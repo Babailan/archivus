@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Student {
+  student_id    Int        @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  middle_name   String
+  date_of_birth DateTime
+  address       String
+  gender        GenderEnum
+  email         String
+  created_at    DateTime   @default(now())
+}
+
+enum GenderEnum {
+  male
+  female
+}
+
+model Subject {
+  subject_code       String               @id @unique
+  subject_name       String
+  created_at         DateTime             @default(now())
+  price              Decimal              @db.Decimal(10, 2)
+  curriculumSubjects CurriculumSubjects[]
+}
+
+model Curriculum {
+  grade_level        GradeLevelEnum
+  curriculum_code    String               @id
+  curriculum_name    String
+  created_at         DateTime             @default(now())
+  curriculumSubjects CurriculumSubjects[]
+}
+
+model CurriculumSubjects {
+  curriculum      Curriculum @relation(fields: [curriculum_code], references: [curriculum_code])
+  curriculum_code String
+  subject         Subject    @relation(fields: [subject_code], references: [subject_code])
+  subject_code    String
+
+  // Compute all subjects that has the same curriculum_code and make a frozen price
+  frozen_price Decimal @db.Decimal(10, 2)
+
+  created_at DateTime @default(now())
+
+  @@id([curriculum_code, subject_code])
+}
+
+enum QuarterEnum {
+  firstQuarter
+  secondQuarter
+  thirdQuarter
+  fourthQuarter
+}
+
+enum GradeLevelEnum {
+  grade1
+  grade2
+  grade3
+  grade4
+  grade5
+  grade6
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
+  password   String
+  role       Role[]
+  created_at DateTime @default(now())
+}
+
+enum Roles {
+  registrar
+  cashier
+  admin
+}
+
+model Role {
+  user    User  @relation(fields: [user_id], references: [id])
+  user_id Int
+  role    Roles @unique
+}
