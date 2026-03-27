@@ -36,7 +36,7 @@ const formSchema = z.object({
   first_name: z.string().nonempty("This field is required."),
   last_name: z.string().nonempty("This field is required."),
   middle_name: z.string().nonempty("This field is required."),
-  date_of_birth: z.date({"error":()=> "This field is required"}),
+  date_of_birth: z.date({ error: () => "This field is required" }),
   gender: z.enum(["male", "female"], {
     error: () => "This field is required.",
   }),
@@ -206,15 +206,15 @@ export default function CreateSubject() {
                       onSelect={(date) => {
                         setDate(date);
                         setOpen(false);
-                        if(date) {
-                          form.setValue("date_of_birth",date);
+                        if (date) {
+                          form.setValue("date_of_birth", date);
                           form.trigger("date_of_birth");
                         }
                       }}
                     />
                   </PopoverContent>
                 </Popover>
-                <FieldError errors={[fieldState.error]}/>
+                <FieldError errors={[fieldState.error]} />
               </Field>
             )}
           />

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
-import { DashboardSideBar, HeaderBar } from "../components/sidebar/dashboard-side-bar";
+import {
+  DashboardSideBar,
+  HeaderBar,
+} from "../components/sidebar/dashboard-side-bar";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import {

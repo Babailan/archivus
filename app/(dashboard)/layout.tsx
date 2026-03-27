@@ -1,4 +1,7 @@
-import { DashboardSideBar, HeaderBar } from "@/components/sidebar/dashboard-side-bar";
+import {
+  DashboardSideBar,
+  HeaderBar,
+} from "@/components/sidebar/dashboard-side-bar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({

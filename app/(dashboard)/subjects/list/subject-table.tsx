@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/empty";
 
 export async function SubjectTableList({ q }: { q: string }) {
-  const {results} = await searchSubjectAction(q);
+  const { results } = await searchSubjectAction(q);
 
   if (results.length == 0) {
     return (
@@ -48,7 +48,7 @@ export async function SubjectTableList({ q }: { q: string }) {
   }
 
   return (
-      <Table>
+    <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Subject Code</TableHead>

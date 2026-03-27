@@ -1,9 +1,7 @@
 "use server";
 
 import prisma from "@/app/libs/dbClient";
-import {
-  PrismaClientKnownRequestError,
-} from "@prisma/client/runtime/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 
 export async function createSubjectAction(
   data: FormData,
@@ -42,7 +40,7 @@ export async function createSubjectAction(
       }
     }
     return {
-      message:  "Something went wrong",
+      message: "Something went wrong",
       success: false,
     };
   }

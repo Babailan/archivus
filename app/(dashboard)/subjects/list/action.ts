@@ -7,20 +7,18 @@ export async function searchSubjectAction(q: string) {
 
   const pageSize = 10;
 
-  const searchFilter = q.length > 0 
-    ? {
-        OR: [
-          { subject_name: q },
-          { subject_code: q },
-        ],
-      }
-    : {};
+  const searchFilter =
+    q.length > 0
+      ? {
+          OR: [{ subject_name: q }, { subject_code: q }],
+        }
+      : {};
 
   const data = await prisma.subject.findMany({
     where: searchFilter,
     take: pageSize + 1,
-    orderBy: { subject_name: 'asc' }
+    orderBy: { subject_name: "asc" },
   });
 
-  return {results:data,};
+  return { results: data };
 }

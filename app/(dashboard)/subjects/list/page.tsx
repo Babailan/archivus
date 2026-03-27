@@ -18,9 +18,11 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-export default async function SubjectListPage({searchParams}: PageProps<"/subjects/list">) {
-  const t = new URLSearchParams(await searchParams as Record<string,string>)
-  const q = t.get("q") ?? ""
+export default async function SubjectListPage({
+  searchParams,
+}: PageProps<"/subjects/list">) {
+  const t = new URLSearchParams((await searchParams) as Record<string, string>);
+  const q = t.get("q") ?? "";
   console.log(t);
   return (
     <div className="p-10">
