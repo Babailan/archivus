@@ -1,20 +1,29 @@
-import { PrismaClient } from "../app/generated/prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import prisma from "@/lib/dbClient";
+import bcrypt from "bcryptjs";
 
-const adapter = new PrismaMariaDb({
-  user: "root",
-  password: "rongrong",
-  database: "mydb",
-});
+async function main() {
+  const salt = await bcrypt.genSalt(10);
 
-const prisma = new PrismaClient({
-  adapter,
-});
-
-export async function main() {
-  // await prisma.user.create({data:{email:"babailanxx@gmail.com","name":"babi"}})
-
-  await prisma.$disconnect();
+  await prisma.user.create({
+    data: {
+      email: "babailanxx@gmail.com",
+      hash_password: await bcrypt.hash("admin", salt),
+      username: "babi",
+      role: {
+        create: {
+          role: "admin",
+        },
+      },
+    },
+  });
 }
 
-main();
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

@@ -1,5 +1,3 @@
-import prisma from "@/app/libs/dbClient";
-
 export async function addNewUser(formData: FormData) {
   const username = formData.get("username") as string;
   const email = formData.get("email") as string;

@@ -10,8 +10,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Book, LibraryBig, School } from "lucide-react";
-import { Avatar, AvatarBadge, AvatarFallback } from "../ui/avatar";
 import Link from "next/link";
+import { AvatarDashboard } from "./avatar-dashboard";
 
 export async function DashboardSideBar() {
   return (
@@ -21,14 +21,14 @@ export async function DashboardSideBar() {
         <SidebarGroup>
           <SidebarGroupLabel>Registrar</SidebarGroupLabel>
           <SidebarMenu>
-            <Link href={"/subjects/list"}>
+            <Link href={"/subjects"}>
               <SidebarMenuButton>
                 <Book /> Subjects
               </SidebarMenuButton>
             </Link>
           </SidebarMenu>
           <SidebarMenu>
-            <Link href={"/curriculum/list"}>
+            <Link href={"/curriculum"}>
               <SidebarMenuButton>
                 <LibraryBig /> Curriculum
               </SidebarMenuButton>
@@ -54,10 +54,7 @@ export function HeaderBar() {
         <SidebarTrigger />
       </div>
       <div>
-        <Avatar>
-          <AvatarFallback>R</AvatarFallback>
-          <AvatarBadge className="bg-green-500"></AvatarBadge>
-        </Avatar>
+        <AvatarDashboard />
       </div>
     </div>
   );

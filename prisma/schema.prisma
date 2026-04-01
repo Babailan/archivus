@@ -25,19 +25,28 @@ enum GenderEnum {
 }
 
 model Subject {
-  subject_code       String               @id @unique
-  subject_name       String
-  created_at         DateTime             @default(now())
-  price              Decimal              @db.Decimal(10, 2)
-  curriculumSubjects CurriculumSubjects[]
+  id                  Int                  @id @default(autoincrement())
+  subject_code        String               @unique
+  subject_name        String
+  created_at          DateTime             @default(now())
+  prices              SubjectPrice[]
+  curriculum_subjects CurriculumSubjects[]
+}
+
+model SubjectPrice {
+  id           Int      @id @default(autoincrement())
+  subject      Subject  @relation(fields: [subject_code], references: [subject_code])
+  subject_code String
+  price        Decimal  @db.Decimal(10, 2)
+  created_at   DateTime @default(now())
 }
 
 model Curriculum {
-  grade_level        GradeLevelEnum
-  curriculum_code    String               @id
-  curriculum_name    String
-  created_at         DateTime             @default(now())
-  curriculumSubjects CurriculumSubjects[]
+  grade_level         GradeLevelEnum
+  curriculum_code     String               @id
+  curriculum_name     String
+  created_at          DateTime             @default(now())
+  curriculum_subjects CurriculumSubjects[]
 }
 
 model CurriculumSubjects {
@@ -71,12 +80,12 @@ enum GradeLevelEnum {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  email      String   @unique
-  password   String
-  role       Role[]
-  created_at DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  email         String   @unique
+  hash_password String
+  role          Role[]
+  created_at    DateTime @default(now())
 }
 
 enum Roles {
@@ -86,7 +95,8 @@ enum Roles {
 }
 
 model Role {
-  user    User  @relation(fields: [user_id], references: [id])
-  user_id Int
-  role    Roles @unique
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int
+  role       Roles    @unique
+  created_at DateTime @default(now())
 }

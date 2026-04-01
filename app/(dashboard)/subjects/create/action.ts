@@ -1,47 +1,34 @@
 "use server";
 
-import prisma from "@/app/libs/dbClient";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { z } from "zod";
+import { actionClient } from "@/lib/safe-action";
+import { zfd } from "zod-form-data";
+import { anyAmountHelper, sleep } from "@/lib/utils";
+import prisma from "@/lib/dbClient";
+import {
+  flattenValidationErrors,
+  returnValidationErrors,
+} from "next-safe-action";
 
-export async function createSubjectAction(
-  data: FormData,
-): Promise<ActionResponse> {
-  const subject_name = data.get("subject_name") as string;
-  const subject_code = data.get("subject_code") as string;
+const createSubjectInputSchema = zfd.formData({
+  subject_name: zfd.text(z.string({ error: "Subject name is required." })),
+  subject_code: zfd.text(z.string({ error: "Subject code is required." })),
+  price: zfd.numeric(anyAmountHelper()),
+});
 
-  if (!subject_name || !subject_code) {
-    throw new Error("Subject name and code are required.");
-  }
-  try {
-    const createdSubject = await prisma.subject.create({
-      data: {
-        subject_code,
-        subject_name,
-      },
+export const createSubject = actionClient
+  .inputSchema(createSubjectInputSchema)
+  .action(async ({ parsedInput: { price, subject_code, subject_name } }) => {
+    const subjectExist = await prisma.subject.findUnique({
+      where: { subject_code },
     });
-    await prisma.$disconnect();
-    return {
-      success: false,
-      message: "Subject created successfully.",
-    };
-  } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return {
-          message: error.message,
-          success: false,
-          errors: [
-            {
-              field: "subject_code",
-              message: "This subject code exist already.",
-            },
-          ],
-        };
-      }
+    if (subjectExist) {
+      returnValidationErrors(createSubjectInputSchema, {
+        subject_code: { _errors: ["Subject Code exist already."] },
+      });
     }
-    return {
-      message: "Something went wrong",
-      success: false,
-    };
-  }
-}
+    await prisma.subject.create({
+      data: { prices: { create: { price } }, subject_code, subject_name },
+    });
+    return { feedback: `Successfully created.` };
+  });

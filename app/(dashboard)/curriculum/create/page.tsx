@@ -1,3 +1,18 @@
+"use client";
+
+import { useAction } from "next-safe-action/hooks";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { SendHorizonal } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -7,16 +22,15 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { CreateSubjectForm } from "./create-subject-form";
+import { CreateCurriculumForm } from "./create-curriculum-form";
 
-export default function Test() {
-
+export default function CreateCurriculum() {
   return (
     <div className="p-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-             <BreadcrumbLink asChild>
+            <BreadcrumbLink asChild>
               <Link href={"/dashboard"}>Home</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -32,7 +46,12 @@ export default function Test() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <CreateSubjectForm/>
+      <div className="flex items-center mb-5">
+        <div>
+          <h1 className="text-xl font-bold">Create Curriculum</h1>
+        </div>
+      </div>
+      <CreateCurriculumForm />
     </div>
   );
 }
