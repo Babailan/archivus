@@ -17,6 +17,11 @@ export async function getSubject(q: string) {
         sort: "desc",
       },
     };
+  } else {
+    // order by created_at desc if empty string
+    select.orderBy = {
+      created_at: "desc",
+    };
   }
 
   let find = await prisma.subject.findMany({
