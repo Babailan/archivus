@@ -16,18 +16,26 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { SendHorizonal } from "lucide-react";
 import React from "react";
-import { dinero, PHP } from "dinero.js";
 import numeral from "numeral";
 import { PesoInput } from "@/components/ui/peso";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 export function CreateSubjectForm() {
-  const { execute, result, status, isExecuting } = useAction(createSubject);
-  function submit(e: React.SubmitEvent<HTMLFormElement>) {
+  const { executeAsync, result, status, isExecuting } =
+    useAction(createSubject);
+  async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const formdata = new FormData(e.target);
     const price = numeral(formdata.get("price"));
     formdata.set("price", price.value()?.toString() ?? "");
-    execute(formdata);
+    const result = await executeAsync(formdata);
+    if (result.data) {
+      toast.success("Subject created successfully", {
+        description: format(new Date(), "MMM, d yyyy"),
+      });
+      e.target.reset();
+    }
   }
   return (
     <form onSubmit={submit}>
@@ -45,6 +53,10 @@ export function CreateSubjectForm() {
             name="subject_name"
             aria-invalid={!!result.validationErrors?.fieldErrors.subject_name}
           />
+          <FieldDescription>
+            Use clear, descriptive names (e.g., "Advanced Mathematics" or
+            "Introduction to Biology")
+          </FieldDescription>
           <FieldError>
             {result.validationErrors?.fieldErrors.subject_name}
           </FieldError>
@@ -53,11 +65,16 @@ export function CreateSubjectForm() {
           <FieldLabel>
             Subject Code <span className="text-red-600">*</span>
           </FieldLabel>
+
           <Input
             type="text"
             name="subject_code"
             aria-invalid={!!result.validationErrors?.fieldErrors.subject_code}
           />
+          <FieldDescription>
+            Follow a consistent format like `[ABBREV][LEVEL]` (e.g., MATH101,
+            ENG202)
+          </FieldDescription>
           <FieldError>
             {result.validationErrors?.fieldErrors.subject_code}
           </FieldError>
@@ -70,10 +87,12 @@ export function CreateSubjectForm() {
             customInput={PesoInput}
             thousandSeparator
             decimalScale={2}
-            onValueChange={(v) => v.floatValue}
             name="price"
             aria-invalid={!!result.validationErrors?.fieldErrors.price}
           />
+          <FieldDescription>
+            Set based on subject complexity, materials needed, or credit hours
+          </FieldDescription>
           <FieldError>{result.validationErrors?.fieldErrors.price}</FieldError>
         </Field>
         <Button type="submit" disabled={isExecuting}>

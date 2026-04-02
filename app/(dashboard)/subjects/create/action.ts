@@ -30,5 +30,5 @@ export const createSubject = actionClient
     await prisma.subject.create({
       data: { prices: { create: { price } }, subject_code, subject_name },
     });
-    return { feedback: `Successfully created.` };
+    return { success: true };
   });

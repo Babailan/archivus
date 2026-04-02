@@ -8,7 +8,6 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { searchSubjectAction } from "./action";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,20 +17,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowUp,
-  Ellipsis,
-  Folder,
-  PiIcon,
-  Search,
-  SearchX,
-  ShieldAlert,
-} from "lucide-react";
-import { format, sub } from "date-fns";
+import { Ellipsis, Search } from "lucide-react";
+import { format } from "date-fns";
 import { NumericFormat } from "react-number-format";
 import {
   Empty,
-  EmptyContent,
   EmptyDescription,
   EmptyHeader,
   EmptyMedia,
@@ -40,24 +30,24 @@ import {
 import { use, useEffect } from "react";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import EditSubjectDialog from "./edit-subject-dialog";
-import { SearchSubjectResult } from "./page";
 import { useSearchParams, useRouter } from "next/navigation";
+import { GetSubjectResult } from "@/services/subject.service";
 
 export function SubjectListForm({
   subjectsPromise,
 }: {
-  subjectsPromise: Promise<SearchSubjectResult>;
+  subjectsPromise: Promise<GetSubjectResult>;
 }) {
   const subjects = use(subjectsPromise);
+
+  async function deleteSubject() {}
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
       }}
     >
-      {/* {!!subjects.subjects.length && <SkeletonTable />} */}
       {!subjects.subjects.length && (
         <Empty>
           <EmptyHeader>

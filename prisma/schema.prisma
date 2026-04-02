@@ -29,8 +29,11 @@ model Subject {
   subject_code        String               @unique
   subject_name        String
   created_at          DateTime             @default(now())
+  inactive            Boolean              @default(false)
   prices              SubjectPrice[]
   curriculum_subjects CurriculumSubjects[]
+
+  @@fulltext([subject_code, subject_name(order: Desc)])
 }
 
 model SubjectPrice {

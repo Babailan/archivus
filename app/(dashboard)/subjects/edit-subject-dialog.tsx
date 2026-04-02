@@ -14,16 +14,17 @@ import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
 import Link from "next/link";
 import { InferSafeActionFnResult } from "next-safe-action";
-import { searchSubjectAction, updateSubjectAction } from "./action";
+import { updateSubjectAction } from "./action";
 import { NumericFormat } from "react-number-format";
 import { PesoInput } from "@/components/ui/peso";
 import { useAction } from "next-safe-action/hooks";
 import React from "react";
 import numeral from "numeral";
+import { GetSubjectResult } from "@/services/subject.service";
+import { toast, useSonner } from "sonner";
+import { format } from "date-fns";
 
-type props = NonNullable<
-  InferSafeActionFnResult<typeof searchSubjectAction>["data"]
->["subjects"][number];
+type props = Awaited<GetSubjectResult>["subjects"][number];
 
 export default function EditSubjectDialog({
   prices,
@@ -31,10 +32,9 @@ export default function EditSubjectDialog({
   subject_name,
   id,
 }: props) {
-  const { isExecuting, result, execute } = useAction(updateSubjectAction);
+  const { isExecuting, result, executeAsync } = useAction(updateSubjectAction);
 
-  console.log(result);
-  function submit(e: React.SubmitEvent<HTMLFormElement>) {
+  async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     e.stopPropagation();
     const formdata = new FormData(e.currentTarget);
@@ -53,7 +53,12 @@ export default function EditSubjectDialog({
         numeral(formdata.get("price")!).value()?.toString()!,
       );
     }
-    execute(validateForm);
+    const result = await executeAsync(validateForm);
+    if (result.data) {
+      toast.success("Subject updated successfully", {
+        description: format(new Date(), "MMM, d yyyy"),
+      });
+    }
   }
   return (
     <Dialog>
@@ -99,8 +104,9 @@ export default function EditSubjectDialog({
                 </Link>
               </DialogDescription>
             </DialogFooter>
-
-            <Button className="w-full mt-2">Update Subject</Button>
+            <Button className="w-full mt-2" disabled={isExecuting}>
+              {isExecuting ? "Updating..." : "Update Subject"}
+            </Button>
           </FieldSet>
         </form>
       </DialogContent>

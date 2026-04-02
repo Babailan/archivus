@@ -15,13 +15,14 @@ import { queryFirst, sleep } from "@/lib/utils";
 import { SubjectFindManyArgs } from "@/app/generated/prisma/models";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getSubject } from "@/services/subject.service";
 
 export default async function SubjectListPage({
   searchParams,
 }: PageProps<"/subjects">) {
   let { q } = await searchParams;
   q = queryFirst(q);
-  const subjects = searchSubject(q);
+  const subjects = getSubject(q);
 
   return (
     <div className="p-10">
@@ -56,35 +57,6 @@ export default async function SubjectListPage({
       </Suspense>
     </div>
   );
-}
-
-export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
-
-async function searchSubject(q: string) {
-  await sleep(3000);
-  const select: SubjectFindManyArgs = {};
-  if (q) {
-    select.where = { OR: [{ subject_code: q }, { subject_name: q }] };
-  }
-
-  let find = await prisma.subject.findMany({
-    ...select,
-    include: {
-      prices: {
-        take: 1,
-        orderBy: {
-          created_at: "desc",
-        },
-      },
-    },
-  });
-
-  return {
-    subjects: find.map((v) => ({
-      ...v,
-      prices: v.prices.map((p) => ({ ...p, price: p.price.toNumber() })),
-    })),
-  };
 }
 
 function SkeletonTable() {

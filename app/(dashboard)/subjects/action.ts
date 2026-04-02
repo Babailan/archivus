@@ -1,47 +1,13 @@
 "use server";
 
-import {
-  SubjectFindManyArgs,
-  SubjectUpdateInput,
-} from "@/app/generated/prisma/models";
+import { SubjectUpdateInput } from "@/app/generated/prisma/models";
 import prisma from "@/lib/dbClient";
 import { actionClient } from "@/lib/safe-action";
 import { anyAmountHelper } from "@/lib/utils";
-import { cacheTag, revalidatePath, revalidateTag, updateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
-
-const searchSubjectActionInputSchema = zfd.formData({
-  q: zfd.text(z.string().default("")),
-});
-
-export const searchSubjectAction = actionClient
-  .inputSchema(searchSubjectActionInputSchema)
-  .action(async ({ parsedInput: { q } }) => {
-    const select: SubjectFindManyArgs = {};
-    if (q) {
-      select.where = { OR: [{ subject_code: q }, { subject_name: q }] };
-    }
-
-    let find = await prisma.subject.findMany({
-      ...select,
-      include: {
-        prices: {
-          take: 1,
-          orderBy: {
-            created_at: "desc",
-          },
-        },
-      },
-    });
-
-    return {
-      subjects: find.map((v) => ({
-        ...v,
-        prices: v.prices.map((p) => ({ ...p, price: p.price.toNumber() })),
-      })),
-    };
-  });
+import { getSubject } from "@/services/subject.service";
 
 const updateSubjectActionInputSchema = zfd.formData({
   id: zfd.numeric(z.number()),
@@ -75,3 +41,20 @@ export const updateSubjectAction = actionClient
       };
     },
   );
+
+export const searchSubjectsAction = actionClient
+  .inputSchema(zfd.formData({ q: z.string() }))
+  .action(async ({ parsedInput: { q } }) => {
+    return await getSubject(q);
+  });
+
+export const deleteSubjectAction = actionClient
+  .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
+  .action(async ({ parsedInput: { id } }) => {
+    await prisma.subject.update({
+      where: { id },
+      data: { inactive: true },
+    });
+    revalidatePath("/subjects");
+    return { success: true };
+  });

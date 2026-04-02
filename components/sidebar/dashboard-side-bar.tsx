@@ -9,11 +9,21 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Book, LibraryBig, School } from "lucide-react";
+import { Book, LibraryBig, School, User } from "lucide-react";
 import Link from "next/link";
-import { AvatarDashboard } from "./avatar-dashboard";
+import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
+import {
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenu,
+} from "../ui/dropdown-menu";
+import { DropdownMenuItemLogOut } from "./drop-drown-menu-avatar";
 
-export async function DashboardSideBar() {
+export function DashboardSideBar() {
   return (
     <Sidebar variant="sidebar">
       <SidebarHeader />
@@ -54,7 +64,26 @@ export function HeaderBar() {
         <SidebarTrigger />
       </div>
       <div>
-        <AvatarDashboard />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Avatar suppressHydrationWarning>
+              <AvatarFallback>R</AvatarFallback>
+              <AvatarBadge className="bg-green-500"></AvatarBadge>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <User /> Profile
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItemLogOut />
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
