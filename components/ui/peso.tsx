@@ -14,7 +14,7 @@ export const PesoInput = ({
 }: React.ComponentProps<"input">) => {
   return (
     <InputGroup>
-      <InputGroupInput placeholder="Search..." {...props} />
+      <InputGroupInput placeholder="" {...props} />
       <InputGroupAddon>
         <PhilippinePeso />
       </InputGroupAddon>

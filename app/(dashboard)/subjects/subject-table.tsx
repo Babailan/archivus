@@ -37,35 +37,28 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useAction } from "next-safe-action/hooks";
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
 import EditSubjectDialog from "./edit-subject-dialog";
+import { SearchSubjectResult } from "./page";
+import { useSearchParams, useRouter } from "next/navigation";
 
-export function SubjectListForm() {
-  const { execute, isExecuting, result, status } =
-    useAction(searchSubjectAction);
-
-  useEffect(() => {
-    execute({ q: undefined });
-  }, []);
-
+export function SubjectListForm({
+  subjectsPromise,
+}: {
+  subjectsPromise: Promise<SearchSubjectResult>;
+}) {
+  const subjects = use(subjectsPromise);
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        execute(new FormData(e.target));
       }}
     >
-      <Field>
-        <Input placeholder="Search for subjects" name="q" />
-      </Field>
-
-      {(status == "idle" || isExecuting) && <SkeletonTable />}
-      {!result.data?.subjects.length && status != "idle" && !isExecuting && (
+      {/* {!!subjects.subjects.length && <SkeletonTable />} */}
+      {!subjects.subjects.length && (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -76,7 +69,7 @@ export function SubjectListForm() {
           </EmptyHeader>
         </Empty>
       )}
-      {!!(!isExecuting && result.data?.subjects.length) && (
+      {!!subjects.subjects.length && (
         <Table className="mt-5">
           <TableHeader>
             <TableRow>
@@ -88,7 +81,7 @@ export function SubjectListForm() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.data?.subjects.map((subject) => (
+            {subjects.subjects.map((subject) => (
               <TableRow key={subject.id}>
                 <TableCell>{subject.subject_code.toUpperCase()}</TableCell>
                 <TableCell>{subject.subject_name.toUpperCase()}</TableCell>
@@ -131,19 +124,25 @@ export function SubjectListForm() {
     </form>
   );
 }
+import { useDebouncedCallback } from "use-debounce";
 
-function SkeletonTable() {
+export function SearchInput() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const debounced = useDebouncedCallback((value: string) => {
+    router.push(`/subjects?q=${value}`);
+  }, 300);
+
   return (
-    <div className="flex w-full flex-col gap-2 mt-5">
-      {Array.from({ length: 5 }).map((_, index) => (
-        <div className="flex gap-4" key={index}>
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 flex-1" />
-          <Skeleton className="h-10 w-20" />
-        </div>
-      ))}
-    </div>
+    <Field>
+      <Input
+        placeholder="Search for subjects"
+        name="q"
+        defaultValue={params.get("q") || ""}
+        onChange={(e) => {
+          debounced(e.currentTarget.value);
+        }}
+      />
+    </Field>
   );
 }

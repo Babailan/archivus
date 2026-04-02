@@ -28,3 +28,10 @@ export const stripEmpty = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) => {
     Object.fromEntries(Object.entries(val).filter(([_, v]) => v != null)),
   );
 };
+
+export function queryFirst(value: string | string[] | undefined) {
+  if (Array.isArray(value)) {
+    return value[0] ?? "";
+  }
+  return value ?? "";
+}

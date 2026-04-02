@@ -7,7 +7,7 @@ import {
 import prisma from "@/lib/dbClient";
 import { actionClient } from "@/lib/safe-action";
 import { anyAmountHelper } from "@/lib/utils";
-import { cacheTag, revalidateTag, updateTag } from "next/cache";
+import { cacheTag, revalidatePath, revalidateTag, updateTag } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
 
@@ -69,7 +69,7 @@ export const updateSubjectAction = actionClient
         where: { id },
         data: data,
       });
-      updateTag("subjects");
+      revalidatePath("/subjects");
       return {
         success: true,
       };
