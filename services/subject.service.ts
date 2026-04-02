@@ -9,7 +9,6 @@ export async function getSubject(q: string) {
     select.where = {
       subject_name: { search: q + "*" },
       subject_code: { search: q + "*" },
-      inactive: false,
     };
     select.orderBy = {
       _relevance: {
@@ -21,6 +20,9 @@ export async function getSubject(q: string) {
   }
 
   let find = await prisma.subject.findMany({
+    where: {
+      inactive: false,
+    },
     ...select,
     include: {
       prices: {
