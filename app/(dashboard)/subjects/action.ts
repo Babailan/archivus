@@ -7,7 +7,7 @@ import { anyAmountHelper, sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
-import { getSubject } from "@/services/subject.service";
+import { searchSubject } from "@/services/subject.service";
 
 const updateSubjectActionInputSchema = zfd.formData({
   id: zfd.numeric(z.number()),
@@ -46,7 +46,7 @@ export const searchSubjectsAction = actionClient
   .inputSchema(zfd.formData({ q: z.string() }))
   .action(async ({ parsedInput: { q } }) => {
     await sleep(1000);
-    return await getSubject(q);
+    return await searchSubject(q);
   });
 
 export const deleteSubjectAction = actionClient

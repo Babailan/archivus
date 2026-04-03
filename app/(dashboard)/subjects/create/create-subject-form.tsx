@@ -17,7 +17,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { SendHorizonal } from "lucide-react";
 import React from "react";
 import numeral from "numeral";
-import { PesoInput } from "@/components/ui/peso";
+import { PesoInput } from "@/components/ui/peso-input";
 import { toast } from "sonner";
 import { format } from "date-fns";
 

@@ -38,10 +38,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { GetSubjectResult } from "@/services/subject.service";
+import { SearchSubjectResult } from "@/services/subject.service";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
-import { PesoInput } from "@/components/ui/peso";
+import { PesoInput } from "@/components/ui/peso-input";
 import {
   Dialog,
   DialogClose,
@@ -55,7 +55,7 @@ import {
 
 export function CreateCurriculumForm() {
   const { executeAsync, result, isExecuting } = useAction(createCurriculum);
-  const [subjects, setSubjects] = useState<GetSubjectResult["subjects"]>([]);
+  const [subjects, setSubjects] = useState<SearchSubjectResult["subjects"]>([]);
   // miscellaneous fee
   const [miscellaneousFee, setMiscellaneousFee] = useState<number>(0);
   const ref = useRef<HTMLFormElement>(null);
@@ -63,12 +63,7 @@ export function CreateCurriculumForm() {
   const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    // map only the subject price
-    console.log(
-      subjects.map((subject) => ({
-        subjectPrice_id: subject.prices[0].id,
-      })),
-    );
+
     formData.append(
       "subjects",
       JSON.stringify(
@@ -81,12 +76,17 @@ export function CreateCurriculumForm() {
     formData.set("miscellaneous_fee", miscellaneousFee.toString());
 
     const { data, validationErrors } = await executeAsync(formData);
-    console.log(validationErrors);
+    if (data?.success) {
+      toast.success("Curriculum created successfully");
+      setSubjects([]);
+      setMiscellaneousFee(0);
+      ref.current?.reset();
+    }
   };
 
   return (
     <>
-      <form ref={ref} onSubmit={onSubmit}>
+      <form ref={ref} onSubmit={onSubmit} autoComplete="off">
         <FieldSet>
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2">
             <Field>

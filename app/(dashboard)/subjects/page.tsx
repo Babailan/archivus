@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { SearchInput, SubjectListForm } from "./subject-list-table";
+import { SubjectListForm } from "./subject-list-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,14 +13,15 @@ import {
 import { queryFirst } from "@/lib/utils";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getSubject } from "@/services/subject.service";
+import { searchSubject } from "@/services/subject.service";
+import { SearchInput } from "@/components/ui/search-input";
 
 export default async function SubjectListPage({
   searchParams,
 }: PageProps<"/subjects">) {
   let { q } = await searchParams;
   q = queryFirst(q);
-  const subjects = getSubject(q);
+  const subjects = searchSubject(q);
 
   return (
     <div className="p-10">
@@ -49,7 +50,7 @@ export default async function SubjectListPage({
           </Link>
         </div>
       </div>
-      <SearchInput />
+      <SearchInput pathname="/subjects" />
       <Suspense key={q} fallback={<SkeletonTable />}>
         <SubjectListForm subjectsPromise={subjects} />
       </Suspense>

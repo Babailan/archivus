@@ -1,9 +1,9 @@
 import { SubjectFindManyArgs } from "@/app/generated/prisma/models";
 import prisma from "@/lib/dbClient";
 
-export type GetSubjectResult = Awaited<ReturnType<typeof getSubject>>;
+export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
 
-export async function getSubject(q: string) {
+export async function searchSubject(q: string) {
   const select: SubjectFindManyArgs = {};
   if (q) {
     select.where = {

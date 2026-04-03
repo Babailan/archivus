@@ -5,6 +5,7 @@ import prisma from "@/lib/dbClient";
 import { actionClient } from "@/lib/safe-action";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { returnValidationErrors } from "next-safe-action";
+import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
 
@@ -59,7 +60,7 @@ export const createCurriculum = actionClient
       },
     }) => {
       try {
-        await prisma.curriculum.create({
+        const curriculum = await prisma.curriculum.create({
           data: {
             curriculum_name,
             curriculum_code,
@@ -75,7 +76,10 @@ export const createCurriculum = actionClient
             },
           },
         });
+        revalidatePath("/curriculum");
+        return { success: true };
       } catch (err) {
+        console.log(err);
         if (err instanceof PrismaClientKnownRequestError) {
           if (err.code === "P2002") {
             return returnValidationErrors(createCurriculumInputSchema, {
@@ -86,6 +90,5 @@ export const createCurriculum = actionClient
           }
         }
       }
-      return { success: true };
     },
   );

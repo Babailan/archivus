@@ -53,6 +53,7 @@ model Curriculum {
   created_at          DateTime             @default(now())
   miscellaneous_fee   Decimal              @db.Decimal(10, 2)
   curriculum_subjects CurriculumSubjects[]
+  inactive            Boolean              @default(false)
 
   @@fulltext([curriculum_code, curriculum_name(order: Desc)])
 }

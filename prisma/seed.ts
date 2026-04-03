@@ -1,7 +1,33 @@
 import prisma from "@/lib/dbClient";
 
 async function main() {
-  const data = await prisma.subject.findMany({});
+  //also include the data of curriculum
+  const curriculum = await prisma.curriculum.findUnique({
+    where: {
+      id: 6,
+    },
+    include: {
+      curriculum_subjects: true,
+    },
+  });
+
+  const {
+    _sum: { price },
+  } = await prisma.subjectPrice.aggregate({
+    _sum: {
+      price: true,
+    },
+    where: {
+      curriculumSubjects: {
+        some: {
+          curriculum_id: 6,
+        },
+      },
+    },
+  });
+
+  price;
+
   // const salt = await bcrypt.genSalt(10);
   // await prisma.user.create({
   //   data: {

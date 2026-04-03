@@ -16,15 +16,15 @@ import Link from "next/link";
 import { InferSafeActionFnResult } from "next-safe-action";
 import { updateSubjectAction } from "./action";
 import { NumericFormat } from "react-number-format";
-import { PesoInput } from "@/components/ui/peso";
+import { PesoInput } from "@/components/ui/peso-input";
 import { useAction } from "next-safe-action/hooks";
 import React from "react";
 import numeral from "numeral";
-import { GetSubjectResult } from "@/services/subject.service";
+import { SearchSubjectResult } from "@/services/subject.service";
 import { toast, useSonner } from "sonner";
 import { format } from "date-fns";
 
-type props = Awaited<GetSubjectResult>["subjects"][number];
+type props = Awaited<SearchSubjectResult>["subjects"][number];
 
 export default function EditSubjectDialog({
   prices,

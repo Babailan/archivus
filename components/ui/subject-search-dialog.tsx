@@ -16,13 +16,13 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { searchSubjectsAction } from "@/app/(dashboard)/subjects/action";
-import { GetSubjectResult } from "@/services/subject.service";
+import { SearchSubjectResult } from "@/services/subject.service";
 import { cn } from "@/lib/utils";
 import { ClassValue } from "clsx";
 import { Spinner } from "./spinner";
 
 interface SubjectSearchDialogProps {
-  onSelect?: (subject: GetSubjectResult["subjects"][number]) => void;
+  onSelect?: (subject: SearchSubjectResult["subjects"][number]) => void;
   children?: React.ReactNode;
   className?: ClassValue;
 }
@@ -46,7 +46,9 @@ export function SubjectSearchDialog({
   }, 300);
 
   // make onClick of command item to add subject to the table
-  const handleAddSubject = (subject: GetSubjectResult["subjects"][number]) => {
+  const handleAddSubject = (
+    subject: SearchSubjectResult["subjects"][number],
+  ) => {
     setOpen(false);
     if (onSelect) {
       onSelect(subject);

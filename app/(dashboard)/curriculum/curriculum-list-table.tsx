@@ -18,7 +18,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Ellipsis, Search } from "lucide-react";
 import { format } from "date-fns";
-import { NumericFormat } from "react-number-format";
 import {
   Empty,
   EmptyDescription,
@@ -27,16 +26,16 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { use } from "react";
-import EditSubjectDialog from "./edit-subject-dialog";
-import { SearchSubjectResult } from "@/services/subject.service";
-import DeleteSubjectDialog from "./delete-subject-dialog";
+import { SearchSubjectResult } from "@/services/curriculum.service";
+import EditCurriculumDialog from "./edit-curriculum-dialog";
+import DeleteCurriculumDialog from "./delete-curriculum-dialog";
 
-export function SubjectListForm({
-  subjectsPromise,
+export function CurriculumListForm({
+  curriculumsPromise,
 }: {
-  subjectsPromise: Promise<SearchSubjectResult>;
+  curriculumsPromise: Promise<SearchSubjectResult>;
 }) {
-  const subjects = use(subjectsPromise);
+  const data = use(curriculumsPromise);
 
   return (
     <form
@@ -44,43 +43,38 @@ export function SubjectListForm({
         e.preventDefault();
       }}
     >
-      {!subjects.subjects.length && (
+      {!data.curriculums.length && (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <Search />
             </EmptyMedia>
             <EmptyTitle>No data</EmptyTitle>
-            <EmptyDescription>Subject doesn't exist.</EmptyDescription>
+            <EmptyDescription>Curriculum doesn't exist.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}
-      {!!subjects.subjects.length && (
+      {!!data.curriculums.length && (
         <Table className="mt-5">
           <TableHeader>
             <TableRow>
-              <TableHead>Subject Code</TableHead>
-              <TableHead>Subject Name</TableHead>
-              <TableHead>Price</TableHead>
+              <TableHead>Curriculum Code</TableHead>
+              <TableHead>Curriculum Name</TableHead>
               <TableHead>Date Created</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {subjects.subjects.map((subject) => (
-              <TableRow key={subject.id}>
-                <TableCell>{subject.subject_code.toUpperCase()}</TableCell>
-                <TableCell>{subject.subject_name.toUpperCase()}</TableCell>
+            {data.curriculums.map((curriculum) => (
+              <TableRow key={curriculum.id}>
                 <TableCell>
-                  <NumericFormat
-                    displayType="text"
-                    prefix="₱ "
-                    value={subject.prices[0]?.price}
-                    thousandSeparator
-                  />
+                  {curriculum.curriculum_code.toUpperCase()}
                 </TableCell>
                 <TableCell>
-                  {format(subject.created_at, "MMM, d yyyy")}
+                  {curriculum.curriculum_name.toUpperCase()}
+                </TableCell>
+                <TableCell>
+                  {format(curriculum.created_at, "MMM, d yyyy")}
                 </TableCell>
                 <TableCell className="flex justify-end">
                   <DropdownMenu>
@@ -91,11 +85,11 @@ export function SubjectListForm({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuGroup>
-                        <EditSubjectDialog {...subject} />
+                        <EditCurriculumDialog id={curriculum.id} />
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DeleteSubjectDialog id={subject.id} />
+                        <DeleteCurriculumDialog id={curriculum.id} />
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
