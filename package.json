@@ -16,6 +16,7 @@
     "@next-safe-action/adapter-react-hook-form": "^2.0.4",
     "@prisma/adapter-mariadb": "^7.6.0",
     "@prisma/client": "^7.6.0",
+    "@stepperize/react": "^6.1.0",
     "@tanstack/react-query": "^5.95.2",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

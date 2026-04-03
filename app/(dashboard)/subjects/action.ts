@@ -3,7 +3,7 @@
 import { SubjectUpdateInput } from "@/app/generated/prisma/models";
 import prisma from "@/lib/dbClient";
 import { actionClient } from "@/lib/safe-action";
-import { anyAmountHelper } from "@/lib/utils";
+import { anyAmountHelper, sleep } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
@@ -45,6 +45,7 @@ export const updateSubjectAction = actionClient
 export const searchSubjectsAction = actionClient
   .inputSchema(zfd.formData({ q: z.string() }))
   .action(async ({ parsedInput: { q } }) => {
+    await sleep(1000);
     return await getSubject(q);
   });
 

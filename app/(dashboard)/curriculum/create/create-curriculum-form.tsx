@@ -1,20 +1,17 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandShortcut,
-} from "@/components/ui/command";
+import { SubjectSearchDialog } from "@/components/ui/subject-search-dialog";
 
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect, useState } from "react";
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import { useEffect, useRef, useState } from "react";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import {
   SelectTrigger,
   SelectValue,
@@ -33,8 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookX, Icon, Plus, Save, Trash } from "lucide-react";
-import { searchSubjectsAction } from "../../subjects/action";
+import { BookX, Plus, Save, Trash } from "lucide-react";
 import {
   Empty,
   EmptyDescription,
@@ -44,31 +40,82 @@ import {
 } from "@/components/ui/empty";
 import { GetSubjectResult } from "@/services/subject.service";
 import { NumericFormat } from "react-number-format";
+import { toast } from "sonner";
+import { PesoInput } from "@/components/ui/peso";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 export function CreateCurriculumForm() {
-  const { execute, result } = useAction(createCurriculum);
+  const { executeAsync, result, isExecuting } = useAction(createCurriculum);
   const [subjects, setSubjects] = useState<GetSubjectResult["subjects"]>([]);
+  // miscellaneous fee
+  const [miscellaneousFee, setMiscellaneousFee] = useState<number>(0);
+  const ref = useRef<HTMLFormElement>(null);
+  // make a submit function
+  const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    // map only the subject price
+    console.log(
+      subjects.map((subject) => ({
+        subjectPrice_id: subject.prices[0].id,
+      })),
+    );
+    formData.append(
+      "subjects",
+      JSON.stringify(
+        subjects.map((subject) => ({
+          subjectPrice_id: subject.prices[0].id,
+          subject_id: subject.id,
+        })),
+      ),
+    );
+    formData.set("miscellaneous_fee", miscellaneousFee.toString());
+
+    const { data, validationErrors } = await executeAsync(formData);
+    console.log(validationErrors);
+  };
 
   return (
     <>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          execute(new FormData(e.target));
-        }}
-      >
+      <form ref={ref} onSubmit={onSubmit}>
         <FieldSet>
           <FieldGroup className="grid grid-cols-1 md:grid-cols-2">
             <Field>
               <FieldLabel>
                 Curriculum Name <span className="text-red-600">*</span>
               </FieldLabel>
-              <Input name="curriculum_name" />
+              <Input
+                aria-invalid={
+                  !!result?.validationErrors?.fieldErrors?.curriculum_name
+                }
+                name="curriculum_name"
+              />
+              <FieldError>
+                {result?.validationErrors?.fieldErrors?.curriculum_name}
+              </FieldError>
             </Field>
             <Field>
               <FieldLabel>
                 Curriculum Code <span className="text-red-600">*</span>
               </FieldLabel>
-              <Input name="curriculum_code" />
+              <Input
+                aria-invalid={
+                  !!result?.validationErrors?.fieldErrors?.curriculum_code
+                }
+                name="curriculum_code"
+              />
+              <FieldError>
+                {result?.validationErrors?.fieldErrors?.curriculum_code}
+              </FieldError>
             </Field>
           </FieldGroup>
           <FieldGroup>
@@ -76,31 +123,75 @@ export function CreateCurriculumForm() {
               <FieldLabel>
                 Grade Level <span className="text-red-600">*</span>
               </FieldLabel>
-              <Select>
-                <SelectTrigger className="w-full">
+              <Select name="grade_level">
+                <SelectTrigger
+                  className="w-full"
+                  aria-invalid={
+                    !!result?.validationErrors?.fieldErrors?.grade_level
+                  }
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="grade_1">Grade 1</SelectItem>
-                    <SelectItem value="grade_2">Grade 2</SelectItem>
-                    <SelectItem value="grade_3">Grade 3</SelectItem>
-                    <SelectItem value="grade_4">Grade 4</SelectItem>
-                    <SelectItem value="grade_5">Grade 5</SelectItem>
-                    <SelectItem value="grade_6">Grade 6</SelectItem>
+                    <SelectItem value="grade1">Grade 1</SelectItem>
+                    <SelectItem value="grade2">Grade 2</SelectItem>
+                    <SelectItem value="grade3">Grade 3</SelectItem>
+                    <SelectItem value="grade4">Grade 4</SelectItem>
+                    <SelectItem value="grade5">Grade 5</SelectItem>
+                    <SelectItem value="grade6">Grade 6</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              <FieldError>
+                {result?.validationErrors?.fieldErrors?.grade_level}
+              </FieldError>
+            </Field>
+            <Field>
+              <FieldLabel>Miscellaneous Fee</FieldLabel>
+              <NumericFormat
+                customInput={PesoInput}
+                thousandSeparator
+                decimalScale={2}
+                onValueChange={(values) => {
+                  setMiscellaneousFee(values.floatValue || 0);
+                }}
+                name="miscellaneous_fee"
+                aria-invalid={
+                  !!result?.validationErrors?.fieldErrors?.miscellaneous_fee
+                }
+              />
+              <FieldError>
+                {result?.validationErrors?.fieldErrors?.miscellaneous_fee}
+              </FieldError>
             </Field>
           </FieldGroup>
         </FieldSet>
         <div className="flex items-center justify-between mt-5">
           <h1 className="text-lg font-semibold">Subjects</h1>
-          <SubjectSearchDialog
-            onSelect={(subject) => {
-              setSubjects((prev) => [...prev, subject]);
-            }}
-          />
+          <div className="flex  items-end gap-5 flex-col">
+            <SubjectSearchDialog
+              onSelect={(subject) => {
+                if (subjects.find((s) => s.id === subject.id)) {
+                  toast.error("Subject already added");
+                  return;
+                }
+                setSubjects((prev) => [...prev, subject]);
+              }}
+            >
+              <Button
+                type="button"
+                variant={"secondary"}
+                className="w-fit"
+                aria-invalid={!!result?.validationErrors?.fieldErrors?.subjects}
+              >
+                <Plus className="w-4 h-4 mr-2" /> Add Subjects
+              </Button>
+            </SubjectSearchDialog>
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.subjects}
+            </FieldError>
+          </div>
         </div>
         <Table className="mt-5 border rounded-md">
           <TableCaption>
@@ -130,7 +221,7 @@ export function CreateCurriculumForm() {
                     <NumericFormat
                       value={subject.prices[0].price}
                       thousandSeparator=","
-                      prefix="₱"
+                      prefix="₱ "
                       displayType="text"
                       decimalScale={2}
                     />
@@ -151,12 +242,11 @@ export function CreateCurriculumForm() {
                 </TableRow>
               ))
             )}
-            {/* Make a total of all prices */}
             {subjects.length > 0 && (
               <TableRow>
                 <TableCell />
-                <TableCell className="font-bold" colSpan={1}>
-                  Total
+                <TableCell className="font-medium" colSpan={1}>
+                  Accumulated Subject Fees
                 </TableCell>
                 <TableCell>
                   <NumericFormat
@@ -165,20 +255,88 @@ export function CreateCurriculumForm() {
                       0,
                     )}
                     thousandSeparator=","
-                    prefix="₱"
+                    prefix="₱ "
                     displayType="text"
-                    className="font-bold"
+                    className="font-medium"
                     decimalScale={2}
                   />
                 </TableCell>
                 <TableCell></TableCell>
               </TableRow>
             )}
+
+            <TableRow>
+              <TableCell />
+              <TableCell className="font-medium" colSpan={1}>
+                Miscellaneous Fee
+              </TableCell>
+              <TableCell>
+                <NumericFormat
+                  value={miscellaneousFee}
+                  thousandSeparator=","
+                  prefix="₱ "
+                  displayType="text"
+                  className="font-medium"
+                  decimalScale={2}
+                />
+              </TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell />
+              <TableCell className="font-medium" colSpan={1}>
+                Total Tuition
+              </TableCell>
+              <TableCell>
+                <NumericFormat
+                  value={
+                    subjects.reduce(
+                      (acc, subject) => acc + subject.prices[0].price,
+                      0,
+                    ) + miscellaneousFee
+                  }
+                  thousandSeparator=","
+                  prefix="₱ "
+                  displayType="text"
+                  className="font-medium"
+                  decimalScale={2}
+                />
+              </TableCell>
+              <TableCell></TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-        <Button className="w-full mt-5">
-          <Save /> Create Curriculum
-        </Button>
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="w-full mt-5" size={"lg"}>
+              Create Curriculum
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Curriculum</DialogTitle>
+              <DialogDescription>
+                Create a new curriculum for the school.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  onClick={() => {
+                    ref.current?.requestSubmit();
+                  }}
+                  disabled={isExecuting}
+                >
+                  Create
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </form>
     </>
   );
@@ -199,67 +357,5 @@ function EmptyRow() {
         </Empty>
       </TableCell>
     </TableRow>
-  );
-}
-
-function SubjectSearchDialog({
-  onSelect,
-}: {
-  onSelect?: (subject: GetSubjectResult["subjects"][number]) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const { execute, result, isExecuting } = useAction(searchSubjectsAction);
-
-  useEffect(() => {
-    execute({ q: "" });
-  }, []);
-
-  // make onClick of command item to add subject to the table
-  const handleAddSubject = (subject: GetSubjectResult["subjects"][number]) => {
-    setOpen(false);
-    if (onSelect) {
-      onSelect(subject);
-    }
-  };
-  return (
-    <div className="flex flex-col gap-4">
-      <Button
-        onClick={() => setOpen(true)}
-        variant={"secondary"}
-        className="w-fit"
-      >
-        <Plus /> Add Subjects
-      </Button>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <Command shouldFilter={false}>
-          <CommandInput
-            name="q"
-            placeholder="Search subjects..."
-            onValueChange={(value) => {
-              execute({ q: value });
-            }}
-          />
-          <CommandList>
-            <CommandGroup heading="Subjects">
-              {!isExecuting &&
-                result.data?.subjects.map((subject) => (
-                  <CommandItem
-                    key={subject.id}
-                    className="uppercase"
-                    value={subject.id.toString()}
-                    onSelect={() => handleAddSubject(subject)}
-                  >
-                    {subject.subject_code}
-                    <CommandShortcut className="uppercase">
-                      {subject.subject_name}
-                    </CommandShortcut>
-                  </CommandItem>
-                ))}
-              <CommandEmpty>No results found.</CommandEmpty>
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </CommandDialog>
-    </div>
   );
 }

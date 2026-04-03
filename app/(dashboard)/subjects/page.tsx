@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { SearchInput, SubjectListForm } from "./subject-table";
+import { SearchInput, SubjectListForm } from "./subject-list-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,9 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import prisma from "@/lib/dbClient";
-import { queryFirst, sleep } from "@/lib/utils";
-import { SubjectFindManyArgs } from "@/app/generated/prisma/models";
+import { queryFirst } from "@/lib/utils";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSubject } from "@/services/subject.service";

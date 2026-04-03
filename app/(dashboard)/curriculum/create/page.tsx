@@ -1,18 +1,3 @@
-"use client";
-
-import { useAction } from "next-safe-action/hooks";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import { SendHorizonal } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -37,7 +22,7 @@ export default function CreateCurriculum() {
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href={"/subjects"}>Subjects</Link>
+              <Link href={"/curriculum"}>Curriculum</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

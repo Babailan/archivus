@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DialogTrigger,
@@ -9,12 +10,25 @@ import {
   DialogClose,
   Dialog,
 } from "@/components/ui/dialog";
+import { useAction } from "next-safe-action/hooks";
+import { deleteSubjectAction } from "./action";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
-export default function DeleteSubjectDialog() {
+export default function DeleteSubjectDialog({ id }: { id: number }) {
+  const { executeAsync, result, isExecuting } = useAction(deleteSubjectAction);
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const { data } = await executeAsync({ id });
+    if (data) {
+      toast.success("Subject deleted successfully");
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="destructive">Delete</Button>
+        <Button variant="destructive" className="w-full justify-start">
+          Delete
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -28,7 +42,15 @@ export default function DeleteSubjectDialog() {
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button type="submit">Delete</Button>
+          <DialogClose asChild>
+            <Button
+              type="submit"
+              variant={"destructive"}
+              onClick={handleSubmit}
+            >
+              Delete
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

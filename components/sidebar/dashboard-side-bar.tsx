@@ -29,20 +29,18 @@ export function DashboardSideBar() {
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Registrar</SidebarGroupLabel>
           <SidebarMenu>
-            <Link href={"/subjects"}>
-              <SidebarMenuButton>
+            <SidebarGroupLabel>Registrar</SidebarGroupLabel>
+            <SidebarMenuButton asChild pathname="/subjects">
+              <Link href={"/subjects"}>
                 <Book /> Subjects
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenu>
-          <SidebarMenu>
-            <Link href={"/curriculum"}>
-              <SidebarMenuButton>
+              </Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton asChild pathname="/curriculum">
+              <Link href={"/curriculum"}>
                 <LibraryBig /> Curriculum
-              </SidebarMenuButton>
-            </Link>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
@@ -65,8 +63,8 @@ export function HeaderBar() {
       </div>
       <div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar suppressHydrationWarning>
+          <DropdownMenuTrigger>
+            <Avatar>
               <AvatarFallback>R</AvatarFallback>
               <AvatarBadge className="bg-green-500"></AvatarBadge>
             </Avatar>

@@ -41,7 +41,6 @@ export function SubjectListForm({
 }) {
   const subjects = use(subjectsPromise);
 
-  async function deleteSubject() {}
   return (
     <form
       onSubmit={(e) => {
@@ -78,7 +77,7 @@ export function SubjectListForm({
                 <TableCell>
                   <NumericFormat
                     displayType="text"
-                    prefix="₱"
+                    prefix="₱ "
                     value={subject.prices[0]?.price}
                     thousandSeparator
                   />
@@ -99,9 +98,7 @@ export function SubjectListForm({
                       </DropdownMenuGroup>
                       <DropdownMenuSeparator />
                       <DropdownMenuGroup>
-                        <DropdownMenuItem variant="destructive">
-                          Delete
-                        </DropdownMenuItem>
+                        <DeleteSubjectDialog id={subject.id} />
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -115,6 +112,7 @@ export function SubjectListForm({
   );
 }
 import { useDebouncedCallback } from "use-debounce";
+import DeleteSubjectDialog from "./delete-subject-dialog";
 
 export function SearchInput() {
   const params = useSearchParams();

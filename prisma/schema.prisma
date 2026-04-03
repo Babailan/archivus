@@ -37,33 +37,37 @@ model Subject {
 }
 
 model SubjectPrice {
-  id           Int      @id @default(autoincrement())
-  subject      Subject  @relation(fields: [subject_code], references: [subject_code])
-  subject_code String
-  price        Decimal  @db.Decimal(10, 2)
-  created_at   DateTime @default(now())
+  id                 Int                  @id @default(autoincrement())
+  subject            Subject              @relation(fields: [subject_code], references: [subject_code])
+  subject_code       String
+  price              Decimal              @db.Decimal(10, 2)
+  created_at         DateTime             @default(now())
+  curriculumSubjects CurriculumSubjects[]
 }
 
 model Curriculum {
+  id                  Int                  @id @default(autoincrement())
   grade_level         GradeLevelEnum
-  curriculum_code     String               @id
+  curriculum_code     String               @unique
   curriculum_name     String
   created_at          DateTime             @default(now())
+  miscellaneous_fee   Decimal              @db.Decimal(10, 2)
   curriculum_subjects CurriculumSubjects[]
+
+  @@fulltext([curriculum_code, curriculum_name(order: Desc)])
 }
 
 model CurriculumSubjects {
-  curriculum      Curriculum @relation(fields: [curriculum_code], references: [curriculum_code])
-  curriculum_code String
-  subject         Subject    @relation(fields: [subject_code], references: [subject_code])
-  subject_code    String
-
-  // Compute all subjects that has the same curriculum_code and make a frozen price
-  frozen_price Decimal @db.Decimal(10, 2)
+  curriculum       Curriculum   @relation(fields: [curriculum_id], references: [id])
+  curriculum_id    Int
+  subject          Subject      @relation(fields: [subject_id], references: [id])
+  subject_id       Int
+  subject_price    SubjectPrice @relation(fields: [subject_price_id], references: [id])
+  subject_price_id Int
 
   created_at DateTime @default(now())
 
-  @@id([curriculum_code, subject_code])
+  @@id([curriculum_id, subject_id])
 }
 
 enum QuarterEnum {

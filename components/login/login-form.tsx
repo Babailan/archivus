@@ -34,8 +34,8 @@ export function LoginForm({
   const { formState, control, handleSubmit } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "babailanxx@gmail.com",
+      password: "admin",
     },
   });
   const [invalidCredentials, setInvalidCredentials] = useState(false);
@@ -52,8 +52,7 @@ export function LoginForm({
     if (res?.ok) {
       await sleep(3000);
       setInvalidCredentials(false);
-      window.location.replace("/dashboard")
-      
+      window.location.replace("/dashboard");
     } else {
       setInvalidCredentials(true);
     }
