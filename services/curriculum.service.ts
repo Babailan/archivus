@@ -1,38 +1,44 @@
 import { CurriculumFindManyArgs } from "@/app/generated/prisma/models";
 import prisma from "@/lib/dbClient";
 
+export type CurriculumWithSubjects = Awaited<ReturnType<typeof getCurriculum>>;
+
 export async function getCurriculum(id: number) {
   const curriculum = await prisma.curriculum.findUnique({
     where: {
       id,
+      inactive: false,
     },
     include: {
-      curriculum_subjects: true,
-    },
-  });
-
-  const {
-    _sum: { price },
-  } = await prisma.subjectPrice.aggregate({
-    _sum: {
-      price: true,
-    },
-    where: {
-      curriculumSubjects: {
-        some: {
-          curriculum_id: id,
+      curriculum_subjects: {
+        include: {
+          subject: {
+            include: {
+              prices: true,
+            },
+          },
+          subject_price: true,
         },
       },
     },
   });
 
+  if (!curriculum) return null;
+
   return {
-    curriculum,
-    price:
-      (price?.toNumber() ?? 0) +
-      (curriculum?.miscellaneous_fee.toNumber() ?? 0),
+    ...curriculum,
+    miscellaneous_fee: curriculum.miscellaneous_fee.toNumber(),
+    curriculum_subjects: curriculum.curriculum_subjects.map((cs) => ({
+      curriculum_id: cs.curriculum_id,
+      subject_id: cs.subject_id,
+      subject_name: cs.subject.subject_name,
+      subject_code: cs.subject.subject_code,
+      price: cs.subject_price.price.toNumber(),
+      subject_price_id: cs.subject_price_id,
+    })),
   };
 }
+
 
 export type SearchSubjectResult = Awaited<ReturnType<typeof searchCurriculum>>;
 
