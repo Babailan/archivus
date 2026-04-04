@@ -310,11 +310,13 @@ export function CreateCurriculumForm() {
         </Table>
 
         <Dialog>
-          <DialogTrigger render={<Button className="w-full mt-5" size={"lg"}>
-              Create Curriculum
-            </Button>}>
-            
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="w-full mt-5" size={"lg"}>
+                Create Curriculum
+              </Button>
+            }
+          ></DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Create Curriculum</DialogTitle>

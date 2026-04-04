@@ -2,7 +2,7 @@
 
 import { anyAmountHelper } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, registrarActionClient } from "@/lib/safe-action";
 import z from "zod";
 import { zfd } from "zod-form-data";
 import {
@@ -18,7 +18,7 @@ const updateSubjectActionInputSchema = zfd.formData({
   price: zfd.numeric(anyAmountHelper()).optional(),
 });
 
-export const updateSubjectAction = actionClient
+export const updateSubjectAction = registrarActionClient
   .inputSchema(updateSubjectActionInputSchema)
   .action(
     async ({ parsedInput: { id, subject_code, subject_name, price } }) => {
@@ -34,7 +34,7 @@ export const searchSubjectsAction = actionClient
     return await searchSubject(q);
   });
 
-export const deleteSubjectAction = actionClient
+export const deleteSubjectAction = registrarActionClient
   .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
   .action(async ({ parsedInput: { id } }) => {
     await deleteSubject(id);

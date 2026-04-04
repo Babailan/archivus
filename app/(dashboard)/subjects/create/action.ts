@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { actionClient } from "@/lib/safe-action";
+import { registrarActionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { anyAmountHelper } from "@/lib/utils";
 import { createSubject, findSubjectByCode } from "@/services/subject.service";
@@ -13,7 +13,7 @@ const createSubjectInputSchema = zfd.formData({
   price: zfd.numeric(anyAmountHelper()),
 });
 
-export const createSubjectAction = actionClient
+export const createSubjectAction = registrarActionClient
   .inputSchema(createSubjectInputSchema)
   .action(async ({ parsedInput: { price, subject_code, subject_name } }) => {
     const subjectExist = await findSubjectByCode(subject_code);

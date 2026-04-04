@@ -38,7 +38,7 @@ export function EnrollmentSettingsForm({
   settings,
   curriculums,
 }: EnrollmentSettingsFormProps) {
-  const { executeAsync, isExecuting ,result} = useAction(
+  const { executeAsync, isExecuting, result } = useAction(
     updateEnrollmentSettingsAction,
   );
 
@@ -118,7 +118,12 @@ export function EnrollmentSettingsForm({
           {gradeLevels.map((grade) => (
             <Field key={grade.key}>
               <FieldLabel>{grade.label}</FieldLabel>
-              <Select value={grade.value} onValueChange={grade.setter}>
+              <Select
+                value={grade.value}
+                onValueChange={(v) => {
+                  grade.setter(v ?? "");
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select curriculum" />
                 </SelectTrigger>

@@ -4,7 +4,12 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import { Input } from "./input";
 
-function SearchInput({ pathname }: { pathname: string }) {
+function SearchInput({
+  pathname,
+  ...props
+}: React.ComponentProps<"input"> & {
+  pathname: string;
+}) {
   const params = useSearchParams();
   const router = useRouter();
   const debounced = useDebouncedCallback((value: string) => {
@@ -19,7 +24,7 @@ function SearchInput({ pathname }: { pathname: string }) {
       onChange={(e) => {
         debounced(e.currentTarget.value);
       }}
-      suppressHydrationWarning
+      {...props}
     />
   );
 }

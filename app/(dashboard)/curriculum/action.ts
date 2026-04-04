@@ -1,6 +1,6 @@
 "use server";
 
-import { actionClient } from "@/lib/safe-action";
+import { actionClient, registrarActionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
@@ -18,7 +18,7 @@ export const searchCurriculumAction = actionClient
     return await searchCurriculum(q);
   });
 
-export const deleteCurriculumAction = actionClient
+export const deleteCurriculumAction = registrarActionClient
   .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
   .action(async ({ parsedInput: { id } }) => {
     await deleteCurriculum(id);
@@ -65,7 +65,7 @@ const editCurriculumInputSchema = zfd.formData({
   ),
 });
 
-export const updateCurriculumAction = actionClient
+export const updateCurriculumAction = registrarActionClient
   .inputSchema(editCurriculumInputSchema)
   .action(
     async ({

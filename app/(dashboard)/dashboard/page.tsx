@@ -1,3 +1,4 @@
+import { authOption } from "@/app/api/auth/[...nextauth]/route";
 import {
   Card,
   CardContent,
@@ -15,7 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-export default function DashboardPage() {
+import { getServerSession } from "next-auth";
+export default async function DashboardPage() {
+  console.log(JSON.stringify(await getServerSession(authOption)));
   return (
     <div className="p-10">
       <div className="grid grid-cols-2 gap-5">

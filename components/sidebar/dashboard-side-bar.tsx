@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Book, LibraryBig, School, Settings, User } from "lucide-react";
+import { Book, LibraryBig, School, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
 import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
 import {
@@ -59,6 +59,14 @@ export function DashboardSideBar() {
         <SidebarGroup>
           <SidebarGroupLabel>Settings</SidebarGroupLabel>
           <SidebarMenuButton
+            pathname="/users"
+            render={
+              <Link href={"/users"}>
+                <Users /> Users
+              </Link>
+            }
+          />
+          <SidebarMenuButton
             pathname="/enrollment-settings"
             render={
               <Link href={"/enrollment-settings"}>
@@ -88,8 +96,7 @@ export function HeaderBar() {
                 <AvatarBadge className="bg-green-500"></AvatarBadge>
               </Avatar>
             }
-            suppressHydrationWarning
-          ></DropdownMenuTrigger>
+          />
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>

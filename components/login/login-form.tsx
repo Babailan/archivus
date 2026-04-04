@@ -50,7 +50,7 @@ export function LoginForm({
     });
 
     if (res?.ok) {
-      await sleep(3000);
+      await sleep(1000);
       setInvalidCredentials(false);
       window.location.replace("/dashboard");
     } else {
@@ -58,7 +58,7 @@ export function LoginForm({
     }
   }
   return (
-    <form>
+    <form autoComplete="noplease">
       <FieldSet className={cn("flex flex-col gap-6", className)} {...props}>
         <FieldGroup>
           <div className="flex flex-col items-center gap-1 text-center">
@@ -84,6 +84,7 @@ export function LoginForm({
                   id="email"
                   type="email"
                   aria-invalid={fieldState.invalid}
+                  autoComplete="noplease"
                   {...field}
                 />
                 <FieldError errors={[fieldState.error]} />

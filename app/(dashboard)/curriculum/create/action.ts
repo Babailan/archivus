@@ -1,7 +1,7 @@
 "use server";
 
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
-import { actionClient } from "@/lib/safe-action";
+import { registrarActionClient } from "@/lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
 import z from "zod";
@@ -47,7 +47,7 @@ const createCurriculumInputSchema = zfd.formData({
   ),
 });
 
-export const createCurriculumAction = actionClient
+export const createCurriculumAction = registrarActionClient
   .inputSchema(createCurriculumInputSchema)
   .action(
     async ({
