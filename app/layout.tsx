@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Toaster } from "sonner";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Archivus",
@@ -28,6 +28,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className={`antialiased`}>
+        
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

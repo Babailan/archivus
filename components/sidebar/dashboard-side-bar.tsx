@@ -71,8 +71,8 @@ export function HeaderBar() {
       </div>
       <div>
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Avatar>
+          <DropdownMenuTrigger asChild>
+            <Avatar >
               <AvatarFallback>R</AvatarFallback>
               <AvatarBadge className="bg-green-500"></AvatarBadge>
             </Avatar>
