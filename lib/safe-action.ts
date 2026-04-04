@@ -1,3 +1,4 @@
+import { authOption } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
 import { createSafeActionClient } from "next-safe-action";
 import { redirect } from "next/navigation";
@@ -7,13 +8,20 @@ export const actionClient = createSafeActionClient({
 });
 
 export const registrarActionClient = actionClient.use(async ({ next }) => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOption);
 
+  if (!session?.user?.roles?.includes("registrar")) {
+    redirect("/unauthorized");
+  }
   return next();
 });
 
 export const adminActionClient = actionClient.use(async ({ next }) => {
-  const session = await getServerSession();
+  const session = await getServerSession(authOption);
+
+  if (!session?.user?.roles?.includes("admin")) {
+    redirect("/unauthorized");
+  }
 
   return next();
 });
