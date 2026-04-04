@@ -39,11 +39,7 @@ export function SubjectListForm({
   const subjects = use(subjectsPromise);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
-    >
+    <>
       {!subjects.subjects.length && (
         <Empty>
           <EmptyHeader>
@@ -84,11 +80,13 @@ export function SubjectListForm({
                 </TableCell>
                 <TableCell className="flex justify-end">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size={"icon-sm"} variant={"ghost"}>
-                        <Ellipsis />
-                      </Button>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button size={"icon-sm"} variant={"ghost"}>
+                          <Ellipsis />
+                        </Button>
+                      }
+                    />
                     <DropdownMenuContent>
                       <DropdownMenuGroup>
                         <EditSubjectDialog {...subject} />
@@ -105,6 +103,6 @@ export function SubjectListForm({
           </TableBody>
         </Table>
       )}
-    </form>
+    </>
   );
 }

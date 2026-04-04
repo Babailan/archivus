@@ -28,8 +28,8 @@ export default async function SubjectListPage({
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard">Home</Link>
+            <BreadcrumbLink render={<Link href="/dashboard" />}>
+              Home
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

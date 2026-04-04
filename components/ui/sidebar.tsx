@@ -24,6 +24,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { PanelLeftIcon } from "lucide-react"
+import { usePathname } from "next/navigation"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -498,18 +499,20 @@ const sidebarMenuButtonVariants = cva(
 
 function SidebarMenuButton({
   render,
-  isActive = false,
   variant = "default",
   size = "default",
   tooltip,
   className,
+  pathname,
   ...props
 }: useRender.ComponentProps<"button"> &
   React.ComponentProps<"button"> & {
     isActive?: boolean
+    pathname?: string
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
+  const path = usePathname()
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -523,7 +526,7 @@ function SidebarMenuButton({
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
       size,
-      active: isActive,
+      active: path == pathname,
     },
   })
 

@@ -310,10 +310,10 @@ export function CreateCurriculumForm() {
         </Table>
 
         <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full mt-5" size={"lg"}>
+          <DialogTrigger render={<Button className="w-full mt-5" size={"lg"}>
               Create Curriculum
-            </Button>
+            </Button>}>
+            
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -323,19 +323,21 @@ export function CreateCurriculumForm() {
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button
-                  onClick={() => {
-                    ref.current?.requestSubmit();
-                  }}
-                  disabled={isExecuting}
-                >
-                  Create
-                </Button>
-              </DialogClose>
+              <DialogClose
+                render={<Button variant="outline">Cancel</Button>}
+              ></DialogClose>
+              <DialogClose
+                render={
+                  <Button
+                    onClick={() => {
+                      ref.current?.requestSubmit();
+                    }}
+                    disabled={isExecuting}
+                  >
+                    Create
+                  </Button>
+                }
+              ></DialogClose>
             </DialogFooter>
           </DialogContent>
         </Dialog>

@@ -38,11 +38,7 @@ export function CurriculumListForm({
   const data = use(curriculumsPromise);
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-      }}
-    >
+    <div>
       {!data.curriculums.length && (
         <Empty>
           <EmptyHeader>
@@ -82,11 +78,13 @@ export function CurriculumListForm({
                 </TableCell>
                 <TableCell className="flex justify-end">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button size={"icon-sm"} variant={"ghost"}>
-                        <Ellipsis />
-                      </Button>
-                    </DropdownMenuTrigger>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button size={"icon-sm"} variant={"ghost"}>
+                          <Ellipsis />
+                        </Button>
+                      }
+                    />
                     <DropdownMenuContent>
                       <DropdownMenuGroup>
                         <EditCurriculumDialog id={curriculum.id} />
@@ -103,6 +101,6 @@ export function CurriculumListForm({
           </TableBody>
         </Table>
       )}
-    </form>
+    </div>
   );
 }

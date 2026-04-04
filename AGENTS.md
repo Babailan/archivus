@@ -20,7 +20,6 @@ npm run start            # Start production server
 npm run prettier         # Format all files with Prettier
 ```
 
-
 ## Code Style Guidelines
 
 ### TypeScript Configuration
@@ -245,9 +244,7 @@ revalidatePath("/path");
 
 ```typescript
 <DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button size="icon-sm" variant="ghost"><Ellipsis /></Button>
-  </DropdownMenuTrigger>
+  <DropdownMenuTrigger render={<Button size="icon-sm" variant="ghost"><Ellipsis /></Button>}/>
   <DropdownMenuContent>
     <DropdownMenuGroup><EditDialog id={id} /></DropdownMenuGroup>
     <DropdownMenuSeparator />

@@ -62,11 +62,13 @@ export default function EditSubjectDialog({
   }
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant={"ghost"} className="w-full justify-start">
-          Edit
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button variant={"ghost"} className="w-full justify-start">
+            Edit
+          </Button>
+        }
+      />
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Subject</DialogTitle>

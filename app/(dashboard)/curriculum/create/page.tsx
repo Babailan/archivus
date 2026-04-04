@@ -15,14 +15,14 @@ export default function CreateCurriculum() {
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/dashboard"}>Home</Link>
+            <BreadcrumbLink render={<Link href={"/dashboard"} />}>
+              Home
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/curriculum"}>Curriculum</Link>
+            <BreadcrumbLink render={<Link href={"/curriculum"} />}>
+              Curriculum
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />

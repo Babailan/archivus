@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <DashboardSideBar />
-      <SidebarInset>
+      <SidebarInset className="overflow-hidden" >
         <HeaderBar />
         {children}
       </SidebarInset>

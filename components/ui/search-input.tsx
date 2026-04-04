@@ -19,6 +19,7 @@ function SearchInput({ pathname }: { pathname: string }) {
       onChange={(e) => {
         debounced(e.currentTarget.value);
       }}
+      suppressHydrationWarning
     />
   );
 }

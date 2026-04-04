@@ -187,16 +187,18 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
                   Date of birth <span className="text-red-600">*</span>
                 </FieldLabel>
                 <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      id="date"
-                      className={"justify-start font-normal"}
-                      aria-invalid={fieldState.invalid}
-                    >
-                      {date ? date.toLocaleDateString() : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
+                  <PopoverTrigger
+                    render={
+                      <Button
+                        variant="outline"
+                        id="date"
+                        className={"justify-start font-normal"}
+                        aria-invalid={fieldState.invalid}
+                      >
+                        {date ? date.toLocaleDateString() : "Select date"}
+                      </Button>
+                    }
+                  />
                   <PopoverContent
                     className="w-auto overflow-hidden p-0"
                     align="start"

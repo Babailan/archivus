@@ -25,22 +25,28 @@ import { DropdownMenuItemLogOut } from "./drop-drown-menu-avatar";
 
 export function DashboardSideBar() {
   return (
-    <Sidebar variant="sidebar">
+    <Sidebar variant="inset">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
           <SidebarMenu>
             <SidebarGroupLabel>Registrar</SidebarGroupLabel>
-            <SidebarMenuButton asChild pathname="/subjects">
-              <Link href={"/subjects"}>
-                <Book /> Subjects
-              </Link>
-            </SidebarMenuButton>
-            <SidebarMenuButton asChild pathname="/curriculum">
-              <Link href={"/curriculum"}>
-                <LibraryBig /> Curriculum
-              </Link>
-            </SidebarMenuButton>
+            <SidebarMenuButton
+              pathname="/subjects"
+              render={
+                <Link href={"/subjects"}>
+                  <Book /> Subjects
+                </Link>
+              }
+            ></SidebarMenuButton>
+            <SidebarMenuButton
+              pathname="/curriculum"
+              render={
+                <Link href={"/curriculum"}>
+                  <LibraryBig /> Curriculum
+                </Link>
+              }
+            ></SidebarMenuButton>
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
@@ -52,11 +58,14 @@ export function DashboardSideBar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarMenuButton asChild pathname="/enrollment-settings">
-            <Link href={"/enrollment-settings"}>
-              <Settings /> Enrollment Settings
-            </Link>
-          </SidebarMenuButton>
+          <SidebarMenuButton
+            pathname="/enrollment-settings"
+            render={
+              <Link href={"/enrollment-settings"}>
+                <Settings /> Enrollment Settings
+              </Link>
+            }
+          />
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter />
@@ -71,12 +80,16 @@ export function HeaderBar() {
       </div>
       <div>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Avatar >
-              <AvatarFallback>R</AvatarFallback>
-              <AvatarBadge className="bg-green-500"></AvatarBadge>
-            </Avatar>
-          </DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            nativeButton={false}
+            render={
+              <Avatar>
+                <AvatarFallback>R</AvatarFallback>
+                <AvatarBadge className="bg-green-500"></AvatarBadge>
+              </Avatar>
+            }
+            suppressHydrationWarning
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
               <DropdownMenuLabel>My Account</DropdownMenuLabel>

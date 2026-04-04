@@ -382,11 +382,13 @@ export function EditCurriculumForm({
         </Table>
 
         <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full mt-5" size={"lg"}>
-              Update Curriculum
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button className="w-full mt-5" size={"lg"}>
+                Update Curriculum
+              </Button>
+            }
+          />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Update Curriculum</DialogTitle>
@@ -395,19 +397,19 @@ export function EditCurriculumForm({
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-              </DialogClose>
-              <DialogClose asChild>
-                <Button
-                  onClick={() => {
-                    ref.current?.requestSubmit();
-                  }}
-                  disabled={isExecuting}
-                >
-                  Update
-                </Button>
-              </DialogClose>
+              <DialogClose render={<Button variant="outline">Cancel</Button>} />
+              <DialogClose
+                render={
+                  <Button
+                    onClick={() => {
+                      ref.current?.requestSubmit();
+                    }}
+                    disabled={isExecuting}
+                  >
+                    Update
+                  </Button>
+                }
+              />
             </DialogFooter>
           </DialogContent>
         </Dialog>

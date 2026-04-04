@@ -10,20 +10,19 @@ import Link from "next/link";
 import { CreateSubjectForm } from "./create-subject-form";
 
 export default function Test() {
-
   return (
     <div className="p-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-             <BreadcrumbLink asChild>
-              <Link href={"/dashboard"}>Home</Link>
+            <BreadcrumbLink render={<Link href={"/dashboard"} />}>
+              Home
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href={"/subjects"}>Subjects</Link>
+            <BreadcrumbLink render={<Link href={"/subjects"} />}>
+              Subjects
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
@@ -32,7 +31,7 @@ export default function Test() {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <CreateSubjectForm/>
+      <CreateSubjectForm />
     </div>
   );
 }

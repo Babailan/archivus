@@ -27,11 +27,13 @@ export default function DeleteCurriculumDialog({ id }: { id: number }) {
   };
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive" className="w-full justify-start">
-          Delete
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button variant="destructive" className="w-full justify-start">
+            Delete
+          </Button>
+        }
+      ></DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Delete Curriculum</DialogTitle>
@@ -41,18 +43,18 @@ export default function DeleteCurriculumDialog({ id }: { id: number }) {
         </DialogHeader>
 
         <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <DialogClose asChild>
-            <Button
-              type="submit"
-              variant={"destructive"}
-              onClick={handleSubmit}
-            >
-              Delete
-            </Button>
-          </DialogClose>
+          <DialogClose render={<Button variant="outline">Cancel</Button>} />
+          <DialogClose
+            render={
+              <Button
+                type="submit"
+                variant={"destructive"}
+                onClick={handleSubmit}
+              >
+                Delete
+              </Button>
+            }
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>

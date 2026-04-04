@@ -27,9 +27,9 @@ export default async function CurriculumPage({
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="/dashboard">Home</Link>
-            </BreadcrumbLink>
+            <BreadcrumbLink
+              render={<Link href="/dashboard">Home</Link>}
+            ></BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
