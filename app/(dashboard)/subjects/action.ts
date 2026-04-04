@@ -1,13 +1,15 @@
 "use server";
 
-import { SubjectUpdateInput } from "@/app/generated/prisma/models";
-import prisma from "@/lib/dbClient";
-import { actionClient } from "@/lib/safe-action";
-import { anyAmountHelper, sleep } from "@/lib/utils";
+import { anyAmountHelper } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
+import { actionClient } from "@/lib/safe-action";
 import z from "zod";
 import { zfd } from "zod-form-data";
-import { searchSubject } from "@/services/subject.service";
+import {
+  deleteSubject,
+  searchSubject,
+  updateSubject,
+} from "@/services/subject.service";
 
 const updateSubjectActionInputSchema = zfd.formData({
   id: zfd.numeric(z.number()),
@@ -20,42 +22,22 @@ export const updateSubjectAction = actionClient
   .inputSchema(updateSubjectActionInputSchema)
   .action(
     async ({ parsedInput: { id, subject_code, subject_name, price } }) => {
-      // some field can be undefined, so we need to check if it is undefined
-      const data: SubjectUpdateInput = {};
-      if (subject_code) {
-        data.subject_code = subject_code;
-      }
-      if (subject_name) {
-        data.subject_name = subject_name;
-      }
-      if (price) {
-        data.prices = { create: { price } };
-      }
-      await prisma.subject.update({
-        where: { id },
-        data: data,
-      });
+      await updateSubject({ id, subject_code, subject_name, price });
       revalidatePath("/subjects");
-      return {
-        success: true,
-      };
+      return { success: true };
     },
   );
 
 export const searchSubjectsAction = actionClient
   .inputSchema(zfd.formData({ q: z.string() }))
   .action(async ({ parsedInput: { q } }) => {
-    await sleep(1000);
     return await searchSubject(q);
   });
 
 export const deleteSubjectAction = actionClient
   .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
   .action(async ({ parsedInput: { id } }) => {
-    await prisma.subject.update({
-      where: { id },
-      data: { inactive: true },
-    });
+    await deleteSubject(id);
     revalidatePath("/subjects");
     return { success: true };
   });

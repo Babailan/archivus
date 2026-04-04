@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Student {
-  student_id    Int        @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   first_name    String
   last_name     String
   middle_name   String
@@ -16,12 +16,47 @@ model Student {
   address       String
   gender        GenderEnum
   email         String
-  created_at    DateTime   @default(now())
+  created_at    DateTime     @default(now())
+  enrollments   Enrollment[]
 }
 
 enum GenderEnum {
   male
   female
+}
+
+model Enrollment {
+  id            Int              @id @default(autoincrement())
+  student       Student          @relation(fields: [student_id], references: [id])
+  student_id    Int
+  curriculum    Curriculum       @relation(fields: [curriculum_id], references: [id])
+  curriculum_id Int
+  school_year   String // e.g., "2025-2026"
+  status        EnrollmentStatus @default(pending)
+
+  // These store the calculation at the MOMENT of enrollment
+  total_tuition_snapshot Decimal @db.Decimal(10, 2)
+  total_misc_snapshot    Decimal @db.Decimal(10, 2)
+
+  payments   TuitionFeePayment[]
+  created_at DateTime            @default(now())
+}
+
+model TuitionFeePayment {
+  id             Int        @id @default(autoincrement())
+  enrollment     Enrollment @relation(fields: [enrollment_id], references: [id])
+  enrollment_id  Int
+  amount_paid    Decimal    @db.Decimal(10, 2)
+  payment_date   DateTime   @default(now())
+  receipt_no     String     @unique
+  payment_method String // e.g., "Cash", "GCash"
+}
+
+enum EnrollmentStatus {
+  pending
+  partially_paid
+  fully_paid
+  dropped
 }
 
 model Subject {
@@ -54,6 +89,13 @@ model Curriculum {
   miscellaneous_fee   Decimal              @db.Decimal(10, 2)
   curriculum_subjects CurriculumSubjects[]
   inactive            Boolean              @default(false)
+  enrollments         Enrollment[]
+  grade1_settings     EnrollmentSettings[]  @relation("Grade1Curriculum")
+  grade2_settings     EnrollmentSettings[]  @relation("Grade2Curriculum")
+  grade3_settings     EnrollmentSettings[]  @relation("Grade3Curriculum")
+  grade4_settings     EnrollmentSettings[]  @relation("Grade4Curriculum")
+  grade5_settings     EnrollmentSettings[]  @relation("Grade5Curriculum")
+  grade6_settings     EnrollmentSettings[]  @relation("Grade6Curriculum")
 
   @@fulltext([curriculum_code, curriculum_name(order: Desc)])
 }
@@ -107,4 +149,23 @@ model Role {
   user_id    Int
   role       Roles    @unique
   created_at DateTime @default(now())
+}
+
+model EnrollmentSettings {
+  id                              Int         @id @default(autoincrement())
+  grade1_curriculum              Curriculum? @relation("Grade1Curriculum", fields: [grade1_curriculum_id], references: [id])
+  grade1_curriculum_id            Int?
+  grade2_curriculum              Curriculum? @relation("Grade2Curriculum", fields: [grade2_curriculum_id], references: [id])
+  grade2_curriculum_id            Int?
+  grade3_curriculum              Curriculum? @relation("Grade3Curriculum", fields: [grade3_curriculum_id], references: [id])
+  grade3_curriculum_id            Int?
+  grade4_curriculum              Curriculum? @relation("Grade4Curriculum", fields: [grade4_curriculum_id], references: [id])
+  grade4_curriculum_id            Int?
+  grade5_curriculum              Curriculum? @relation("Grade5Curriculum", fields: [grade5_curriculum_id], references: [id])
+  grade5_curriculum_id            Int?
+  grade6_curriculum              Curriculum? @relation("Grade6Curriculum", fields: [grade6_curriculum_id], references: [id])
+  grade6_curriculum_id            Int?
+  is_online_enrollment_enabled    Boolean     @default(false)
+  created_at                      DateTime    @default(now())
+  updated_at                      DateTime    @updatedAt
 }

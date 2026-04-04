@@ -1,13 +1,13 @@
 "use server";
 
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
-import prisma from "@/lib/dbClient";
 import { actionClient } from "@/lib/safe-action";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
+import { createCurriculum } from "@/services/curriculum.service";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 
 const createCurriculumInputSchema = zfd.formData({
   curriculum_name: zfd.text(z.string({ error: "This field is required." })),
@@ -24,7 +24,7 @@ const createCurriculumInputSchema = zfd.formData({
       .transform((str, ctx) => {
         try {
           return JSON.parse(str);
-        } catch (e) {
+        } catch {
           ctx.addIssue({
             code: "custom",
             message: "Invalid JSON format",
@@ -47,7 +47,7 @@ const createCurriculumInputSchema = zfd.formData({
   ),
 });
 
-export const createCurriculum = actionClient
+export const createCurriculumAction = actionClient
   .inputSchema(createCurriculumInputSchema)
   .action(
     async ({
@@ -60,26 +60,14 @@ export const createCurriculum = actionClient
       },
     }) => {
       try {
-        const curriculum = await prisma.curriculum.create({
-          data: {
-            curriculum_name,
-            curriculum_code,
-            grade_level,
-            miscellaneous_fee,
-            curriculum_subjects: {
-              createMany: {
-                data: subjects.map((subject) => ({
-                  subject_id: subject.subject_id,
-                  subject_price_id: subject.subjectPrice_id,
-                })),
-              },
-            },
-          },
+        await createCurriculum({
+          subjects,
+          curriculum_name,
+          curriculum_code,
+          grade_level: grade_level as GradeLevelEnum,
+          miscellaneous_fee,
         });
-        revalidatePath("/curriculum");
-        return { success: true };
       } catch (err) {
-        console.log(err);
         if (err instanceof PrismaClientKnownRequestError) {
           if (err.code === "P2002") {
             return returnValidationErrors(createCurriculumInputSchema, {
@@ -90,5 +78,7 @@ export const createCurriculum = actionClient
           }
         }
       }
+      revalidatePath("/curriculum");
+      return { success: true };
     },
   );

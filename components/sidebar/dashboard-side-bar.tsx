@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Book, LibraryBig, School, User } from "lucide-react";
+import { Book, LibraryBig, School, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
 import {
@@ -48,6 +48,14 @@ export function DashboardSideBar() {
           <SidebarMenuButton>
             <School />
             Classroom
+          </SidebarMenuButton>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
+          <SidebarMenuButton asChild pathname="/enrollment-settings">
+            <Link href={"/enrollment-settings"}>
+              <Settings /> Enrollment Settings
+            </Link>
           </SidebarMenuButton>
         </SidebarGroup>
       </SidebarContent>

@@ -1,5 +1,6 @@
 import { CurriculumFindManyArgs } from "@/app/generated/prisma/models";
 import prisma from "@/lib/dbClient";
+import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 
 export type CurriculumWithSubjects = Awaited<ReturnType<typeof getCurriculum>>;
 
@@ -39,8 +40,9 @@ export async function getCurriculum(id: number) {
   };
 }
 
-
-export type SearchSubjectResult = Awaited<ReturnType<typeof searchCurriculum>>;
+export type SearchCurriculumResult = Awaited<
+  ReturnType<typeof searchCurriculum>
+>;
 
 export async function searchCurriculum(q: string) {
   const select: CurriculumFindManyArgs = {};
@@ -58,13 +60,12 @@ export async function searchCurriculum(q: string) {
       },
     };
   } else {
-    // order by created_at desc if empty string
     select.orderBy = {
       created_at: "desc",
     };
   }
 
-  let find = await prisma.curriculum.findMany({
+  const find = await prisma.curriculum.findMany({
     where: {
       inactive: false,
     },
@@ -81,4 +82,100 @@ export async function searchCurriculum(q: string) {
     curriculums,
     hasMore: true,
   };
+}
+
+export type CreateCurriculumInput = {
+  curriculum_name: string;
+  curriculum_code: string;
+  grade_level: GradeLevelEnum;
+  miscellaneous_fee: number;
+  subjects: Array<{ subjectPrice_id: number; subject_id: number }>;
+};
+
+export async function createCurriculum(input: CreateCurriculumInput) {
+  return await prisma.curriculum.create({
+    data: {
+      curriculum_name: input.curriculum_name,
+      curriculum_code: input.curriculum_code,
+      grade_level: input.grade_level,
+      miscellaneous_fee: input.miscellaneous_fee,
+      curriculum_subjects: {
+        createMany: {
+          data: input.subjects.map((subject) => ({
+            subject_id: subject.subject_id,
+            subject_price_id: subject.subjectPrice_id,
+          })),
+        },
+      },
+    },
+  });
+}
+
+export type UpdateCurriculumInput = {
+  id: number;
+  curriculum_name: string;
+  curriculum_code: string;
+  grade_level: GradeLevelEnum;
+  miscellaneous_fee: number;
+  subjects: Array<{ subjectPrice_id: number; subject_id: number }>;
+};
+
+export async function updateCurriculum(input: UpdateCurriculumInput) {
+  const existingCurriculum = await prisma.curriculum.findUnique({
+    where: { id: input.id },
+    include: {
+      curriculum_subjects: true,
+    },
+  });
+
+  if (!existingCurriculum) {
+    throw new Error("Curriculum not found");
+  }
+
+  const existingSubjectIds = existingCurriculum.curriculum_subjects.map(
+    (cs) => cs.subject_id,
+  );
+  const newSubjectIds = input.subjects.map((s) => s.subject_id);
+
+  const subjectsToDelete = existingSubjectIds.filter(
+    (sid) => !newSubjectIds.includes(sid),
+  );
+  const subjectsToAdd = newSubjectIds.filter(
+    (sid) => !existingSubjectIds.includes(sid),
+  );
+
+  await prisma.$transaction([
+    prisma.curriculum.update({
+      where: { id: input.id },
+      data: {
+        curriculum_name: input.curriculum_name,
+        curriculum_code: input.curriculum_code,
+        grade_level: input.grade_level,
+        miscellaneous_fee: input.miscellaneous_fee,
+      },
+    }),
+    prisma.curriculumSubjects.deleteMany({
+      where: {
+        curriculum_id: input.id,
+        subject_id: { in: subjectsToDelete },
+      },
+    }),
+    ...subjectsToAdd.map((subjectId) => {
+      const subject = input.subjects.find((s) => s.subject_id === subjectId)!;
+      return prisma.curriculumSubjects.create({
+        data: {
+          curriculum_id: input.id,
+          subject_id: subjectId,
+          subject_price_id: subject.subjectPrice_id,
+        },
+      });
+    }),
+  ]);
+}
+
+export async function deleteCurriculum(id: number) {
+  await prisma.curriculum.update({
+    where: { id },
+    data: { inactive: true },
+  });
 }

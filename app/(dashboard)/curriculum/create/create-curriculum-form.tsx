@@ -20,7 +20,7 @@ import {
   SelectItem,
   Select,
 } from "@/components/ui/select";
-import { createCurriculum } from "./action";
+import { createCurriculumAction } from "./action";
 import {
   Table,
   TableBody,
@@ -54,7 +54,9 @@ import {
 } from "@/components/ui/dialog";
 
 export function CreateCurriculumForm() {
-  const { executeAsync, result, isExecuting } = useAction(createCurriculum);
+  const { executeAsync, result, isExecuting } = useAction(
+    createCurriculumAction,
+  );
   const [subjects, setSubjects] = useState<SearchSubjectResult["subjects"]>([]);
   // miscellaneous fee
   const [miscellaneousFee, setMiscellaneousFee] = useState<number>(0);

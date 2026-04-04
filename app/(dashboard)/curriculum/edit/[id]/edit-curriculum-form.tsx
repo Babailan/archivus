@@ -20,7 +20,7 @@ import {
   SelectItem,
   Select,
 } from "@/components/ui/select";
-import { updateCurriculum } from "../../action";
+import { updateCurriculumAction } from "../../action";
 import {
   Table,
   TableBody,
@@ -71,7 +71,9 @@ export function EditCurriculumForm({
   curriculum: NonNullable<CurriculumWithSubjects>;
 }) {
   const router = useRouter();
-  const { executeAsync, result, isExecuting } = useAction(updateCurriculum);
+  const { executeAsync, result, isExecuting } = useAction(
+    updateCurriculumAction,
+  );
   const [existingSubjects, setExistingSubjects] = useState<ExistingSubject[]>(
     curriculum.curriculum_subjects,
   );

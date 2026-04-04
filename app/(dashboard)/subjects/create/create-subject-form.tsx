@@ -9,7 +9,7 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { useAction } from "next-safe-action/hooks";
-import { createSubject } from "./action";
+import { createSubjectAction } from "./action";
 import { Input } from "@/components/ui/input";
 import { NumericFormat } from "react-number-format";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import { format } from "date-fns";
 
 export function CreateSubjectForm() {
   const { executeAsync, result, status, isExecuting } =
-    useAction(createSubject);
+    useAction(createSubjectAction);
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const formdata = new FormData(e.target);

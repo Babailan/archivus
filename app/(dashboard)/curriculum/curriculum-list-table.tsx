@@ -26,14 +26,14 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { use } from "react";
-import { SearchSubjectResult } from "@/services/curriculum.service";
+import { SearchCurriculumResult } from "@/services/curriculum.service";
 import EditCurriculumDialog from "./edit-curriculum-dialog";
 import DeleteCurriculumDialog from "./delete-curriculum-dialog";
 
 export function CurriculumListForm({
   curriculumsPromise,
 }: {
-  curriculumsPromise: Promise<SearchSubjectResult>;
+  curriculumsPromise: Promise<SearchCurriculumResult>;
 }) {
   const data = use(curriculumsPromise);
 
@@ -60,6 +60,7 @@ export function CurriculumListForm({
             <TableRow>
               <TableHead>Curriculum Code</TableHead>
               <TableHead>Curriculum Name</TableHead>
+              <TableHead>Grade Level</TableHead>
               <TableHead>Date Created</TableHead>
               <TableHead></TableHead>
             </TableRow>
@@ -67,11 +68,14 @@ export function CurriculumListForm({
           <TableBody>
             {data.curriculums.map((curriculum) => (
               <TableRow key={curriculum.id}>
-                <TableCell>
-                  {curriculum.curriculum_code.toUpperCase()}
+                <TableCell className="uppercase">
+                  {curriculum.curriculum_code}
                 </TableCell>
-                <TableCell>
-                  {curriculum.curriculum_name.toUpperCase()}
+                <TableCell className="uppercase">
+                  {curriculum.curriculum_name}
+                </TableCell>
+                <TableCell className="uppercase">
+                  {curriculum.grade_level}
                 </TableCell>
                 <TableCell>
                   {format(curriculum.created_at, "MMM, d yyyy")}

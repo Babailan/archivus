@@ -3,12 +3,9 @@
 import { z } from "zod";
 import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
-import { anyAmountHelper, sleep } from "@/lib/utils";
-import prisma from "@/lib/dbClient";
-import {
-  flattenValidationErrors,
-  returnValidationErrors,
-} from "next-safe-action";
+import { anyAmountHelper } from "@/lib/utils";
+import { createSubject, findSubjectByCode } from "@/services/subject.service";
+import { returnValidationErrors } from "next-safe-action";
 
 const createSubjectInputSchema = zfd.formData({
   subject_name: zfd.text(z.string({ error: "Subject name is required." })),
@@ -16,19 +13,15 @@ const createSubjectInputSchema = zfd.formData({
   price: zfd.numeric(anyAmountHelper()),
 });
 
-export const createSubject = actionClient
+export const createSubjectAction = actionClient
   .inputSchema(createSubjectInputSchema)
   .action(async ({ parsedInput: { price, subject_code, subject_name } }) => {
-    const subjectExist = await prisma.subject.findUnique({
-      where: { subject_code },
-    });
+    const subjectExist = await findSubjectByCode(subject_code);
     if (subjectExist) {
-      returnValidationErrors(createSubjectInputSchema, {
+      return returnValidationErrors(createSubjectInputSchema, {
         subject_code: { _errors: ["Subject Code exist already."] },
       });
     }
-    await prisma.subject.create({
-      data: { prices: { create: { price } }, subject_code, subject_name },
-    });
+    await createSubject({ price, subject_code, subject_name });
     return { success: true };
   });
