@@ -10,7 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { queryFirst } from "@/lib/utils";
+import { queryFirst } from "@/lib/helper";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { searchUsers, SearchUserResult } from "@/services/user.service";
