@@ -11,7 +11,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { createUserAction } from "./action";
+import { updateUserAction } from "./action";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -25,10 +25,15 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Roles } from "@/app/generated/prisma/enums";
+import { UserWithRoles } from "@/services/user.service";
+import { useRouter } from "next/navigation";
 
-export function CreateUserForm() {
-  const { executeAsync, result, isExecuting } = useAction(createUserAction);
-  const [roles, setRoles] = useState<Roles[]>([]);
+const AVAILABLE_ROLES: Roles[] = ["registrar", "cashier"];
+
+export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
+  const router = useRouter();
+  const { executeAsync, result, isExecuting } = useAction(updateUserAction);
+  const [roles, setRoles] = useState<Roles[]>(user.roles as Roles[]);
   const ref = useRef<HTMLFormElement>(null);
 
   const toggleRole = (role: Roles) => {
@@ -44,16 +49,15 @@ export function CreateUserForm() {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.set("roles", JSON.stringify(roles));
+    formData.set("id", user.id.toString());
 
     const { data, validationErrors } = await executeAsync(formData);
     if (data?.success) {
-      toast.success("User created successfully");
-      setRoles([]);
-      ref.current?.reset();
+      toast.success("User updated successfully");
+      router.push("/users");
     }
   };
 
-  console.log(result.validationErrors);
   return (
     <form ref={ref} onSubmit={onSubmit} autoComplete="off">
       <FieldSet>
@@ -64,6 +68,7 @@ export function CreateUserForm() {
             </FieldLabel>
             <Input
               name="username"
+              defaultValue={user.username}
               aria-invalid={!!result?.validationErrors?.fieldErrors?.username}
             />
             <FieldError>
@@ -78,6 +83,7 @@ export function CreateUserForm() {
               type="email"
               aria-invalid={!!result?.validationErrors?.fieldErrors?.email}
               name="email"
+              defaultValue={user.email}
               autoComplete="off"
             />
             <FieldError>
@@ -88,12 +94,13 @@ export function CreateUserForm() {
         <FieldGroup>
           <Field>
             <FieldLabel>
-              Password <span className="text-red-600">*</span>
+              New Password <span className="text-red-600">*</span>
             </FieldLabel>
             <Input
               type="password"
               aria-invalid={!!result?.validationErrors?.fieldErrors?.password}
               name="password"
+              placeholder="Enter new password to change"
             />
             <FieldError>
               {result?.validationErrors?.fieldErrors?.password}
@@ -106,20 +113,18 @@ export function CreateUserForm() {
               Roles <span className="text-red-600">*</span>
             </FieldLabel>
             <div className="flex gap-4 mt-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox
-                  checked={roles.includes("registrar")}
-                  onCheckedChange={() => toggleRole("registrar")}
-                />
-                Registrar
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <Checkbox
-                  checked={roles.includes("cashier")}
-                  onCheckedChange={() => toggleRole("cashier")}
-                />
-                Cashier
-              </label>
+              {AVAILABLE_ROLES.map((role) => (
+                <label
+                  key={role}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Checkbox
+                    checked={roles.includes(role)}
+                    onCheckedChange={() => toggleRole(role)}
+                  />
+                  <span className="capitalize">{role}</span>
+                </label>
+              ))}
             </div>
             <FieldError>
               {result?.validationErrors?.fieldErrors?.roles}
@@ -132,21 +137,19 @@ export function CreateUserForm() {
         <DialogTrigger
           render={
             <Button className="w-full mt-5" size={"lg"}>
-              Create User
+              Update User
             </Button>
           }
-        ></DialogTrigger>
+        />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Create User</DialogTitle>
+            <DialogTitle>Update User</DialogTitle>
             <DialogDescription>
-              Create a new user with the specified roles.
+              Update this user with the specified roles.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <DialogClose
-              render={<Button variant="outline">Cancel</Button>}
-            ></DialogClose>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
             <DialogClose
               render={
                 <Button
@@ -155,10 +158,10 @@ export function CreateUserForm() {
                   }}
                   disabled={isExecuting}
                 >
-                  Create
+                  Update
                 </Button>
               }
-            ></DialogClose>
+            />
           </DialogFooter>
         </DialogContent>
       </Dialog>

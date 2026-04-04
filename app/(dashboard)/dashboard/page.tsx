@@ -1,4 +1,4 @@
-import { authOption } from "@/app/api/auth/[...nextauth]/route";
+import { authOption } from "@/lib/auth";
 import {
   Card,
   CardContent,

@@ -3,14 +3,10 @@ import { Geist, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
 import { Toaster } from "sonner";
+import { SessionProvider } from "@/components/session-provider";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "Archivus",
@@ -34,8 +30,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-center" />
-          {children}
+          <SessionProvider>
+            <Toaster richColors position="top-center" />
+            {children}
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

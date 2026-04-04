@@ -22,6 +22,10 @@ import {
   DropdownMenu,
 } from "../ui/dropdown-menu";
 import { DropdownMenuItemLogOut } from "./drop-drown-menu-avatar";
+import { Badge } from "../ui/badge";
+import { getServerSession } from "next-auth";
+import { authOption } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 
 export function DashboardSideBar() {
   return (
@@ -80,26 +84,56 @@ export function DashboardSideBar() {
     </Sidebar>
   );
 }
-export function HeaderBar() {
+
+const roleColors: Record<string, string> = {
+  admin: "bg-yellow-500",
+  cashier: "bg-blue-500",
+  registrar: "bg-green-500",
+};
+
+function getBadgeColor(roles: string[] | undefined): string {
+  if (!roles || roles.length === 0) return "bg-gray-500";
+  const firstRole = roles[0];
+  return roleColors[firstRole] ?? "bg-gray-500";
+}
+
+export async function HeaderBar() {
+  const session = await getServerSession(authOption);
+
   return (
     <div className="px-5 py-5 border-b-2 flex justify-between">
       <div>
         <SidebarTrigger />
       </div>
-      <div>
+      <div className="flex items-center gap-5">
+        {session?.user?.roles?.map((role) => (
+          <Badge
+            key={role}
+            variant="default"
+            className={cn(roleColors[role] ?? "bg-gray-500","uppercase")}
+          >
+            {role}
+          </Badge>
+        ))}
         <DropdownMenu>
           <DropdownMenuTrigger
             nativeButton={false}
             render={
               <Avatar>
-                <AvatarFallback>R</AvatarFallback>
-                <AvatarBadge className="bg-green-500"></AvatarBadge>
+                <AvatarFallback>
+                  {session?.user?.name?.[0]?.toUpperCase() ?? "U"}
+                </AvatarFallback>
+                <AvatarBadge
+                  className={getBadgeColor(session?.user?.roles)}
+                ></AvatarBadge>
               </Avatar>
             }
           />
           <DropdownMenuContent align="end">
             <DropdownMenuGroup>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel className="flex flex-col gap-1">
+                <span>{session?.user?.name}</span>
+              </DropdownMenuLabel>
               <DropdownMenuItem>
                 <User /> Profile
               </DropdownMenuItem>

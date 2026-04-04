@@ -147,8 +147,10 @@ enum Roles {
 model Role {
   user       User     @relation(fields: [user_id], references: [id])
   user_id    Int
-  role       Roles    @unique
+  role       Roles
   created_at DateTime @default(now())
+
+  @@id([user_id, role])
 }
 
 model EnrollmentSettings {
