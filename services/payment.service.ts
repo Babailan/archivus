@@ -58,10 +58,12 @@ export async function getApprovedEnrollments(q?: string) {
       (sum, p) => sum + p.amount_paid.toNumber(),
       0,
     );
-    const paymentStatus = computePaymentStatus(
-      e.payments,
-      e.total_tuition_snapshot.toNumber(),
-    );
+    const totalTuition = e.total_tuition_snapshot.toNumber();
+    const paymentStatus = computePaymentStatus(e.payments, totalTuition);
+    const minPartialPayment =
+      e.min_partial_payment_override != null
+        ? e.min_partial_payment_override.toNumber()
+        : totalTuition * 0.2;
     return {
       id: e.id,
       student: {
@@ -70,10 +72,11 @@ export async function getApprovedEnrollments(q?: string) {
       },
       grade_level: e.curriculum.grade_level,
       school_year: e.school_year,
-      total_tuition: e.total_tuition_snapshot.toNumber(),
+      total_tuition: totalTuition,
       total_paid: totalPaid,
-      balance: e.total_tuition_snapshot.toNumber() - totalPaid,
+      balance: totalTuition - totalPaid,
       paymentStatus,
+      min_partial_payment: minPartialPayment,
     };
   });
 }

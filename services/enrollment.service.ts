@@ -34,6 +34,8 @@ export async function getEnrollment(id: number) {
     paymentStatus,
     total_tuition_snapshot: enrollment.total_tuition_snapshot.toNumber(),
     total_misc_snapshot: enrollment.total_misc_snapshot.toNumber(),
+    min_partial_payment_override:
+      enrollment.min_partial_payment_override?.toNumber() ?? null,
     curriculum: {
       ...enrollment.curriculum,
       miscellaneous_fee: enrollment.curriculum.miscellaneous_fee.toNumber(),

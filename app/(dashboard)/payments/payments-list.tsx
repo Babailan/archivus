@@ -52,6 +52,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
               <TableHead>Total Tuition</TableHead>
               <TableHead>Amount Paid</TableHead>
               <TableHead>Balance</TableHead>
+              <TableHead>Min Partial</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
@@ -60,7 +61,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
             {payments.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={9}
                   className="py-8 text-center text-muted-foreground"
                 >
                   No approved enrollments found
@@ -79,6 +80,9 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
                   </TableCell>
                   <TableCell>₱{payment.total_paid.toLocaleString()}</TableCell>
                   <TableCell>₱{payment.balance.toLocaleString()}</TableCell>
+                  <TableCell>
+                    ₱{payment.min_partial_payment.toLocaleString()}
+                  </TableCell>
                   <TableCell>
                     <span
                       className={`px-2 py-1 rounded-full text-xs text-white ${paymentStatusColors[payment.paymentStatus]}`}

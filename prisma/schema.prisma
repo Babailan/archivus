@@ -38,6 +38,9 @@ model Enrollment {
   total_tuition_snapshot Decimal @db.Decimal(10, 2)
   total_misc_snapshot    Decimal @db.Decimal(10, 2)
 
+  // Optional override for minimum partial payment. If null, defaults to 20% of total tuition.
+  min_partial_payment_override Decimal? @db.Decimal(10, 2)
+
   payments   TuitionFeePayment[]
   created_at DateTime            @default(now())
 }

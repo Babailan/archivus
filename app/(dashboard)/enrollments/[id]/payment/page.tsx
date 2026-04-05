@@ -30,7 +30,10 @@ export default async function PaymentPage({
         {enrollment.student.first_name}
       </h1>
       <PaymentForm enrollment={enrollment} />
-      <PaymentHistory payments={paymentHistory} />
+      <PaymentHistory
+        payments={paymentHistory}
+        studentName={`${enrollment.student.last_name}, ${enrollment.student.first_name}`}
+      />
     </div>
   );
 }

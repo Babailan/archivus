@@ -12,6 +12,7 @@ import {
 import {
   Book,
   ClipboardList,
+  GalleryVerticalEnd,
   LibraryBig,
   Settings,
   User,
@@ -36,81 +37,98 @@ import { authOption } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { getPendingEnrollmentCount } from "@/services/enrollment.service";
 import { getPendingRollbackCount } from "@/services/rollback.service";
+import { Button } from "../ui/button";
 
 export async function DashboardSideBar() {
   const pendingCount = await getPendingEnrollmentCount();
   const pendingRollbackCount = await getPendingRollbackCount();
   const session = await getServerSession(authOption);
   const isAdmin = session?.user?.roles?.includes("admin");
+  const isRegistrar = session?.user?.roles?.includes("registrar");
+  const isCashier = session?.user?.roles?.includes("cashier");
 
   return (
     <Sidebar variant="inset">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
-          <SidebarMenu>
+          <div className="flex gap-2 items-center">
+            <Button size={"icon"}>
+              <GalleryVerticalEnd />
+            </Button>
+            <span className="font-medium">Archivus Inc.</span>
+          </div>
+        </SidebarGroup>
+        {(isAdmin || isRegistrar) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
+            <SidebarMenu>
+              <SidebarMenuButton
+                pathname="/subjects"
+                render={
+                  <Link href={"/subjects"}>
+                    <Book /> Subjects
+                  </Link>
+                }
+              ></SidebarMenuButton>
+              <SidebarMenuButton
+                pathname="/curriculum"
+                render={
+                  <Link href={"/curriculum"}>
+                    <LibraryBig /> Curriculum
+                  </Link>
+                }
+              ></SidebarMenuButton>
+              <SidebarMenuButton
+                pathname="/users"
+                render={
+                  <Link href={"/users"}>
+                    <Users /> Users
+                  </Link>
+                }
+              />
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
+        {(isAdmin || isRegistrar) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
             <SidebarMenuButton
-              pathname="/subjects"
+              pathname="/enrollments"
               render={
-                <Link href={"/subjects"}>
-                  <Book /> Subjects
-                </Link>
-              }
-            ></SidebarMenuButton>
-            <SidebarMenuButton
-              pathname="/curriculum"
-              render={
-                <Link href={"/curriculum"}>
-                  <LibraryBig /> Curriculum
-                </Link>
-              }
-            ></SidebarMenuButton>
-            <SidebarMenuButton
-              pathname="/users"
-              render={
-                <Link href={"/users"}>
-                  <Users /> Users
+                <Link href={"/enrollments"} className="relative">
+                  <ClipboardList /> Enrollments
+                  {pendingCount > 0 && (
+                    <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                      {pendingCount}
+                    </Badge>
+                  )}
                 </Link>
               }
             />
-          </SidebarMenu>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
-          <SidebarMenuButton
-            pathname="/enrollments"
-            render={
-              <Link href={"/enrollments"} className="relative">
-                <ClipboardList /> Enrollments
-                {pendingCount > 0 && (
-                  <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    {pendingCount}
-                  </Badge>
-                )}
-              </Link>
-            }
-          />
-          <SidebarMenuButton
-            pathname="/enrollment-settings"
-            render={
-              <Link href={"/enrollment-settings"}>
-                <Settings /> Enrollment Settings
-              </Link>
-            }
-          />
-        </SidebarGroup>
+            <SidebarMenuButton
+              pathname="/enrollment-settings"
+              render={
+                <Link href={"/enrollment-settings"}>
+                  <Settings /> Enrollment Settings
+                </Link>
+              }
+            />
+          </SidebarGroup>
+        )}
         <SidebarGroup>
           <SidebarGroupLabel>Finance</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarMenuButton
-              pathname="/payments"
-              render={
-                <Link href={"/payments"}>
-                  <Wallet /> Payments
-                </Link>
-              }
-            />
+            {(isAdmin || isCashier) && (
+              <SidebarMenuButton
+                pathname="/payments"
+                render={
+                  <Link href={"/payments"}>
+                    <Wallet /> Payments
+                  </Link>
+                }
+              />
+            )}
             {isAdmin && (
               <SidebarMenuButton
                 pathname="/rollback-requests"

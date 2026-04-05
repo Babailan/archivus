@@ -16,6 +16,14 @@ import { recordPaymentAction } from "../../action";
 import { toast } from "sonner";
 import { CircleDollarSign, Calculator } from "lucide-react";
 import { EnrollmentWithDetails } from "@/services/enrollment.service";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface PaymentFormProps {
   enrollment: EnrollmentWithDetails;
@@ -24,6 +32,7 @@ interface PaymentFormProps {
 export function PaymentForm({ enrollment }: PaymentFormProps) {
   const { executeAsync, isExecuting } = useAction(recordPaymentAction);
   const [amount, setAmount] = useState<string>("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   if (!enrollment) {
     return <div>Enrollment not found</div>;
@@ -35,7 +44,10 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
     0,
   );
   const remainingBalance = totalTuition - totalPaid;
-  const minPartialPayment = totalTuition * 0.2;
+  const minPartialPayment =
+    enrollment.min_partial_payment_override != null
+      ? enrollment.min_partial_payment_override
+      : totalTuition * 0.2;
 
   const paymentStatusLabels: Record<string, string> = {
     unpaid: "Unpaid",
@@ -49,7 +61,7 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
     fully_paid: "bg-green-500",
   };
 
-  const handlePay = async () => {
+  const handlePayClick = () => {
     if (!amount) {
       toast.error("Please enter an amount");
       return;
@@ -61,6 +73,18 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
       return;
     }
 
+    if (totalPaid === 0 && amountNum < minPartialPayment) {
+      toast.error(
+        `First payment must be at least ₱${minPartialPayment.toLocaleString()} (minimum partial)`,
+      );
+      return;
+    }
+
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmPay = async () => {
+    const amountNum = parseFloat(amount);
     const receiptNo = `RCP-${Date.now()}`;
     const formData = new FormData();
     formData.append("enrollment_id", enrollment.id.toString());
@@ -68,12 +92,14 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
     formData.append("receipt_no", receiptNo);
 
     const { data } = await executeAsync(formData);
+    setConfirmOpen(false);
     if (data?.success) {
       toast.success(
         data.isFullyPaid
           ? "Payment recorded. Enrollment is fully paid!"
           : "Partial payment recorded!",
       );
+      setAmount("");
     } else {
       toast.error("Failed to record payment");
     }
@@ -113,7 +139,7 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
             </span>
           </div>
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>Min Partial (20%):</span>
+            <span>Min Partial Payment:</span>
             <span>₱{minPartialPayment.toLocaleString()}</span>
           </div>
           <div className="flex justify-between pt-2">
@@ -131,7 +157,7 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
             Set Full Payment
           </Button>
           <Button variant="outline" onClick={setMinPartial}>
-            Min Partial (20%)
+            Min Partial
           </Button>
         </div>
 
@@ -148,11 +174,58 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
           </Field>
         </FieldGroup>
 
-        <Button className="mt-4" onClick={handlePay} disabled={isExecuting}>
+        <Button
+          className="mt-4"
+          onClick={handlePayClick}
+          disabled={isExecuting}
+        >
           <Calculator className="w-4 h-4 mr-2" />
           {isExecuting ? "Processing..." : "Record Payment"}
         </Button>
       </FieldSet>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Payment</DialogTitle>
+            <DialogDescription>
+              Please review the payment details before confirming.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Student:</span>
+              <span className="font-medium">
+                {enrollment.student.last_name}, {enrollment.student.first_name}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Amount to Pay:</span>
+              <span className="font-medium">
+                ₱{parseFloat(amount).toLocaleString()}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Remaining Balance:</span>
+              <span className="font-medium">
+                ₱{(remainingBalance - parseFloat(amount)).toLocaleString()}
+              </span>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              disabled={isExecuting}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmPay} disabled={isExecuting}>
+              {isExecuting ? "Processing..." : "Confirm Payment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

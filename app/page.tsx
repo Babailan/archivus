@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ArrowRight, GalleryVerticalEnd } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -15,9 +16,10 @@ export default function Home() {
             Archivus Inc.
           </span>
         </div>
-        <div className="flex items-center gap-2 text-sm md:gap-4">dawda</div>
+        <div className="flex items-center gap-2 text-sm md:gap-4">
+        </div>
       </div>
-      <div className="p-2 flex flex-col justify-center text-center gap-4 items-center m-auto">
+      <div className="p-2 flex flex-col justify-center text-center gap-4 items-center m-auto mt-20">
         <Badge variant={"secondary"}>
           Introducing Archivus <ArrowRight />{" "}
         </Badge>
@@ -26,33 +28,16 @@ export default function Home() {
         </h1>
         <p className="max-w-4xl text-base text-balance text-foreground sm:text-lg">
           A set of beautifully designed components that you can customize,
-          extend, and build on. Start here then make it your own. Open Source.
-          Open Code.
+          extend, and build on. Start here then make it your own.
         </p>
         <div className="gap-2 flex">
-          <Button>Enroll Now</Button>
+          <Link href={"/enroll"}>
+            <Button>Enroll Now</Button>
+          </Link>
           <Button variant={"ghost"}>Explore More</Button>
         </div>
-
-        <div className="flex  items-center space-x-4 text-sm">
-          <div>Blog</div>
-          <Separator orientation="vertical" />
-          <div>Docs</div>
-        </div>
       </div>
-      <SeparatorVertical />
     </div>
   );
 }
 
-function SeparatorVertical() {
-  return (
-    <div className="flex h-5 items-center gap-4 text-sm">
-      <div>Blog</div>
-      <Separator orientation="vertical" />
-      <div>Docs</div>
-      <Separator orientation="vertical" />
-      <div>Source</div>
-    </div>
-  );
-}
