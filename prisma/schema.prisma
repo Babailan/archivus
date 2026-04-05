@@ -49,7 +49,6 @@ model TuitionFeePayment {
   amount_paid    Decimal    @db.Decimal(10, 2)
   payment_date   DateTime   @default(now())
   receipt_no     String     @unique
-  payment_method String // e.g., "Cash", "GCash"
 }
 
 enum EnrollmentStatus {

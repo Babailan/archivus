@@ -13,10 +13,10 @@ import {
   Book,
   ClipboardList,
   LibraryBig,
-  School,
   Settings,
   User,
   Users,
+  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
@@ -44,8 +44,8 @@ export async function DashboardSideBar() {
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
+          <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
           <SidebarMenu>
-            <SidebarGroupLabel>Registrar</SidebarGroupLabel>
             <SidebarMenuButton
               pathname="/subjects"
               render={
@@ -62,10 +62,18 @@ export async function DashboardSideBar() {
                 </Link>
               }
             ></SidebarMenuButton>
+            <SidebarMenuButton
+              pathname="/users"
+              render={
+                <Link href={"/users"}>
+                  <Users /> Users
+                </Link>
+              }
+            />
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Students</SidebarGroupLabel>
+          <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
           <SidebarMenuButton
             pathname="/enrollments"
             render={
@@ -79,26 +87,22 @@ export async function DashboardSideBar() {
               </Link>
             }
           />
-          <SidebarMenuButton>
-            <School />
-            Classroom
-          </SidebarMenuButton>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Settings</SidebarGroupLabel>
-          <SidebarMenuButton
-            pathname="/users"
-            render={
-              <Link href={"/users"}>
-                <Users /> Users
-              </Link>
-            }
-          />
           <SidebarMenuButton
             pathname="/enrollment-settings"
             render={
               <Link href={"/enrollment-settings"}>
                 <Settings /> Enrollment Settings
+              </Link>
+            }
+          />
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Finance</SidebarGroupLabel>
+          <SidebarMenuButton
+            pathname="/payments"
+            render={
+              <Link href={"/payments"}>
+                <Wallet /> Payments
               </Link>
             }
           />

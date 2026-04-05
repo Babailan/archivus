@@ -39,7 +39,6 @@ export const approveEnrollmentAction = actionClient
 const recordPaymentInputSchema = zfd.formData({
   enrollment_id: zfd.numeric(z.number()),
   amount_paid: zfd.numeric(z.number()),
-  payment_method: zfd.text(z.string().min(1)),
   receipt_no: zfd.text(z.string().min(1)),
 });
 
@@ -49,7 +48,6 @@ export const recordPaymentAction = actionClient
     const result = await recordPayment({
       enrollment_id: parsedInput.enrollment_id,
       amount_paid: parsedInput.amount_paid,
-      payment_method: parsedInput.payment_method,
       receipt_no: parsedInput.receipt_no,
     });
     revalidatePath("/enrollments");

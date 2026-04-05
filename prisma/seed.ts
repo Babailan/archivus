@@ -28,11 +28,6 @@ const generatePayment = (amount: number) => {
       payments.push({
         amount_paid: remaining,
         receipt_no: `RCP-${faker.string.alphanumeric(8).toUpperCase()}`,
-        payment_method: faker.helpers.arrayElement([
-          "Cash",
-          "GCash",
-          "Bank Transfer",
-        ]),
         payment_date: faker.date.between({
           from: new Date("2025-01-01"),
           to: new Date("2025-06-30"),
@@ -46,11 +41,6 @@ const generatePayment = (amount: number) => {
       payments.push({
         amount_paid: paymentAmount,
         receipt_no: `RCP-${faker.string.alphanumeric(8).toUpperCase()}`,
-        payment_method: faker.helpers.arrayElement([
-          "Cash",
-          "GCash",
-          "Bank Transfer",
-        ]),
         payment_date: faker.date.between({
           from: new Date("2025-01-01"),
           to: new Date("2025-06-30"),
@@ -488,7 +478,6 @@ async function main() {
             enrollment_id: enrollment.id,
             amount_paid: payment.amount_paid,
             receipt_no: payment.receipt_no,
-            payment_method: payment.payment_method,
             payment_date: payment.payment_date,
           },
         });
@@ -547,7 +536,6 @@ async function main() {
             enrollment_id: enrollment.id,
             amount_paid: payment.amount_paid,
             receipt_no: payment.receipt_no,
-            payment_method: payment.payment_method,
             payment_date: payment.payment_date,
           },
         });

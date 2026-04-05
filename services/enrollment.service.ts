@@ -199,7 +199,6 @@ export async function approveEnrollment(id: number) {
 export async function recordPayment(data: {
   enrollment_id: number;
   amount_paid: number;
-  payment_method: string;
   receipt_no: string;
 }) {
   const enrollment = await prisma.enrollment.findUnique({
@@ -223,7 +222,6 @@ export async function recordPayment(data: {
     data: {
       enrollment_id: data.enrollment_id,
       amount_paid: data.amount_paid,
-      payment_method: data.payment_method,
       receipt_no: data.receipt_no,
     },
   });

@@ -10,13 +10,6 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
 import { recordPaymentAction } from "../../action";
@@ -29,13 +22,12 @@ interface PaymentFormProps {
 }
 
 export function PaymentForm({ enrollment }: PaymentFormProps) {
+  const { executeAsync, isExecuting } = useAction(recordPaymentAction);
+  const [amount, setAmount] = useState<string>("");
+
   if (!enrollment) {
     return <div>Enrollment not found</div>;
   }
-
-  const { executeAsync, isExecuting } = useAction(recordPaymentAction);
-  const [amount, setAmount] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<string>("");
 
   const totalTuition = enrollment.total_tuition_snapshot;
   const totalPaid = enrollment.payments.reduce(
@@ -58,8 +50,8 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
   };
 
   const handlePay = async () => {
-    if (!amount || !paymentMethod) {
-      toast.error("Please fill in all fields");
+    if (!amount) {
+      toast.error("Please enter an amount");
       return;
     }
 
@@ -73,7 +65,6 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
     const formData = new FormData();
     formData.append("enrollment_id", enrollment.id.toString());
     formData.append("amount_paid", amountNum.toString());
-    formData.append("payment_method", paymentMethod);
     formData.append("receipt_no", receiptNo);
 
     const { data } = await executeAsync(formData);
@@ -153,27 +144,6 @@ export function PaymentForm({ enrollment }: PaymentFormProps) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
-            <FieldError />
-          </Field>
-        </FieldGroup>
-
-        <FieldGroup>
-          <Field>
-            <FieldLabel>Payment Method</FieldLabel>
-            <Select
-              value={paymentMethod}
-              onValueChange={(v) => setPaymentMethod(v || "")}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select payment method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Cash">Cash</SelectItem>
-                <SelectItem value="GCash">GCash</SelectItem>
-                <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                <SelectItem value="Check">Check</SelectItem>
-              </SelectContent>
-            </Select>
             <FieldError />
           </Field>
         </FieldGroup>
