@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import { ArrowRight, GalleryVerticalEnd } from "lucide-react";
 
 export default function Home() {
@@ -36,17 +36,16 @@ export default function Home() {
 
         <div className="flex  items-center space-x-4 text-sm">
           <div>Blog</div>
-          <Separator orientation="vertical"   />
+          <Separator orientation="vertical" />
           <div>Docs</div>
         </div>
       </div>
-      <SeparatorVertical/>
+      <SeparatorVertical />
     </div>
-    
   );
 }
 
- function SeparatorVertical() {
+function SeparatorVertical() {
   return (
     <div className="flex h-5 items-center gap-4 text-sm">
       <div>Blog</div>
@@ -55,5 +54,5 @@ export default function Home() {
       <Separator orientation="vertical" />
       <div>Source</div>
     </div>
-  )
+  );
 }

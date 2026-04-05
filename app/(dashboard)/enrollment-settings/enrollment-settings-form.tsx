@@ -42,23 +42,32 @@ export function EnrollmentSettingsForm({
     updateEnrollmentSettingsAction,
   );
 
+  const [schoolYear, setSchoolYear] = useState<string>(
+    settings?.school_year ?? "",
+  );
+  const gradeCurriculumMap = new Map(
+    settings?.grade_curriculum_settings.map((gcs) => [
+      gcs.grade_level,
+      gcs.curriculum_id.toString(),
+    ]) ?? [],
+  );
   const [grade1, setGrade1] = useState<string>(
-    settings?.grade1_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade1") ?? "",
   );
   const [grade2, setGrade2] = useState<string>(
-    settings?.grade2_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade2") ?? "",
   );
   const [grade3, setGrade3] = useState<string>(
-    settings?.grade3_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade3") ?? "",
   );
   const [grade4, setGrade4] = useState<string>(
-    settings?.grade4_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade4") ?? "",
   );
   const [grade5, setGrade5] = useState<string>(
-    settings?.grade5_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade5") ?? "",
   );
   const [grade6, setGrade6] = useState<string>(
-    settings?.grade6_curriculum_id?.toString() ?? "",
+    gradeCurriculumMap.get("grade6") ?? "",
   );
   const [isEnabled, setIsEnabled] = useState<boolean>(
     settings?.is_online_enrollment_enabled ?? false,
@@ -68,6 +77,10 @@ export function EnrollmentSettingsForm({
     e.preventDefault();
     const formData = new FormData();
 
+    if (schoolYear) {
+      console.log("ss");
+      formData.append("school_year", schoolYear);
+    }
     if (grade1) formData.append("grade1_curriculum_id", grade1);
     if (grade2) formData.append("grade2_curriculum_id", grade2);
     if (grade3) formData.append("grade3_curriculum_id", grade3);
@@ -75,7 +88,9 @@ export function EnrollmentSettingsForm({
     if (grade5) formData.append("grade5_curriculum_id", grade5);
     if (grade6) formData.append("grade6_curriculum_id", grade6);
     formData.append("is_online_enrollment_enabled", isEnabled.toString());
-    const { data } = await executeAsync(formData);
+    const { data, validationErrors } = await executeAsync(formData);
+    console.log("Data:", data);
+    console.log("Validation;", validationErrors);
     if (data?.success) {
       toast.success("Enrollment settings updated successfully");
     }
@@ -101,6 +116,34 @@ export function EnrollmentSettingsForm({
           Configure the curriculum for online enrollment and enable/disable the
           enrollment form.
         </FieldDescription>
+
+        <FieldGroup className="mt-6 max-w-sm">
+          <Field>
+            <FieldLabel>School Year</FieldLabel>
+            <Select
+              value={schoolYear}
+              onValueChange={(v) => {
+                setSchoolYear(v ?? "");
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select school year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {Array.from({ length: 10 }, (_, i) => {
+                    const year = new Date().getFullYear() - 2 + i;
+                    return (
+                      <SelectItem key={year} value={`${year}-${year + 1}`}>
+                        {year}-{year + 1}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        </FieldGroup>
 
         <FieldGroup className="mt-6 max-w-sm">
           <Field className="flex flex-row justify-between rounded-lg border p-4">

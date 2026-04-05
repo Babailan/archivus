@@ -30,6 +30,9 @@ import {
 } from "@/components/ui/popover";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAction } from "next-safe-action/hooks";
+import { submitEnrollmentAction } from "./action";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   first_name: z.string().nonempty("This field is required."),
@@ -43,6 +46,7 @@ const formSchema = z.object({
     error: () => "This field is required.",
   }),
   address: z.string().nonempty("This field is required."),
+  email: z.string().email("Invalid email address."),
 });
 
 interface EnrollmentFormProps {
@@ -54,6 +58,7 @@ interface EnrollmentFormProps {
 }
 
 export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
+  const { executeAsync, isExecuting } = useAction(submitEnrollmentAction);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,6 +69,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
       gender: undefined as unknown as "male" | "female",
       address: "",
       grade_level: undefined as unknown as string,
+      email: "",
     },
   });
 
@@ -72,16 +78,29 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
   const [acceptTerm, setAcceptTerm] = useState<boolean>(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
+    if (!acceptTerm) {
+      toast.error("You must accept the terms and conditions");
+      return;
+    }
+
     const formdata = new FormData();
     formdata.append("first_name", data.first_name);
     formdata.append("last_name", data.last_name);
     formdata.append("middle_name", data.middle_name);
     formdata.append("date_of_birth", data.date_of_birth.toISOString());
-    try {
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log(error.message);
-      }
+    formdata.append("gender", data.gender);
+    formdata.append("grade_level", data.grade_level);
+    formdata.append("address", data.address);
+    formdata.append("email", data.email);
+
+    const { data: result } = await executeAsync(formdata);
+    if (result?.success) {
+      toast.success("Enrollment submitted successfully!");
+      form.reset();
+      setDate(undefined);
+      setAcceptTerm(false);
+    } else {
+      toast.error(result?.error || "Failed to submit enrollment");
     }
   }
 
@@ -248,6 +267,26 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
         <FieldGroup>
           <Controller
             control={form.control}
+            name="email"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.error}>
+                <FieldLabel>
+                  Email <span className="text-red-600">*</span>
+                </FieldLabel>
+                <Input
+                  type="email"
+                  placeholder="Ex: john@example.com"
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                />
+                <FieldError errors={[fieldState.error]} />
+              </Field>
+            )}
+          />
+        </FieldGroup>
+        <FieldGroup>
+          <Controller
+            control={form.control}
             name="grade_level"
             render={({ field, fieldState }) => (
               <Field>
@@ -302,9 +341,10 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
         <Button
           className="mt-4 cursor-pointer"
           onClick={form.handleSubmit(onSubmit)}
+          disabled={isExecuting}
         >
           <SendHorizonal />
-          Proceed to Enroll
+          {isExecuting ? "Submitting..." : "Proceed to Enroll"}
         </Button>
       </FieldSet>
     </div>

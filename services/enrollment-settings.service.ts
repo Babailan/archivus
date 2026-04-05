@@ -1,53 +1,18 @@
 import prisma from "@/lib/dbClient";
+import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 
 export type EnrollmentSettingsWithCurriculums = Awaited<
   ReturnType<typeof getEnrollmentSettings>
 >;
 
 export async function getEnrollmentSettings() {
-  const settings = await prisma.enrollmentSettings.findFirst({
+  const settings = await prisma.enrollmentSettings.findFirst();
+  if (!settings) return null;
+
+  const gradeCurriculumSettings = await prisma.gradeCurriculumSetting.findMany({
+    where: { school_year: settings.school_year },
     include: {
-      grade1_curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
-        },
-      },
-      grade2_curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
-        },
-      },
-      grade3_curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
-        },
-      },
-      grade4_curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
-        },
-      },
-      grade5_curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
-        },
-      },
-      grade6_curriculum: {
+      curriculum: {
         select: {
           id: true,
           curriculum_code: true,
@@ -58,7 +23,10 @@ export async function getEnrollmentSettings() {
     },
   });
 
-  return settings;
+  return {
+    ...settings,
+    grade_curriculum_settings: gradeCurriculumSettings,
+  };
 }
 
 export async function getCurriculumsByGradeLevel() {
@@ -76,45 +44,133 @@ export async function getCurriculumsByGradeLevel() {
   return curriculums;
 }
 
+export async function getCurriculumByGradeAndYear(
+  gradeLevel: string,
+  schoolYear: string,
+) {
+  const setting = await prisma.gradeCurriculumSetting.findFirst({
+    where: {
+      grade_level: gradeLevel as GradeLevelEnum,
+      school_year: schoolYear,
+    },
+    include: {
+      curriculum: true,
+    },
+  });
+
+  return setting?.curriculum ?? null;
+}
+
 export type UpdateEnrollmentSettingsInput = {
-  grade1_curriculum_id: number | null;
-  grade2_curriculum_id: number | null;
-  grade3_curriculum_id: number | null;
-  grade4_curriculum_id: number | null;
-  grade5_curriculum_id: number | null;
-  grade6_curriculum_id: number | null;
+  school_year: string;
+  grade_curriculum_settings: {
+    grade_level: string;
+    curriculum_id: number | null;
+  }[];
   is_online_enrollment_enabled: boolean;
 };
 
 export async function updateEnrollmentSettings(
   input: UpdateEnrollmentSettingsInput,
 ) {
-  const existingSettings = await prisma.enrollmentSettings.findFirst();
+  return await prisma.$transaction(async (tx) => {
+    const existingSettings = await tx.enrollmentSettings.findFirst();
 
-  if (existingSettings) {
-    return await prisma.enrollmentSettings.update({
-      where: { id: existingSettings.id },
+    if (existingSettings) {
+      await tx.enrollmentSettings.update({
+        where: { id: existingSettings.id },
+        data: {
+          school_year: input.school_year,
+          is_online_enrollment_enabled: input.is_online_enrollment_enabled,
+        },
+      });
+
+      for (const gcs of input.grade_curriculum_settings) {
+        if (gcs.curriculum_id === null) {
+          await tx.gradeCurriculumSetting.deleteMany({
+            where: {
+              school_year: input.school_year,
+              grade_level: gcs.grade_level as GradeLevelEnum,
+            },
+          });
+        } else {
+          await tx.gradeCurriculumSetting.upsert({
+            where: {
+              school_year_grade_level: {
+                school_year: input.school_year,
+                grade_level: gcs.grade_level as GradeLevelEnum,
+              },
+            },
+            create: {
+              school_year: input.school_year,
+              grade_level: gcs.grade_level as GradeLevelEnum,
+              curriculum_id: gcs.curriculum_id,
+            },
+            update: {
+              curriculum_id: gcs.curriculum_id,
+            },
+          });
+        }
+      }
+
+      const gradeCurriculumSettings = await tx.gradeCurriculumSetting.findMany({
+        where: { school_year: input.school_year },
+        include: {
+          curriculum: {
+            select: {
+              id: true,
+              curriculum_code: true,
+              curriculum_name: true,
+              grade_level: true,
+            },
+          },
+        },
+      });
+
+      return {
+        ...existingSettings,
+        school_year: input.school_year,
+        is_online_enrollment_enabled: input.is_online_enrollment_enabled,
+        grade_curriculum_settings: gradeCurriculumSettings,
+      };
+    }
+
+    const createdSettings = await tx.enrollmentSettings.create({
       data: {
-        grade1_curriculum_id: input.grade1_curriculum_id,
-        grade2_curriculum_id: input.grade2_curriculum_id,
-        grade3_curriculum_id: input.grade3_curriculum_id,
-        grade4_curriculum_id: input.grade4_curriculum_id,
-        grade5_curriculum_id: input.grade5_curriculum_id,
-        grade6_curriculum_id: input.grade6_curriculum_id,
+        school_year: input.school_year,
         is_online_enrollment_enabled: input.is_online_enrollment_enabled,
       },
     });
-  }
 
-  return await prisma.enrollmentSettings.create({
-    data: {
-      grade1_curriculum_id: input.grade1_curriculum_id,
-      grade2_curriculum_id: input.grade2_curriculum_id,
-      grade3_curriculum_id: input.grade3_curriculum_id,
-      grade4_curriculum_id: input.grade4_curriculum_id,
-      grade5_curriculum_id: input.grade5_curriculum_id,
-      grade6_curriculum_id: input.grade6_curriculum_id,
-      is_online_enrollment_enabled: input.is_online_enrollment_enabled,
-    },
+    for (const gcs of input.grade_curriculum_settings) {
+      if (gcs.curriculum_id !== null) {
+        await tx.gradeCurriculumSetting.create({
+          data: {
+            school_year: input.school_year,
+            grade_level: gcs.grade_level as GradeLevelEnum,
+            curriculum_id: gcs.curriculum_id,
+          },
+        });
+      }
+    }
+
+    const gradeCurriculumSettings = await tx.gradeCurriculumSetting.findMany({
+      where: { school_year: input.school_year },
+      include: {
+        curriculum: {
+          select: {
+            id: true,
+            curriculum_code: true,
+            curriculum_name: true,
+            grade_level: true,
+          },
+        },
+      },
+    });
+
+    return {
+      ...createdSettings,
+      grade_curriculum_settings: gradeCurriculumSettings,
+    };
   });
 }

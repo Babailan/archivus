@@ -9,7 +9,15 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Book, LibraryBig, School, Settings, User, Users } from "lucide-react";
+import {
+  Book,
+  ClipboardList,
+  LibraryBig,
+  School,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
 import {
@@ -26,8 +34,11 @@ import { Badge } from "../ui/badge";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { getPendingEnrollmentCount } from "@/services/enrollment.service";
 
-export function DashboardSideBar() {
+export async function DashboardSideBar() {
+  const pendingCount = await getPendingEnrollmentCount();
+
   return (
     <Sidebar variant="inset">
       <SidebarHeader />
@@ -55,6 +66,19 @@ export function DashboardSideBar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Students</SidebarGroupLabel>
+          <SidebarMenuButton
+            pathname="/enrollments"
+            render={
+              <Link href={"/enrollments"} className="relative">
+                <ClipboardList /> Enrollments
+                {pendingCount > 0 && (
+                  <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                    {pendingCount}
+                  </Badge>
+                )}
+              </Link>
+            }
+          />
           <SidebarMenuButton>
             <School />
             Classroom
@@ -110,7 +134,7 @@ export async function HeaderBar() {
           <Badge
             key={role}
             variant="default"
-            className={cn(roleColors[role] ?? "bg-gray-500","uppercase")}
+            className={cn(roleColors[role] ?? "bg-gray-500", "uppercase")}
           >
             {role}
           </Badge>

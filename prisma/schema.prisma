@@ -31,7 +31,7 @@ model Enrollment {
   student_id    Int
   curriculum    Curriculum       @relation(fields: [curriculum_id], references: [id])
   curriculum_id Int
-  school_year   String // e.g., "2025-2026"
+  school_year   String
   status        EnrollmentStatus @default(pending)
 
   // These store the calculation at the MOMENT of enrollment
@@ -54,8 +54,8 @@ model TuitionFeePayment {
 
 enum EnrollmentStatus {
   pending
-  partially_paid
-  fully_paid
+  approved
+  declined
   dropped
 }
 
@@ -73,8 +73,8 @@ model Subject {
 
 model SubjectPrice {
   id                 Int                  @id @default(autoincrement())
-  subject            Subject              @relation(fields: [subject_code], references: [subject_code])
-  subject_code       String
+  subject            Subject              @relation(fields: [subject_id], references: [id])
+  subject_id         Int
   price              Decimal              @db.Decimal(10, 2)
   created_at         DateTime             @default(now())
   curriculumSubjects CurriculumSubjects[]
@@ -90,12 +90,7 @@ model Curriculum {
   curriculum_subjects CurriculumSubjects[]
   inactive            Boolean              @default(false)
   enrollments         Enrollment[]
-  grade1_settings     EnrollmentSettings[]  @relation("Grade1Curriculum")
-  grade2_settings     EnrollmentSettings[]  @relation("Grade2Curriculum")
-  grade3_settings     EnrollmentSettings[]  @relation("Grade3Curriculum")
-  grade4_settings     EnrollmentSettings[]  @relation("Grade4Curriculum")
-  grade5_settings     EnrollmentSettings[]  @relation("Grade5Curriculum")
-  grade6_settings     EnrollmentSettings[]  @relation("Grade6Curriculum")
+  grade_curriculum_settings GradeCurriculumSetting[]
 
   @@fulltext([curriculum_code, curriculum_name(order: Desc)])
 }
@@ -153,21 +148,20 @@ model Role {
   @@id([user_id, role])
 }
 
+model GradeCurriculumSetting {
+  id            Int              @id @default(autoincrement())
+  school_year   String
+  grade_level   GradeLevelEnum
+  curriculum    Curriculum       @relation(fields: [curriculum_id], references: [id])
+  curriculum_id Int
+
+  @@unique([school_year, grade_level])
+}
+
 model EnrollmentSettings {
-  id                              Int         @id @default(autoincrement())
-  grade1_curriculum              Curriculum? @relation("Grade1Curriculum", fields: [grade1_curriculum_id], references: [id])
-  grade1_curriculum_id            Int?
-  grade2_curriculum              Curriculum? @relation("Grade2Curriculum", fields: [grade2_curriculum_id], references: [id])
-  grade2_curriculum_id            Int?
-  grade3_curriculum              Curriculum? @relation("Grade3Curriculum", fields: [grade3_curriculum_id], references: [id])
-  grade3_curriculum_id            Int?
-  grade4_curriculum              Curriculum? @relation("Grade4Curriculum", fields: [grade4_curriculum_id], references: [id])
-  grade4_curriculum_id            Int?
-  grade5_curriculum              Curriculum? @relation("Grade5Curriculum", fields: [grade5_curriculum_id], references: [id])
-  grade5_curriculum_id            Int?
-  grade6_curriculum              Curriculum? @relation("Grade6Curriculum", fields: [grade6_curriculum_id], references: [id])
-  grade6_curriculum_id            Int?
-  is_online_enrollment_enabled    Boolean     @default(false)
-  created_at                      DateTime    @default(now())
-  updated_at                      DateTime    @updatedAt
+  id                           Int                       @id @default(autoincrement())
+  school_year                  String
+  is_online_enrollment_enabled Boolean                   @default(false)
+  created_at                   DateTime                  @default(now())
+  updated_at                   DateTime                  @updatedAt
 }

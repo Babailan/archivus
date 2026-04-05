@@ -19,36 +19,43 @@ export default async function EnrollmentPage() {
     );
   }
 
+  const gradeCurriculumMap = new Map(
+    settings.grade_curriculum_settings.map((gcs) => [
+      gcs.grade_level,
+      gcs.curriculum_id,
+    ]),
+  );
+
   const gradeLevels = [
     {
       value: "grade1",
       label: "Grade 1",
-      curriculumId: settings.grade1_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade1") ?? null,
     },
     {
       value: "grade2",
       label: "Grade 2",
-      curriculumId: settings.grade2_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade2") ?? null,
     },
     {
       value: "grade3",
       label: "Grade 3",
-      curriculumId: settings.grade3_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade3") ?? null,
     },
     {
       value: "grade4",
       label: "Grade 4",
-      curriculumId: settings.grade4_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade4") ?? null,
     },
     {
       value: "grade5",
       label: "Grade 5",
-      curriculumId: settings.grade5_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade5") ?? null,
     },
     {
       value: "grade6",
       label: "Grade 6",
-      curriculumId: settings.grade6_curriculum_id,
+      curriculumId: gradeCurriculumMap.get("grade6") ?? null,
     },
   ].filter((g) => g.curriculumId !== null);
 

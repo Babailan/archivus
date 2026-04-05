@@ -49,6 +49,7 @@
     "zod-form-data": "^3.0.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.4.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20.19.37",
     "@types/numeral": "^2.0.5",
