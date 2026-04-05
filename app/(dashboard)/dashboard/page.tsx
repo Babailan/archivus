@@ -17,11 +17,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getServerSession } from "next-auth";
+import { getPendingRollbackCount } from "@/services/rollback.service";
+import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+
 export default async function DashboardPage() {
   console.log(JSON.stringify(await getServerSession(authOption)));
+  const pendingRollbackCount = await getPendingRollbackCount();
+
   return (
     <div className="p-10">
-      <div className="grid grid-cols-2 gap-5">
+      <div className="grid grid-cols-3 gap-5">
         <Card>
           <CardHeader>
             <CardTitle className="text-muted-foreground">
@@ -44,6 +50,26 @@ export default async function DashboardPage() {
             <p>Students this year</p>
           </CardContent>
         </Card>
+        <Link href="/rollback-requests">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-muted-foreground">
+                Pending Rollback Requests
+              </CardTitle>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-medium">{pendingRollbackCount}</h1>
+                {pendingRollbackCount > 0 && (
+                  <Badge className="bg-yellow-500">
+                    {pendingRollbackCount} pending
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Click to review</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
       <Table>
         <TableCaption>A list of your recent invoices.</TableCaption>

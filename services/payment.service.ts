@@ -40,7 +40,15 @@ export async function getApprovedEnrollments(q?: string) {
     include: {
       student: true,
       curriculum: true,
-      payments: true,
+      payments: {
+        where: {
+          NOT: {
+            rollback_requests: {
+              some: { status: "approved" },
+            },
+          },
+        },
+      },
     },
     orderBy: { created_at: "desc" },
   });

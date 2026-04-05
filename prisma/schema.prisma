@@ -49,6 +49,7 @@ model TuitionFeePayment {
   amount_paid    Decimal    @db.Decimal(10, 2)
   payment_date   DateTime   @default(now())
   receipt_no     String     @unique
+  rollback_requests RollbackRequest[]
 }
 
 enum EnrollmentStatus {
@@ -56,6 +57,13 @@ enum EnrollmentStatus {
   approved
   declined
   dropped
+}
+
+enum RollbackStatus {
+  pending
+  approved
+  denied
+  cancelled
 }
 
 model Subject {
@@ -130,6 +138,8 @@ model User {
   hash_password String
   role          Role[]
   created_at    DateTime @default(now())
+  rollback_requests_requested  RollbackRequest[]  @relation("RollbackRequestedBy")
+  rollback_requests_reviewed RollbackRequest[]    @relation("RollbackReviewedBy")
 }
 
 enum Roles {
@@ -163,4 +173,22 @@ model EnrollmentSettings {
   is_online_enrollment_enabled Boolean                   @default(false)
   created_at                   DateTime                  @default(now())
   updated_at                   DateTime                  @updatedAt
+}
+
+model RollbackRequest {
+  id               Int             @id @default(autoincrement())
+  payment          TuitionFeePayment @relation(fields: [payment_id], references: [id])
+  payment_id       Int
+  requested_by     User            @relation("RollbackRequestedBy", fields: [requested_by_id], references: [id])
+  requested_by_id  Int
+  reason           String
+  status           RollbackStatus  @default(pending)
+  reviewed_by      User?           @relation("RollbackReviewedBy", fields: [reviewed_by_id], references: [id])
+  reviewed_by_id   Int?
+  reviewed_at      DateTime?
+  created_at       DateTime        @default(now())
+
+  @@index([payment_id])
+  @@index([status])
+  @@index([requested_by_id])
 }

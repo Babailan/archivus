@@ -25,3 +25,13 @@ export const adminActionClient = actionClient.use(async ({ next }) => {
 
   return next();
 });
+
+export const cashierActionClient = actionClient.use(async ({ next }) => {
+  const session = await getServerSession(authOption);
+
+  if (!session?.user?.roles?.includes("cashier")) {
+    redirect("/unauthorized");
+  }
+
+  return next();
+});

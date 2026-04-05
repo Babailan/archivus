@@ -35,9 +35,13 @@ import { getServerSession } from "next-auth";
 import { authOption } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { getPendingEnrollmentCount } from "@/services/enrollment.service";
+import { getPendingRollbackCount } from "@/services/rollback.service";
 
 export async function DashboardSideBar() {
   const pendingCount = await getPendingEnrollmentCount();
+  const pendingRollbackCount = await getPendingRollbackCount();
+  const session = await getServerSession(authOption);
+  const isAdmin = session?.user?.roles?.includes("admin");
 
   return (
     <Sidebar variant="inset">
@@ -98,14 +102,31 @@ export async function DashboardSideBar() {
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>Finance</SidebarGroupLabel>
-          <SidebarMenuButton
-            pathname="/payments"
-            render={
-              <Link href={"/payments"}>
-                <Wallet /> Payments
-              </Link>
-            }
-          />
+          <SidebarMenu>
+            <SidebarMenuButton
+              pathname="/payments"
+              render={
+                <Link href={"/payments"}>
+                  <Wallet /> Payments
+                </Link>
+              }
+            />
+            {isAdmin && (
+              <SidebarMenuButton
+                pathname="/rollback-requests"
+                render={
+                  <Link href={"/rollback-requests"} className="relative">
+                    <Wallet /> Rollback Requests
+                    {pendingRollbackCount > 0 && (
+                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                        {pendingRollbackCount}
+                      </Badge>
+                    )}
+                  </Link>
+                }
+              />
+            )}
+          </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter />

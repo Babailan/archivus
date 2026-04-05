@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { getEnrollmentById } from "../../action";
 import { PaymentForm } from "./payment-form";
+import { getPaymentHistoryAction } from "./action";
+import { PaymentHistory } from "./payment-history";
 
 export default async function PaymentPage({
   params,
@@ -15,6 +17,7 @@ export default async function PaymentPage({
   }
 
   const enrollment = await getEnrollmentById(enrollmentId);
+  const paymentHistory = await getPaymentHistoryAction(enrollmentId);
 
   if (!enrollment) {
     notFound();
@@ -27,6 +30,7 @@ export default async function PaymentPage({
         {enrollment.student.first_name}
       </h1>
       <PaymentForm enrollment={enrollment} />
+      <PaymentHistory payments={paymentHistory} />
     </div>
   );
 }

@@ -10,7 +10,15 @@ export async function getEnrollment(id: number) {
     include: {
       student: true,
       curriculum: true,
-      payments: true,
+      payments: {
+        where: {
+          NOT: {
+            rollback_requests: {
+              some: { status: "approved" },
+            },
+          },
+        },
+      },
     },
   });
 
@@ -70,7 +78,15 @@ export async function searchEnrollments(status?: string) {
     include: {
       student: true,
       curriculum: true,
-      payments: true,
+      payments: {
+        where: {
+          NOT: {
+            rollback_requests: {
+              some: { status: "approved" },
+            },
+          },
+        },
+      },
     },
     orderBy: { created_at: "desc" },
   });
@@ -203,7 +219,17 @@ export async function recordPayment(data: {
 }) {
   const enrollment = await prisma.enrollment.findUnique({
     where: { id: data.enrollment_id },
-    include: { payments: true },
+    include: {
+      payments: {
+        where: {
+          NOT: {
+            rollback_requests: {
+              some: { status: "approved" },
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!enrollment) {
