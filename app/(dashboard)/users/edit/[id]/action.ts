@@ -8,7 +8,7 @@ import z from "zod";
 import { zfd } from "zod-form-data";
 import { getUserByEmail, getUserByUsername } from "@/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 const updateUserInputSchema = zfd.formData({

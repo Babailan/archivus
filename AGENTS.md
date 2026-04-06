@@ -17,8 +17,6 @@ npm run lint         # ESLint
 npm run prettier     # Format with Prettier
 ```
 
-
-
 ## Prisma
 
 - Schema: `prisma/schema.prisma`
@@ -76,7 +74,7 @@ export function Component({ dataPromise }: { dataPromise: Promise<...> }) {
 const search = (q: string) =>
   q
     ? prisma.model.findMany({
-        where: { name: { search: q + "*" }, inactive: false },
+        where: { name: { contains: q }, inactive: false },
       })
     : prisma.model.findMany({
         where: { inactive: false },

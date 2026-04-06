@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/client";
 
 type PaymentStatus = "unpaid" | "partial" | "fully_paid";
@@ -30,8 +30,8 @@ export async function getApprovedEnrollments(q?: string) {
 
   if (q) {
     where.OR = [
-      { student: { last_name: { search: q + "*" } } },
-      { student: { first_name: { search: q + "*" } } },
+      { student: { last_name: { contains: q } } },
+      { student: { first_name: { contains: q } } },
     ];
   }
 

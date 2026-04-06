@@ -1,5 +1,5 @@
 import { CurriculumFindManyArgs } from "@/app/generated/prisma/models";
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 
 export type CurriculumWithSubjects = Awaited<ReturnType<typeof getCurriculum>>;
@@ -48,16 +48,14 @@ export async function searchCurriculum(q: string) {
   const select: CurriculumFindManyArgs = {};
   if (q) {
     select.where = {
-      curriculum_name: { search: q + "*" },
-      curriculum_code: { search: q + "*" },
+      OR: [
+        { curriculum_name: { contains: q } },
+        { curriculum_code: { contains: q } },
+      ],
       inactive: false,
     };
     select.orderBy = {
-      _relevance: {
-        fields: ["curriculum_code", "curriculum_name"],
-        search: q,
-        sort: "desc",
-      },
+      created_at: "desc",
     };
   } else {
     select.orderBy = {
@@ -65,23 +63,31 @@ export async function searchCurriculum(q: string) {
     };
   }
 
-  const find = await prisma.curriculum.findMany({
-    where: {
-      inactive: false,
-    },
-    ...select,
-    take: 10,
-  });
+  try {
+    const find = await prisma.curriculum.findMany({
+      where: {
+        inactive: false,
+      },
+      ...select,
+      take: 10,
+    });
 
-  const curriculums = find.map((c) => ({
-    ...c,
-    miscellaneous_fee: c.miscellaneous_fee.toNumber(),
-  }));
+    const curriculums = find.map((c) => ({
+      ...c,
+      miscellaneous_fee: c.miscellaneous_fee.toNumber(),
+    }));
 
-  return {
-    curriculums,
-    hasMore: true,
-  };
+    return {
+      curriculums,
+      hasMore: true,
+    };
+  } catch (error) {
+    console.error("Full error:", error);
+    if (error instanceof Error && "cause" in error) {
+      console.error("Cause:", JSON.stringify(error.cause, null, 2));
+    }
+    throw error;
+  }
 }
 
 export type CreateCurriculumInput = {

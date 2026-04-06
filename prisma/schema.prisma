@@ -78,7 +78,7 @@ model Subject {
   prices              SubjectPrice[]
   curriculum_subjects CurriculumSubjects[]
 
-  @@fulltext([subject_code, subject_name(order: Desc)])
+  
 }
 
 model SubjectPrice {
@@ -102,7 +102,6 @@ model Curriculum {
   enrollments         Enrollment[]
   grade_curriculum_settings GradeCurriculumSetting[]
 
-  @@fulltext([curriculum_code, curriculum_name(order: Desc)])
 }
 
 model CurriculumSubjects {

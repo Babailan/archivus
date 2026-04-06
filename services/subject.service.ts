@@ -2,7 +2,7 @@ import {
   SubjectFindManyArgs,
   SubjectUpdateInput,
 } from "@/app/generated/prisma/models";
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 
 export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
 
@@ -10,16 +10,14 @@ export async function searchSubject(q: string) {
   const select: SubjectFindManyArgs = {};
   if (q) {
     select.where = {
-      subject_name: { search: q + "*" },
-      subject_code: { search: q + "*" },
+      OR: [
+        { subject_name: { contains: q } },
+        { subject_code: { contains: q } },
+      ],
       inactive: false,
     };
     select.orderBy = {
-      _relevance: {
-        fields: ["subject_name", "subject_code"],
-        search: q,
-        sort: "desc",
-      },
+      created_at: "desc",
     };
   } else {
     select.orderBy = {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useDebouncedCallback } from "use-debounce";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
 import { Input } from "./input";
+import { useEffect, useState } from "react";
 
 function SearchInput({
   pathname,
@@ -11,18 +12,25 @@ function SearchInput({
   pathname: string;
 }) {
   const params = useSearchParams();
+  const [text,setText] = useState<string>();
   const router = useRouter();
-  const debounced = useDebouncedCallback((value: string) => {
-    router.push(`${pathname}?q=${value}`);
-  }, 300);
+  const [value] = useDebounce(text, 300);
+
+  useEffect(()=> {
+    if(value != null) {
+      router.replace(`${pathname}?q=${value}`)
+    }
+  },[value])
+
+
 
   return (
     <Input
       placeholder="Search for subjects"
       name="q"
-      defaultValue={params.get("q") || ""}
+      defaultValue={""}
       onChange={(e) => {
-        debounced(e.currentTarget.value);
+        setText(e.target.value)
       }}
       {...props}
     />

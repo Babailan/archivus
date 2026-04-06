@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { EnrollmentStatus, GradeLevelEnum } from "@/app/generated/prisma/enums";
 import { Decimal } from "@prisma/client/runtime/client";
 

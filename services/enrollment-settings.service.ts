@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 
 export type EnrollmentSettingsWithCurriculums = Awaited<

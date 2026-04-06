@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { Roles } from "@/app/generated/prisma/enums";
 import bcrypt from "bcryptjs";
 
@@ -64,10 +64,7 @@ export async function searchUsers(q: string) {
   const users = await prisma.user.findMany({
     where: q
       ? {
-          OR: [
-            { username: { search: q + "*" } },
-            { email: { search: q + "*" } },
-          ],
+          OR: [{ username: { contains: q } }, { email: { contains: q } }],
         }
       : undefined,
     include: {

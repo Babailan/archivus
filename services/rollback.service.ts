@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOption } from "@/lib/auth";
 import { RollbackStatus } from "@/app/generated/prisma/enums";
