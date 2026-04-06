@@ -1,4 +1,4 @@
-import prisma from "@/lib/dbClient";
+import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { faker } from "@faker-js/faker";
 
@@ -24,7 +24,7 @@ const generatePayment = (amount: number) => {
   const paymentCount = faker.number.int({ min: 1, max: 3 });
 
   for (let i = 0; i < paymentCount; i++) {
-    if (i === paymentCount - 1) {
+    if (i === paymentCount - 1 || remaining <= 1000) {
       payments.push({
         amount_paid: remaining,
         receipt_no: `RCP-${faker.string.alphanumeric(8).toUpperCase()}`,
@@ -33,10 +33,12 @@ const generatePayment = (amount: number) => {
           to: new Date("2025-06-30"),
         }),
       });
+      remaining = 0;
     } else {
+      const maxAmount = Math.min(remaining - 1000, 5000);
       const paymentAmount = faker.number.int({
         min: 1000,
-        max: Math.min(remaining - 1000, 5000),
+        max: Math.max(1000, maxAmount),
       });
       payments.push({
         amount_paid: paymentAmount,
@@ -469,7 +471,10 @@ async function main() {
       const payments = isFullyPaid
         ? generatePayment(totalAmount)
         : generatePayment(
-            faker.number.int({ min: 1000, max: totalAmount - 500 }),
+            faker.number.int({
+              min: 1000,
+              max: Math.max(1000, totalAmount - 500),
+            }),
           );
 
       for (const payment of payments) {
@@ -527,7 +532,10 @@ async function main() {
       const payments = isFullyPaid
         ? generatePayment(totalAmount)
         : generatePayment(
-            faker.number.int({ min: 1000, max: totalAmount - 500 }),
+            faker.number.int({
+              min: 1000,
+              max: Math.max(1000, totalAmount - 500),
+            }),
           );
 
       for (const payment of payments) {
