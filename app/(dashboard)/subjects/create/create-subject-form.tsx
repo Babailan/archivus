@@ -54,8 +54,8 @@ export function CreateSubjectForm() {
             aria-invalid={!!result.validationErrors?.fieldErrors.subject_name}
           />
           <FieldDescription>
-            Use clear, descriptive names (e.g., "Advanced Mathematics" or
-            "Introduction to Biology")
+            Use clear, descriptive names (e.g., &quot;Advanced Mathematics&quot;
+            or &quot;Introduction to Biology&quot;)
           </FieldDescription>
           <FieldError>
             {result.validationErrors?.fieldErrors.subject_name}

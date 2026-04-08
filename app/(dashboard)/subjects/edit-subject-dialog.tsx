@@ -50,7 +50,7 @@ export default function EditSubjectDialog({
     if (numeral(formdata.get("price")!).value() !== prices[0]?.price) {
       validateForm.append(
         "price",
-        numeral(formdata.get("price")!).value()?.toString()!,
+        numeral(formdata.get("price")!).value()?.toString() ?? "",
       );
     }
     const result = await executeAsync(validateForm);

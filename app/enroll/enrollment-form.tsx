@@ -111,15 +111,15 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
 
   return (
     <div className="p-10 mb-10">
-        <div className="mb-14 flex justify-between">
-          <div className="flex items-center gap-2">
-            <Button size={"icon"}>
-              <GalleryVerticalEnd />
-            </Button>
-            <span className="font-medium">Archivus Inc.</span>
-          </div>
-          <div></div>
+      <div className="mb-14 flex justify-between">
+        <div className="flex items-center gap-2">
+          <Button size={"icon"}>
+            <GalleryVerticalEnd />
+          </Button>
+          <span className="font-medium">Archivus Inc.</span>
         </div>
+        <div></div>
+      </div>
       <div className="max-w-4xl m-auto">
         <FieldSet>
           <FieldLegend variant="legend" className="flex gap-2 items-center">

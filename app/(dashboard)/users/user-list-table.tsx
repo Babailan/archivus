@@ -48,7 +48,7 @@ export function UserListForm({
               <Search />
             </EmptyMedia>
             <EmptyTitle>No data</EmptyTitle>
-            <EmptyDescription>User doesn't exist.</EmptyDescription>
+            <EmptyDescription>User doesn&apos;t exist.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}

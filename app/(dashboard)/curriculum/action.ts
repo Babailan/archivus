@@ -6,7 +6,6 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 import {
-  createCurriculum,
   deleteCurriculum,
   searchCurriculum,
   updateCurriculum,

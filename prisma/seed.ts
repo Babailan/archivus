@@ -241,12 +241,6 @@ async function main() {
   });
 
   if (!existingSettings2025) {
-    const createdSettings = await prisma.enrollmentSettings.create({
-      data: {
-        school_year: "2025-2026",
-        is_online_enrollment_enabled: true,
-      },
-    });
     await prisma.gradeCurriculumSetting.createMany({
       data: [
         {
@@ -408,8 +402,6 @@ async function main() {
     },
   });
 
-  const allSubjects = [...subjects, ...additionalSubjects];
-  const allSubjectPrices = [...subjectPrices, ...additionalSubjectPrices];
   const allCurricula = [
     curriculum1,
     curriculum2,
@@ -418,10 +410,6 @@ async function main() {
     curriculum5,
     curriculum6,
   ];
-
-  const students = await prisma.student.createMany({
-    data: generateStudents(25),
-  });
 
   const createdStudents = await prisma.student.findMany({
     take: 25,
@@ -489,10 +477,6 @@ async function main() {
       }
     }
   }
-
-  const moreStudents = await prisma.student.createMany({
-    data: generateStudents(15),
-  });
 
   const createdMoreStudents = await prisma.student.findMany({
     take: 15,

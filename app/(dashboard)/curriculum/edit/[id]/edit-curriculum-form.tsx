@@ -102,7 +102,7 @@ export function EditCurriculumForm({
     formData.set("miscellaneous_fee", miscellaneousFee.toString());
     formData.set("id", curriculum.id.toString());
 
-    const { data, validationErrors } = await executeAsync(formData);
+    const { data } = await executeAsync(formData);
     if (data?.success) {
       toast.success("Curriculum updated successfully");
       router.push("/curriculum");

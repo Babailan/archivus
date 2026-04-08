@@ -1,3 +1,4 @@
+import { EnrollmentWhereInput } from "@/app/generated/prisma/models";
 import prisma from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/client";
 
@@ -24,7 +25,7 @@ export type ApprovedEnrollment = Awaited<
 >[number];
 
 export async function getApprovedEnrollments(q?: string) {
-  const where: any = {
+  const where: EnrollmentWhereInput = {
     status: "approved",
   };
 

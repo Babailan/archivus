@@ -12,17 +12,15 @@ function SearchInput({
   pathname: string;
 }) {
   const params = useSearchParams();
-  const [text,setText] = useState<string>();
+  const [text, setText] = useState<string>();
   const router = useRouter();
   const [value] = useDebounce(text, 300);
 
-  useEffect(()=> {
-    if(value != null) {
-      router.replace(`${pathname}?q=${value}`)
+  useEffect(() => {
+    if (value != null) {
+      router.replace(`${pathname}?q=${value}`);
     }
-  },[value])
-
-
+  }, [value]);
 
   return (
     <Input
@@ -30,7 +28,7 @@ function SearchInput({
       name="q"
       defaultValue={""}
       onChange={(e) => {
-        setText(e.target.value)
+        setText(e.target.value);
       }}
       {...props}
     />

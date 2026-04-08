@@ -16,8 +16,7 @@ export default function Home() {
             Archivus Inc.
           </span>
         </div>
-        <div className="flex items-center gap-2 text-sm md:gap-4">
-        </div>
+        <div className="flex items-center gap-2 text-sm md:gap-4"></div>
       </div>
       <div className="p-2 flex flex-col justify-center text-center gap-4 items-center m-auto mt-20">
         <Badge variant={"secondary"}>
@@ -40,4 +39,3 @@ export default function Home() {
     </div>
   );
 }
-

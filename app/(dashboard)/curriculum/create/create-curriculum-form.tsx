@@ -4,7 +4,7 @@ import { SubjectSearchDialog } from "@/components/ui/subject-search-dialog";
 
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Field,
   FieldError,
@@ -30,7 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BookX, Plus, Save, Trash } from "lucide-react";
+import { BookX, Plus, Trash } from "lucide-react";
 import {
   Empty,
   EmptyDescription,
@@ -77,7 +77,7 @@ export function CreateCurriculumForm() {
     );
     formData.set("miscellaneous_fee", miscellaneousFee.toString());
 
-    const { data, validationErrors } = await executeAsync(formData);
+    const { data } = await executeAsync(formData);
     if (data?.success) {
       toast.success("Curriculum created successfully");
       setSubjects([]);

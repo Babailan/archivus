@@ -47,7 +47,7 @@ export function SubjectListForm({
               <Search />
             </EmptyMedia>
             <EmptyTitle>No data</EmptyTitle>
-            <EmptyDescription>Subject doesn't exist.</EmptyDescription>
+            <EmptyDescription>Subject doesn&apos;t exist.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}

@@ -12,14 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { useAction } from "next-safe-action/hooks";
 import { deleteCurriculumAction } from "./action";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 export default function DeleteCurriculumDialog({ id }: { id: number }) {
-  const { executeAsync, result, isExecuting } = useAction(
+  const { executeAsync } = useAction(
     deleteCurriculumAction,
   );
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async () => {
     const { data } = await executeAsync({ id });
     if (data) {
       toast.success("Curriculum deleted successfully");

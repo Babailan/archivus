@@ -46,7 +46,7 @@ export function CurriculumListForm({
               <Search />
             </EmptyMedia>
             <EmptyTitle>No data</EmptyTitle>
-            <EmptyDescription>Curriculum doesn't exist.</EmptyDescription>
+            <EmptyDescription>Curriculum doesn&apos;t exist.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}
