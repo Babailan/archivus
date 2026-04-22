@@ -52,7 +52,7 @@ export function SubjectListForm({
         </Empty>
       )}
       {!!subjects.subjects.length && (
-        <Table className="mt-5">
+        <Table className="mt-5 border">
           <TableHeader>
             <TableRow>
               <TableHead>Subject Code</TableHead>

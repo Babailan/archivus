@@ -62,7 +62,7 @@ export async function DashboardSideBar() {
         {(isAdmin || isRegistrar) && (
           <SidebarGroup>
             <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               <SidebarMenuButton
                 pathname="/subjects"
                 render={
@@ -93,32 +93,34 @@ export async function DashboardSideBar() {
         {(isAdmin || isRegistrar) && (
           <SidebarGroup>
             <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
-            <SidebarMenuButton
-              pathname="/enrollments"
-              render={
-                <Link href={"/enrollments"} className="relative">
-                  <ClipboardList /> Enrollments
-                  {pendingCount > 0 && (
-                    <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                      {pendingCount}
-                    </Badge>
-                  )}
-                </Link>
-              }
-            />
-            <SidebarMenuButton
-              pathname="/enrollment-settings"
-              render={
-                <Link href={"/enrollment-settings"}>
-                  <Settings /> Enrollment Settings
-                </Link>
-              }
-            />
+            <SidebarMenu className="gap-1">
+              <SidebarMenuButton
+                pathname="/enrollments"
+                render={
+                  <Link href={"/enrollments"} className="relative">
+                    <ClipboardList /> Enrollments
+                    {pendingCount > 0 && (
+                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                        {pendingCount}
+                      </Badge>
+                    )}
+                  </Link>
+                }
+              />
+              <SidebarMenuButton
+                pathname="/enrollment-settings"
+                render={
+                  <Link href={"/enrollment-settings"}>
+                    <Settings /> Enrollment Settings
+                  </Link>
+                }
+              />
+            </SidebarMenu>
           </SidebarGroup>
         )}
         <SidebarGroup>
           <SidebarGroupLabel>Finance</SidebarGroupLabel>
-          <SidebarMenu>
+          <SidebarMenu className="gap-1">
             {(isAdmin || isCashier) && (
               <SidebarMenuButton
                 pathname="/payments"

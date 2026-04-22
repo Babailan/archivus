@@ -51,7 +51,7 @@ export function CurriculumListForm({
         </Empty>
       )}
       {!!data.curriculums.length && (
-        <Table className="mt-5">
+        <Table className="mt-5 border">
           <TableHeader>
             <TableRow>
               <TableHead>Curriculum Code</TableHead>

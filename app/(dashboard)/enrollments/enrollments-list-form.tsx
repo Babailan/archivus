@@ -144,8 +144,7 @@ export function EnrollmentsListForm({
         <Input placeholder="Search students..." className="max-w-sm" />
       </div>
 
-      <div className="border rounded-md">
-        <Table>
+        <Table className="border">
           <TableHeader>
             <TableRow>
               <TableHead>Student Name</TableHead>
@@ -326,7 +325,6 @@ export function EnrollmentsListForm({
             )}
           </TableBody>
         </Table>
-      </div>
     </div>
   );
 }

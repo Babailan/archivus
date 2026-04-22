@@ -53,7 +53,7 @@ export function UserListForm({
         </Empty>
       )}
       {!!users.length && (
-        <Table className="mt-5">
+        <Table className="mt-5 border">
           <TableHeader>
             <TableRow>
               <TableHead>Username</TableHead>
