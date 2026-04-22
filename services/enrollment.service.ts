@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { EnrollmentStatus, GradeLevelEnum } from "@/app/generated/prisma/enums";
 import { Decimal } from "@prisma/client/runtime/client";
+import { generateReferenceCode } from "@/lib/helper";
 
 export type EnrollmentWithDetails = Awaited<ReturnType<typeof getEnrollment>>;
 
@@ -193,6 +194,7 @@ export async function createEnrollment(data: {
         status: "pending",
         total_tuition_snapshot: subjectPrices,
         total_misc_snapshot: curriculum.miscellaneous_fee,
+        reference_code: generateReferenceCode(data.school_year, student.id),
       },
     });
 
@@ -204,6 +206,86 @@ export async function declineEnrollment(id: number) {
   return await prisma.enrollment.update({
     where: { id },
     data: { status: "declined" },
+  });
+}
+
+export async function getStudentByEnrollmentId(id: number) {
+  const enrollment = await prisma.enrollment.findUnique({
+    where: { id },
+    include: {
+      student: true,
+      curriculum: true,
+      payments: {
+        where: {
+          NOT: {
+            rollback_requests: {
+              some: { status: "approved" },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!enrollment) return null;
+
+  const totalPaid = enrollment.payments.reduce(
+    (sum, p) => sum.add(p.amount_paid),
+    new Decimal(0),
+  );
+  const totalTuition = enrollment.total_tuition_snapshot.toNumber();
+  const balance = totalTuition - totalPaid.toNumber();
+
+  return {
+    student: {
+      ...enrollment.student,
+      date_of_birth: enrollment.student.date_of_birth
+        .toISOString()
+        .split("T")[0],
+    },
+    enrollment: {
+      id: enrollment.id,
+      reference_code: enrollment.reference_code,
+      school_year: enrollment.school_year,
+      status: enrollment.status,
+      grade_level: enrollment.curriculum.grade_level,
+      total_tuition_snapshot: totalTuition,
+      total_misc_snapshot: enrollment.total_misc_snapshot.toNumber(),
+      min_partial_payment_override:
+        enrollment.min_partial_payment_override?.toNumber() ?? null,
+      payment_status:
+        balance <= 0
+          ? "fully_paid"
+          : totalPaid.gt(new Decimal(0))
+            ? "partial"
+            : "unpaid",
+      total_paid: totalPaid.toNumber(),
+      balance,
+    },
+  };
+}
+
+export async function updateStudent(data: {
+  id: number;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
+  date_of_birth: string;
+  address: string;
+  gender: "male" | "female";
+  email: string;
+}) {
+  return await prisma.student.update({
+    where: { id: data.id },
+    data: {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      middle_name: data.middle_name,
+      date_of_birth: new Date(data.date_of_birth),
+      address: data.address,
+      gender: data.gender,
+      email: data.email,
+    },
   });
 }
 

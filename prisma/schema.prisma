@@ -26,13 +26,14 @@ enum GenderEnum {
 }
 
 model Enrollment {
-  id            Int              @id @default(autoincrement())
-  student       Student          @relation(fields: [student_id], references: [id])
-  student_id    Int
-  curriculum    Curriculum       @relation(fields: [curriculum_id], references: [id])
-  curriculum_id Int
-  school_year   String
-  status        EnrollmentStatus @default(pending)
+  id             Int              @id @default(autoincrement())
+  reference_code String           @unique
+  student        Student          @relation(fields: [student_id], references: [id])
+  student_id     Int
+  curriculum     Curriculum       @relation(fields: [curriculum_id], references: [id])
+  curriculum_id  Int
+  school_year    String
+  status         EnrollmentStatus @default(pending)
 
   // These store the calculation at the MOMENT of enrollment
   total_tuition_snapshot Decimal @db.Decimal(10, 2)
@@ -46,12 +47,12 @@ model Enrollment {
 }
 
 model TuitionFeePayment {
-  id             Int        @id @default(autoincrement())
-  enrollment     Enrollment @relation(fields: [enrollment_id], references: [id])
-  enrollment_id  Int
-  amount_paid    Decimal    @db.Decimal(10, 2)
-  payment_date   DateTime   @default(now())
-  receipt_no     String     @unique
+  id                Int               @id @default(autoincrement())
+  enrollment        Enrollment        @relation(fields: [enrollment_id], references: [id])
+  enrollment_id     Int
+  amount_paid       Decimal           @db.Decimal(10, 2)
+  payment_date      DateTime          @default(now())
+  receipt_no        String            @unique
   rollback_requests RollbackRequest[]
 }
 
@@ -77,8 +78,6 @@ model Subject {
   inactive            Boolean              @default(false)
   prices              SubjectPrice[]
   curriculum_subjects CurriculumSubjects[]
-
-  
 }
 
 model SubjectPrice {
@@ -91,17 +90,16 @@ model SubjectPrice {
 }
 
 model Curriculum {
-  id                  Int                  @id @default(autoincrement())
-  grade_level         GradeLevelEnum
-  curriculum_code     String               @unique
-  curriculum_name     String
-  created_at          DateTime             @default(now())
-  miscellaneous_fee   Decimal              @db.Decimal(10, 2)
-  curriculum_subjects CurriculumSubjects[]
-  inactive            Boolean              @default(false)
-  enrollments         Enrollment[]
+  id                        Int                      @id @default(autoincrement())
+  grade_level               GradeLevelEnum
+  curriculum_code           String                   @unique
+  curriculum_name           String
+  created_at                DateTime                 @default(now())
+  miscellaneous_fee         Decimal                  @db.Decimal(10, 2)
+  curriculum_subjects       CurriculumSubjects[]
+  inactive                  Boolean                  @default(false)
+  enrollments               Enrollment[]
   grade_curriculum_settings GradeCurriculumSetting[]
-
 }
 
 model CurriculumSubjects {
@@ -134,14 +132,14 @@ enum GradeLevelEnum {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  username      String   @unique
-  email         String   @unique
-  hash_password String
-  role          Role[]
-  created_at    DateTime @default(now())
-  rollback_requests_requested  RollbackRequest[]  @relation("RollbackRequestedBy")
-  rollback_requests_reviewed RollbackRequest[]    @relation("RollbackReviewedBy")
+  id                          Int               @id @default(autoincrement())
+  username                    String            @unique
+  email                       String            @unique
+  hash_password               String
+  role                        Role[]
+  created_at                  DateTime          @default(now())
+  rollback_requests_requested RollbackRequest[] @relation("RollbackRequestedBy")
+  rollback_requests_reviewed  RollbackRequest[] @relation("RollbackReviewedBy")
 }
 
 enum Roles {
@@ -160,35 +158,35 @@ model Role {
 }
 
 model GradeCurriculumSetting {
-  id            Int              @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   school_year   String
   grade_level   GradeLevelEnum
-  curriculum    Curriculum       @relation(fields: [curriculum_id], references: [id])
+  curriculum    Curriculum     @relation(fields: [curriculum_id], references: [id])
   curriculum_id Int
 
   @@unique([school_year, grade_level])
 }
 
 model EnrollmentSettings {
-  id                           Int                       @id @default(autoincrement())
+  id                           Int      @id @default(autoincrement())
   school_year                  String
-  is_online_enrollment_enabled Boolean                   @default(false)
-  created_at                   DateTime                  @default(now())
-  updated_at                   DateTime                  @updatedAt
+  is_online_enrollment_enabled Boolean  @default(false)
+  created_at                   DateTime @default(now())
+  updated_at                   DateTime @updatedAt
 }
 
 model RollbackRequest {
-  id               Int             @id @default(autoincrement())
-  payment          TuitionFeePayment @relation(fields: [payment_id], references: [id])
-  payment_id       Int
-  requested_by     User            @relation("RollbackRequestedBy", fields: [requested_by_id], references: [id])
-  requested_by_id  Int
-  reason           String
-  status           RollbackStatus  @default(pending)
-  reviewed_by      User?           @relation("RollbackReviewedBy", fields: [reviewed_by_id], references: [id])
-  reviewed_by_id   Int?
-  reviewed_at      DateTime?
-  created_at       DateTime        @default(now())
+  id              Int               @id @default(autoincrement())
+  payment         TuitionFeePayment @relation(fields: [payment_id], references: [id])
+  payment_id      Int
+  requested_by    User              @relation("RollbackRequestedBy", fields: [requested_by_id], references: [id])
+  requested_by_id Int
+  reason          String
+  status          RollbackStatus    @default(pending)
+  reviewed_by     User?             @relation("RollbackReviewedBy", fields: [reviewed_by_id], references: [id])
+  reviewed_by_id  Int?
+  reviewed_at     DateTime?
+  created_at      DateTime          @default(now())
 
   @@index([payment_id])
   @@index([status])

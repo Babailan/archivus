@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getEnrollments } from "./action";
 import { EnrollmentsListForm } from "./enrollments-list-form";
 import { Skeleton } from "@/components/ui/skeleton";
-
+export const dynamic = 'force-dynamic';
 export default async function EnrollmentsPage({
   searchParams,
 }: {

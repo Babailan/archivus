@@ -1,32 +1,39 @@
 import prisma from "@/lib/prisma";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
+import { PrismaClientKnownRequestError } from "@/app/generated/prisma/internal/prismaNamespace";
 
 export type EnrollmentSettingsWithCurriculums = Awaited<
   ReturnType<typeof getEnrollmentSettings>
 >;
 
 export async function getEnrollmentSettings() {
-  const settings = await prisma.enrollmentSettings.findFirst();
-  if (!settings) return null;
-
-  const gradeCurriculumSettings = await prisma.gradeCurriculumSetting.findMany({
-    where: { school_year: settings.school_year },
-    include: {
-      curriculum: {
-        select: {
-          id: true,
-          curriculum_code: true,
-          curriculum_name: true,
-          grade_level: true,
+  try{
+    const settings = await prisma.enrollmentSettings.findFirst();
+    if (!settings) return null;
+  
+    const gradeCurriculumSettings = await prisma.gradeCurriculumSetting.findMany({
+      where: { school_year: settings.school_year },
+      include: {
+        curriculum: {
+          select: {
+            id: true,
+            curriculum_code: true,
+            curriculum_name: true,
+            grade_level: true,
+          },
         },
       },
-    },
-  });
+    });
+  
+    return {
+      ...settings,
+      grade_curriculum_settings: gradeCurriculumSettings,
+    };
 
-  return {
-    ...settings,
-    grade_curriculum_settings: gradeCurriculumSettings,
-  };
+  } catch (error) {
+    console.dir(error,{ depth: null });
+    throw error;
+  }
 }
 
 export async function getCurriculumsByGradeLevel() {

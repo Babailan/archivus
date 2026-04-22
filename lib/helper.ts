@@ -18,3 +18,8 @@ export function queryFirst(value: string | string[] | undefined) {
   }
   return value ?? "";
 }
+
+
+export function generateReferenceCode(year: string, id: number): string {
+    return `EN-${year.substring(2, 4)}${id.toString().padStart(6, "0")}`;
+}

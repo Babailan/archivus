@@ -14,7 +14,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -30,7 +29,7 @@ import { useAction } from "next-safe-action/hooks";
 import { declineEnrollmentAction, approveEnrollmentAction } from "./action";
 import { SearchEnrollmentResult } from "@/services/enrollment.service";
 import { toast } from "sonner";
-import { Ellipsis, Check, X } from "lucide-react";
+import { Ellipsis, Check, X, Eye } from "lucide-react";
 import { use } from "react";
 import {
   DialogTrigger,
@@ -198,17 +197,27 @@ export function EnrollmentsListForm({
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        render={
-                          <Button variant="ghost" size="icon-sm">
-                            <Ellipsis />
-                          </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() =>
+                          router.push(`/enrollments/${enrollment.id}/student`)
                         }
-                      />
-                      <DropdownMenuContent align="end">
-                        {enrollment.status === "pending" && (
-                          <>
+                        title="View Details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      {enrollment.status == "pending" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            render={
+                              <Button variant="ghost" size="icon-sm">
+                                <Ellipsis />
+                              </Button>
+                            }
+                          />
+                          <DropdownMenuContent align="end">
                             <DropdownMenuGroup>
                               <Dialog>
                                 <DialogTrigger
@@ -307,10 +316,10 @@ export function EnrollmentsListForm({
                                 </DialogContent>
                               </Dialog>
                             </DropdownMenuGroup>
-                          </>
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

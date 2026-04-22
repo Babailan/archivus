@@ -9,6 +9,8 @@ import {
   searchEnrollments,
   recordPayment,
   getEnrollment,
+  getStudentByEnrollmentId,
+  updateStudent,
 } from "@/services/enrollment.service";
 import { revalidatePath } from "next/cache";
 
@@ -60,4 +62,37 @@ export async function getEnrollments(status?: string) {
 
 export async function getEnrollmentById(id: number) {
   return await getEnrollment(id);
+}
+
+const updateStudentInputSchema = zfd.formData({
+  id: zfd.numeric(z.number()),
+  first_name: zfd.text(z.string().min(1)),
+  last_name: zfd.text(z.string().min(1)),
+  middle_name: zfd.text(z.string().min(1)),
+  date_of_birth: zfd.text(z.string().min(1)),
+  address: zfd.text(z.string().min(1)),
+  gender: zfd.text(z.enum(["male", "female"])),
+  email: zfd.text(z.string().email()),
+});
+
+export const updateStudentAction = actionClient
+  .inputSchema(updateStudentInputSchema)
+  .action(async ({ parsedInput }) => {
+    await updateStudent({
+      id: parsedInput.id,
+      first_name: parsedInput.first_name,
+      last_name: parsedInput.last_name,
+      middle_name: parsedInput.middle_name,
+      date_of_birth: parsedInput.date_of_birth,
+      address: parsedInput.address,
+      gender: parsedInput.gender,
+      email: parsedInput.email,
+    });
+    revalidatePath("/enrollments");
+    return { success: true };
+  });
+
+export async function getStudentByEnrollment(id: number) {
+  console.log("Fetching student by enrollment ID:", id);
+  return await getStudentByEnrollmentId(id);
 }

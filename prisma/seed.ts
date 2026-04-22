@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { faker } from "@faker-js/faker";
+import { generateReferenceCode } from "@/lib/helper";
 
 const generateStudents = (count: number) => {
   const students = [];
@@ -241,6 +242,16 @@ async function main() {
   });
 
   if (!existingSettings2025) {
+    await prisma.enrollmentSettings.create({
+      data: { school_year: "2025-2026" },
+    });
+  }
+
+  const existingGCS2025 = await prisma.gradeCurriculumSetting.count({
+    where: { school_year: "2025-2026" },
+  });
+
+  if (existingGCS2025 === 0) {
     await prisma.gradeCurriculumSetting.createMany({
       data: [
         {
@@ -411,6 +422,14 @@ async function main() {
     curriculum6,
   ];
 
+  const existingStudentCount = await prisma.student.count();
+  if (existingStudentCount === 0) {
+    const students = generateStudents(40);
+    for (const student of students) {
+      await prisma.student.create({ data: student });
+    }
+  }
+
   const createdStudents = await prisma.student.findMany({
     take: 25,
     orderBy: { id: "desc" },
@@ -448,6 +467,7 @@ async function main() {
         status,
         total_tuition_snapshot: totalTuition,
         total_misc_snapshot: totalMisc,
+        reference_code: generateReferenceCode("2025-2026", student.id),
       },
     });
     createdEnrollments.push({ enrollment, totalAmount, status });
@@ -508,6 +528,7 @@ async function main() {
         status,
         total_tuition_snapshot: totalTuition,
         total_misc_snapshot: totalMisc,
+        reference_code: generateReferenceCode("2025-2026", student.id),
       },
     });
 

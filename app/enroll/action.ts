@@ -26,7 +26,7 @@ export const submitEnrollmentAction = actionClient
     }
 
     try {
-      await createEnrollment({
+      const result = await createEnrollment({
         first_name: parsedInput.first_name,
         last_name: parsedInput.last_name,
         middle_name: parsedInput.middle_name,
@@ -38,7 +38,7 @@ export const submitEnrollmentAction = actionClient
         school_year: settings.school_year,
       });
 
-      return { success: true };
+      return { success: true, referenceCode: result.enrollment.reference_code };
     } catch (error) {
       console.log(error);
       return { success: false, error: "Failed to submit enrollment" };

@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAction } from "next-safe-action/hooks";
 import { submitEnrollmentAction } from "./action";
@@ -63,6 +64,7 @@ interface EnrollmentFormProps {
 }
 
 export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
+  const router = useRouter();
   const { executeAsync, isExecuting } = useAction(submitEnrollmentAction);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,11 +101,15 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
     formdata.append("email", data.email);
 
     const { data: result } = await executeAsync(formdata);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     if (result?.success) {
       toast.success("Enrollment submitted successfully!");
       form.reset();
       setDate(undefined);
       setAcceptTerm(false);
+      router.push(`/enroll/success?ref=${result.referenceCode}`);
     } else {
       toast.error(result?.error || "Failed to submit enrollment");
     }
@@ -173,7 +179,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel>
-                    Middle Name <span className="text-red-600">*</span>
+                    Middle Name
                   </FieldLabel>
                   <Input
                     type="text"
@@ -329,10 +335,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
           </FieldGroup>
 
           <FieldGroup>
-            <Field
-              orientation="horizontal"
-              data-invalid={!acceptTerm && form.formState.isSubmitted}
-            >
+            <Field orientation="horizontal" data-invalid={!acceptTerm && form.formState.isSubmitted ? "true" : "false"}>
               <Checkbox
                 id="accept_term"
                 onCheckedChange={(v: boolean) => setAcceptTerm(v)}
