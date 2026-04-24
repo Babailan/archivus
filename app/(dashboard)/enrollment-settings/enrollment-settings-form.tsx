@@ -46,11 +46,19 @@ export function EnrollmentSettingsForm({
     settings?.school_year ?? "",
   );
   const gradeCurriculumMap = new Map(
-    settings?.grade_curriculum_settings.map((gcs) => [
-      gcs.grade_level,
-      gcs.curriculum_id.toString(),
-    ]) ?? [],
+    settings?.grade_curriculum_settings.map((gcs) => {
+      const curriculum = curriculums.find(
+        (c) => c.id === gcs.curriculum_id && c.grade_level === gcs.grade_level
+      );
+      return [
+        gcs.grade_level,
+        curriculum
+          ? `${curriculum.curriculum_name} (${curriculum.curriculum_code})`
+          : gcs.curriculum_id.toString(),
+      ];
+    }) ?? [],
   );
+
   const [grade1, setGrade1] = useState<string>(
     gradeCurriculumMap.get("grade1") ?? "",
   );
@@ -78,15 +86,22 @@ export function EnrollmentSettingsForm({
     const formData = new FormData();
 
     if (schoolYear) {
-      console.log("ss");
       formData.append("school_year", schoolYear);
     }
-    if (grade1) formData.append("grade1_curriculum_id", grade1);
-    if (grade2) formData.append("grade2_curriculum_id", grade2);
-    if (grade3) formData.append("grade3_curriculum_id", grade3);
-    if (grade4) formData.append("grade4_curriculum_id", grade4);
-    if (grade5) formData.append("grade5_curriculum_id", grade5);
-    if (grade6) formData.append("grade6_curriculum_id", grade6);
+
+    const getCurriculumId = (value: string) => {
+      const curriculum = curriculums.find(
+        (c) => `${c.curriculum_name} (${c.curriculum_code})` === value
+      );
+      return curriculum?.id.toString() ?? value;
+    };
+
+    if (grade1) formData.append("grade1_curriculum_id", getCurriculumId(grade1));
+    if (grade2) formData.append("grade2_curriculum_id", getCurriculumId(grade2));
+    if (grade3) formData.append("grade3_curriculum_id", getCurriculumId(grade3));
+    if (grade4) formData.append("grade4_curriculum_id", getCurriculumId(grade4));
+    if (grade5) formData.append("grade5_curriculum_id", getCurriculumId(grade5));
+    if (grade6) formData.append("grade6_curriculum_id", getCurriculumId(grade6));
     formData.append("is_online_enrollment_enabled", isEnabled.toString());
     const { data, validationErrors } = await executeAsync(formData);
     console.log("Data:", data);
@@ -177,7 +192,7 @@ export function EnrollmentSettingsForm({
                       .map((curriculum) => (
                         <SelectItem
                           key={curriculum.id}
-                          value={curriculum.id.toString()}
+                          value={`${curriculum.curriculum_name} (${curriculum.curriculum_code})`}
                         >
                           {curriculum.curriculum_name} (
                           {curriculum.curriculum_code})
