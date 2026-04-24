@@ -13,6 +13,7 @@ import {
   Book,
   ClipboardList,
   GalleryVerticalEnd,
+  LayoutDashboard,
   LibraryBig,
   Settings,
   User,
@@ -58,6 +59,18 @@ export async function DashboardSideBar() {
             </Button>
             <span className="font-medium">Archivus Inc.</span>
           </div>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarMenu className="gap-1">
+            <SidebarMenuButton
+              pathname="/dashboard"
+              render={
+                <Link href={"/dashboard"}>
+                  <LayoutDashboard /> Dashboard
+                </Link>
+              }
+            />
+          </SidebarMenu>
         </SidebarGroup>
         {(isAdmin || isRegistrar) && (
           <SidebarGroup>

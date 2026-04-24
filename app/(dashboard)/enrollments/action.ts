@@ -56,8 +56,8 @@ export const recordPaymentAction = actionClient
     return { success: true, isFullyPaid: result.isFullyPaid };
   });
 
-export async function getEnrollments(status?: string) {
-  return await searchEnrollments(status);
+export async function getEnrollments(status?: string, page?: number) {
+  return await searchEnrollments(status, page);
 }
 
 export async function getEnrollmentById(id: number) {

@@ -11,18 +11,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { ApprovedEnrollment } from "@/services/payment.service";
+import { PaymentsResult, ApprovedEnrollment } from "@/services/payment.service";
 import { use } from "react";
 import { Wallet } from "lucide-react";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 interface PaymentsListProps {
-  paymentsPromise: Promise<ApprovedEnrollment[]>;
+  paymentsPromise: Promise<PaymentsResult>;
 }
 
 export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
-  const payments = use(paymentsPromise);
+  const { enrollments, total, page, pageSize } = use(paymentsPromise);
+  const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const paymentStatusLabels: Record<string, string> = {
     unpaid: "Unpaid",
@@ -58,7 +59,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {payments.length === 0 ? (
+            {enrollments.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={9}
@@ -68,7 +69,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
                 </TableCell>
               </TableRow>
             ) : (
-              payments.map((payment: ApprovedEnrollment) => (
+              enrollments.map((payment) => (
                 <TableRow key={payment.id}>
                   <TableCell>
                     {payment.student.last_name}, {payment.student.first_name}
@@ -107,6 +108,8 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination page={page} totalPages={totalPages} />
+
     </div>
   );
 }

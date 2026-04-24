@@ -48,11 +48,33 @@ export async function getEnrollment(id: number) {
   };
 }
 
-export type SearchEnrollmentResult = Awaited<
-  ReturnType<typeof searchEnrollments>
->;
+export type SearchEnrollmentResult = {
+  enrollments: EnrollmentItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
 
-type PaymentStatus = "unpaid" | "partial" | "fully_paid";
+export type PaymentStatus = "unpaid" | "partial" | "fully_paid";
+
+export type EnrollmentItem = {
+  id: number;
+  student: { id: number; first_name: string; last_name: string; middle_name: string };
+  curriculum: {
+    id: number;
+    grade_level: string;
+    curriculum_name: string;
+    curriculum_code: string;
+    miscellaneous_fee: number;
+  };
+  school_year: string;
+  status: EnrollmentStatus;
+  total_tuition_snapshot: number;
+  total_misc_snapshot: number;
+  paymentStatus: PaymentStatus;
+  payments: Array<{ amount_paid: number }>;
+  created_at: Date;
+};
 
 function computePaymentStatus(
   payments: { amount_paid: Decimal }[],
@@ -70,51 +92,66 @@ function computePaymentStatus(
   return "unpaid";
 }
 
-export async function searchEnrollments(status?: string) {
+export async function searchEnrollments(
+  status?: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const where: { status?: EnrollmentStatus } = {};
   if (status && status !== "all") {
     where.status = status as EnrollmentStatus;
   }
 
-  const enrollments = await prisma.enrollment.findMany({
-    where,
-    take:100,
-    include: {
-      student: true,
-      curriculum: true,
-      payments: {
-        where: {
-          NOT: {
-            rollback_requests: {
-              some: { status: "approved" },
+  const skip = (page - 1) * pageSize;
+
+  const [enrollments, total] = await Promise.all([
+    prisma.enrollment.findMany({
+      where,
+      skip,
+      take: pageSize,
+      include: {
+        student: true,
+        curriculum: true,
+        payments: {
+          where: {
+            NOT: {
+              rollback_requests: {
+                some: { status: "approved" },
+              },
             },
           },
         },
       },
-    },
-    orderBy: { created_at: "desc" },
-  });
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.enrollment.count({ where }),
+  ]);
 
-  return enrollments.map((e) => {
-    const paymentStatus = computePaymentStatus(
-      e.payments,
-      e.total_tuition_snapshot.toNumber(),
-    );
-    return {
-      ...e,
-      paymentStatus,
-      total_tuition_snapshot: e.total_tuition_snapshot.toNumber(),
-      total_misc_snapshot: e.total_misc_snapshot.toNumber(),
-      curriculum: {
-        ...e.curriculum,
-        miscellaneous_fee: e.curriculum.miscellaneous_fee.toNumber(),
-      },
-      payments: e.payments.map((p: { amount_paid: Decimal }) => ({
-        ...p,
-        amount_paid: p.amount_paid.toNumber(),
-      })),
-    };
-  });
+  return {
+    enrollments: enrollments.map((e) => {
+      const paymentStatus = computePaymentStatus(
+        e.payments,
+        e.total_tuition_snapshot.toNumber(),
+      );
+      return {
+        ...e,
+        paymentStatus,
+        total_tuition_snapshot: e.total_tuition_snapshot.toNumber(),
+        total_misc_snapshot: e.total_misc_snapshot.toNumber(),
+        curriculum: {
+          ...e.curriculum,
+          miscellaneous_fee: e.curriculum.miscellaneous_fee.toNumber(),
+        },
+        payments: e.payments.map((p: { amount_paid: Decimal }) => ({
+          ...p,
+          amount_paid: p.amount_paid.toNumber(),
+        })),
+      };
+    }),
+    total,
+    page,
+    pageSize,
+  };
 }
 
 export async function getPendingEnrollmentCount() {

@@ -2,14 +2,16 @@ import { Suspense } from "react";
 import { getEnrollments } from "./action";
 import { EnrollmentsListForm } from "./enrollments-list-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { queryFirst } from "@/lib/helper";
 export const dynamic = 'force-dynamic';
 export default async function EnrollmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; page?: string }>;
 }) {
-  const { status } = await searchParams;
-  const enrollmentsPromise = getEnrollments(status);
+  const { status, page } = await searchParams;
+  const pageNum = page ? parseInt(page) : 1;
+  const enrollmentsPromise = getEnrollments(status, pageNum);
 
   return (
     <div className="px-10 py-2 mb-10">

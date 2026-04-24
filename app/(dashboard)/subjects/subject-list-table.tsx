@@ -26,21 +26,24 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { useRouter, useSearchParams } from "next/navigation";
 import { use } from "react";
-import EditSubjectDialog from "./edit-subject-dialog";
 import { SearchSubjectResult } from "@/services/subject.service";
+import EditSubjectDialog from "./edit-subject-dialog";
 import DeleteSubjectDialog from "./delete-subject-dialog";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 export function SubjectListForm({
   subjectsPromise,
 }: {
   subjectsPromise: Promise<SearchSubjectResult>;
 }) {
-  const subjects = use(subjectsPromise);
+  const { subjects: subj, total, page, pageSize } = use(subjectsPromise);
+  const totalPages = Math.ceil(total / pageSize);
 
   return (
     <>
-      {!subjects.subjects.length && (
+      {!subj.length && (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -51,57 +54,61 @@ export function SubjectListForm({
           </EmptyHeader>
         </Empty>
       )}
-      {!!subjects.subjects.length && (
-        <Table className="mt-5 border">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Subject Code</TableHead>
-              <TableHead>Subject Name</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Date Created</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {subjects.subjects.map((subject) => (
-              <TableRow key={subject.id}>
-                <TableCell>{subject.subject_code.toUpperCase()}</TableCell>
-                <TableCell>{subject.subject_name.toUpperCase()}</TableCell>
-                <TableCell>
-                  <NumericFormat
-                    displayType="text"
-                    prefix="₱ "
-                    value={subject.prices[0]?.price}
-                    thousandSeparator
-                  />
-                </TableCell>
-                <TableCell>
-                  {format(subject.created_at, "MMM, d yyyy")}
-                </TableCell>
-                <TableCell className="flex justify-end">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button size={"icon-sm"} variant={"ghost"}>
-                          <Ellipsis />
-                        </Button>
-                      }
-                    />
-                    <DropdownMenuContent>
-                      <DropdownMenuGroup>
-                        <EditSubjectDialog {...subject} />
-                      </DropdownMenuGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuGroup>
-                        <DeleteSubjectDialog id={subject.id} />
-                      </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
+      {!!subj.length && (
+        <>
+          <Table className="my-5 border">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Subject Code</TableHead>
+                <TableHead>Subject Name</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Date Created</TableHead>
+                <TableHead></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {subj.map((subject) => (
+                <TableRow key={subject.id}>
+                  <TableCell>{subject.subject_code.toUpperCase()}</TableCell>
+                  <TableCell>{subject.subject_name.toUpperCase()}</TableCell>
+                  <TableCell>
+                    <NumericFormat
+                      displayType="text"
+                      prefix="₱ "
+                      value={subject.prices[0]?.price}
+                      thousandSeparator
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {format(subject.created_at, "MMM, d yyyy")}
+                  </TableCell>
+                  <TableCell className="flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button size={"icon-sm"} variant={"ghost"}>
+                            <Ellipsis />
+                          </Button>
+                        }
+                      />
+                      <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                          <EditSubjectDialog {...subject} />
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                          <DeleteSubjectDialog id={subject.id} />
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <DataTablePagination page={page} totalPages={totalPages} />
+
+          </>
       )}
     </>
   );

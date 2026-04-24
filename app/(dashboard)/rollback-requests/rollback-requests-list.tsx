@@ -25,9 +25,15 @@ import {
 } from "@/components/ui/dialog";
 import { approveRollbackAction, denyRollbackAction } from "./action";
 import { getRollbackRequests } from "@/services/rollback.service";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 interface RollbackRequestsListProps {
-  requestsPromise: Promise<Awaited<ReturnType<typeof getRollbackRequests>>>;
+  requestsPromise: Promise<{
+    requests: Awaited<ReturnType<typeof getRollbackRequests>>["requests"];
+    total: number;
+    page: number;
+    pageSize: number;
+  }>;
 }
 
 const statusLabels: Record<string, string> = {
@@ -49,7 +55,8 @@ const statusFilterTabs = ["all", "pending", "approved", "denied", "cancelled"];
 export function RollbackRequestsList({
   requestsPromise,
 }: RollbackRequestsListProps) {
-  const requests = use(requestsPromise);
+  const { requests, total, page, pageSize } = use(requestsPromise);
+  const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentStatus = searchParams.get("status") ?? "all";
@@ -199,6 +206,8 @@ export function RollbackRequestsList({
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination page={page} totalPages={totalPages} />
+
 
       <Dialog
         open={confirmDialog.open}

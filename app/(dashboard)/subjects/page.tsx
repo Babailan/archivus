@@ -19,9 +19,11 @@ import { SearchInput } from "@/components/ui/search-input";
 export default async function SubjectListPage({
   searchParams,
 }: PageProps<"/subjects">) {
-  let { q } = await searchParams;
+  let { q, page } = await searchParams;
   q = queryFirst(q);
-  const subjects = searchSubject(q);
+  page = queryFirst(page);
+  const pageNum = page ? parseInt(page) : 1;
+  const subjects = searchSubject(q, pageNum);
 
   return (
     <div className="p-10">
@@ -51,7 +53,7 @@ export default async function SubjectListPage({
         </div>
       </div>
       <SearchInput pathname="/subjects" />
-      <Suspense key={q} fallback={<SkeletonTable />}>
+      <Suspense key={`${q}-${page}`} fallback={<SkeletonTable />}>
         <SubjectListForm subjectsPromise={subjects} />
       </Suspense>
     </div>

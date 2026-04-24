@@ -60,17 +60,31 @@ export async function getUser(id: number) {
 
 export type SearchUserResult = Awaited<ReturnType<typeof searchUsers>>;
 
-export async function searchUsers(q: string) {
-  const users = await prisma.user.findMany({
-    where: q
-      ? {
-          OR: [{ username: { contains: q } }, { email: { contains: q } }],
-        }
-      : undefined,
-    include: {
-      role: true,
-    },
-    orderBy: { created_at: "desc" },
-  });
-  return { users };
+export async function searchUsers(q: string, page: number = 1, pageSize: number = 10) {
+  const skip = (page - 1) * pageSize;
+
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where: q
+        ? {
+            OR: [{ username: { contains: q } }, { email: { contains: q } }],
+          }
+        : undefined,
+      include: {
+        role: true,
+      },
+      orderBy: { created_at: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.user.count({
+      where: q
+        ? {
+            OR: [{ username: { contains: q } }, { email: { contains: q } }],
+          }
+        : undefined,
+    }),
+  ]);
+
+  return { users, total, page, pageSize };
 }

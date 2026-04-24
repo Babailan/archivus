@@ -6,10 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default async function RollbackRequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; page?: string }>;
 }) {
-  const { status } = await searchParams;
-  const requestsPromise = getRollbackRequestsAction(status);
+  const { status, page } = await searchParams;
+  const pageNum = page ? parseInt(page) : 1;
+  const requestsPromise = getRollbackRequestsAction(status, pageNum);
 
   return (
     <div className="px-10 py-2 mb-10">

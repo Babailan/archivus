@@ -19,9 +19,11 @@ import { SearchInput } from "@/components/ui/search-input";
 export default async function CurriculumPage({
   searchParams,
 }: PageProps<"/curriculum">) {
-  let { q } = await searchParams;
+  let { q, page } = await searchParams;
   q = queryFirst(q);
-  const curriculums = searchCurriculum(q);
+  page = queryFirst(page);
+  const pageNum = page ? parseInt(page) : 1;
+  const curriculums = searchCurriculum(q, pageNum);
   return (
     <div className="p-10">
       <Breadcrumb className="mb-5">
@@ -50,7 +52,7 @@ export default async function CurriculumPage({
         </div>
       </div>
       <SearchInput pathname="/curriculum" />
-      <Suspense key={q} fallback={<SkeletonTable />}>
+      <Suspense key={`${q}-${page}`} fallback={<SkeletonTable />}>
         <CurriculumListForm curriculumsPromise={curriculums} />
       </Suspense>
     </div>

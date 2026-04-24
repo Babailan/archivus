@@ -6,7 +6,9 @@ import prisma from "@/lib/prisma";
 
 export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
 
-export async function searchSubject(q: string) {
+export async function searchSubject(q: string, page: number = 1, pageSize: number = 10) {
+  const skip = (page - 1) * pageSize;
+
   const select: SubjectFindManyArgs = {};
   if (q) {
     select.where = {
@@ -20,33 +22,38 @@ export async function searchSubject(q: string) {
       created_at: "desc",
     };
   } else {
+    select.where = { inactive: false };
     select.orderBy = {
       created_at: "desc",
     };
   }
 
-  const find = await prisma.subject.findMany({
-    where: {
-      inactive: false,
-    },
-    ...select,
-    include: {
-      prices: {
-        take: 1,
-        orderBy: {
-          created_at: "desc",
+  const [find, total] = await Promise.all([
+    prisma.subject.findMany({
+      where: { inactive: false },
+      ...select,
+      include: {
+        prices: {
+          take: 1,
+          orderBy: {
+            created_at: "desc",
+          },
         },
       },
-    },
-    take: 10,
-  });
+      skip,
+      take: pageSize,
+    }),
+    prisma.subject.count({ where: select.where }),
+  ]);
 
   return {
     subjects: find.map((v) => ({
       ...v,
       prices: v.prices.map((p) => ({ ...p, price: p.price.toNumber() })),
     })),
-    hasMore: true,
+    total,
+    page,
+    pageSize,
   };
 }
 

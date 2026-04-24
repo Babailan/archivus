@@ -6,10 +6,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default async function PaymentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; page?: string }>;
 }) {
-  const { q } = await searchParams;
-  const paymentsPromise = getPayments(q);
+  const { q, page } = await searchParams;
+  const pageNum = page ? parseInt(page) : 1;
+  const paymentsPromise = getPayments(q, pageNum);
 
   return (
     <div className="px-10 py-2 mb-10">

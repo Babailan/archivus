@@ -44,7 +44,9 @@ export type SearchCurriculumResult = Awaited<
   ReturnType<typeof searchCurriculum>
 >;
 
-export async function searchCurriculum(q: string) {
+export async function searchCurriculum(q: string, page: number = 1, pageSize: number = 10) {
+  const skip = (page - 1) * pageSize;
+
   const select: CurriculumFindManyArgs = {};
   if (q) {
     select.where = {
@@ -58,19 +60,21 @@ export async function searchCurriculum(q: string) {
       created_at: "desc",
     };
   } else {
+    select.where = { inactive: false };
     select.orderBy = {
       created_at: "desc",
     };
   }
 
   try {
-    const find = await prisma.curriculum.findMany({
-      where: {
-        inactive: false,
-      },
-      ...select,
-      take: 10,
-    });
+    const [find, total] = await Promise.all([
+      prisma.curriculum.findMany({
+        ...select,
+        skip,
+        take: pageSize,
+      }),
+      prisma.curriculum.count({ where: select.where }),
+    ]);
 
     const curriculums = find.map((c) => ({
       ...c,
@@ -79,7 +83,9 @@ export async function searchCurriculum(q: string) {
 
     return {
       curriculums,
-      hasMore: true,
+      total,
+      page,
+      pageSize,
     };
   } catch (error) {
     console.error("Full error:", error);

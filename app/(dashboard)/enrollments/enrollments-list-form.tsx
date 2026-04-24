@@ -18,22 +18,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from "@/components/ui/dialog";
+
 import { useAction } from "next-safe-action/hooks";
 import { declineEnrollmentAction, approveEnrollmentAction } from "./action";
-import { SearchEnrollmentResult } from "@/services/enrollment.service";
+import {
+  PaymentStatus,
+  EnrollmentItem,
+  SearchEnrollmentResult,
+} from "@/services/enrollment.service";
 import { toast } from "sonner";
 import { Ellipsis, Check, X, Eye } from "lucide-react";
 import { use } from "react";
-import {
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-  Dialog,
-} from "@/components/ui/dialog";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
 interface EnrollmentsListFormProps {
   enrollmentsPromise: Promise<SearchEnrollmentResult>;
@@ -44,7 +50,8 @@ export function EnrollmentsListForm({
   enrollmentsPromise,
   statusFilter,
 }: EnrollmentsListFormProps) {
-  const enrollments = use(enrollmentsPromise);
+  const { enrollments, total, page, pageSize } = use(enrollmentsPromise);
+  const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -169,7 +176,7 @@ export function EnrollmentsListForm({
               </TableCell>
             </TableRow>
           ) : (
-            enrollments.map((enrollment: SearchEnrollmentResult[number]) => (
+            enrollments.map((enrollment) => (
               <TableRow key={enrollment.id}>
                 <TableCell>
                   {enrollment.student.last_name},{" "}
@@ -319,6 +326,8 @@ export function EnrollmentsListForm({
           )}
         </TableBody>
       </Table>
+      <DataTablePagination page={page} totalPages={totalPages} />
+
     </div>
   );
 }

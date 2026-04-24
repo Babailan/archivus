@@ -123,54 +123,70 @@ export async function denyRollbackRequest(id: number) {
   });
 }
 
-export async function getRollbackRequests(status?: string) {
+export async function getRollbackRequests(
+  status?: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const where: { status?: RollbackStatus } = {};
   if (status && status !== "all") {
     where.status = status as RollbackStatus;
   }
 
-  const requests = await prisma.rollbackRequest.findMany({
-    where,
-    include: {
-      payment: {
-        include: {
-          enrollment: {
-            include: {
-              student: true,
+  const skip = (page - 1) * pageSize;
+
+  const [requests, total] = await Promise.all([
+    prisma.rollbackRequest.findMany({
+      where,
+      skip,
+      take: pageSize,
+      include: {
+        payment: {
+          include: {
+            enrollment: {
+              include: {
+                student: true,
+              },
             },
           },
         },
-      },
-      requested_by: {
-        select: {
-          id: true,
-          username: true,
+        requested_by: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        reviewed_by: {
+          select: {
+            id: true,
+            username: true,
+          },
         },
       },
-      reviewed_by: {
-        select: {
-          id: true,
-          username: true,
-        },
-      },
-    },
-    orderBy: { created_at: "desc" },
-  });
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.rollbackRequest.count({ where }),
+  ]);
 
-  return requests.map((request) => ({
-    ...request,
-    payment: {
-      ...request.payment,
-      amount_paid: request.payment.amount_paid.toNumber(),
-      enrollment: {
-        ...request.payment.enrollment,
-        total_tuition_snapshot:
-          request.payment.enrollment.total_tuition_snapshot.toNumber(),
-        total_misc_snapshot:
-          request.payment.enrollment.total_misc_snapshot.toNumber(),
+  return {
+    requests: requests.map((request) => ({
+      ...request,
+      payment: {
+        ...request.payment,
+        amount_paid: request.payment.amount_paid.toNumber(),
+        enrollment: {
+          ...request.payment.enrollment,
+          total_tuition_snapshot:
+            request.payment.enrollment.total_tuition_snapshot.toNumber(),
+          total_misc_snapshot:
+            request.payment.enrollment.total_misc_snapshot.toNumber(),
+        },
       },
-    },
-  }));
+    })),
+    total,
+    page,
+    pageSize,
+  };
 }
 
 export async function getPendingRollbackCount() {
