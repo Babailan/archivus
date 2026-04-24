@@ -78,6 +78,7 @@ export async function searchEnrollments(status?: string) {
 
   const enrollments = await prisma.enrollment.findMany({
     where,
+    take:100,
     include: {
       student: true,
       curriculum: true,

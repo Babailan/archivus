@@ -10,7 +10,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
+    <SidebarProvider className="scheme-dark">
       <DashboardSideBar />
       <SidebarInset className="overflow-hidden">
         <HeaderBar />
