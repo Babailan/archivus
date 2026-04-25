@@ -47,7 +47,8 @@ export function AdminDashboard({
         />
         <StatCard
           title="Total Revenue"
-          value={`₱${stats.totalRevenue.toLocaleString()}`}
+          value={stats.totalRevenue}
+          isCurrency
           subtitle="All time collections"
         />
         <Link href="/rollback-requests">

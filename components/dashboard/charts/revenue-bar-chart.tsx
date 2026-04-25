@@ -17,6 +17,8 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { Currency } from "@/components/ui/currency";
+import numeral from "numeral";
 
 type RevenueTrend = {
   month: string;
@@ -73,7 +75,7 @@ export function RevenueBarChart({
                 <ChartTooltipContent
                   hideLabel
                   formatter={(value) => [
-                    `₱${Number(value).toLocaleString()}`,
+                    <Currency key="revenue" value={value as number} />,
                     "Revenue",
                   ]}
                 />
@@ -90,6 +92,7 @@ export function RevenueBarChart({
                 offset={12}
                 className="fill-foreground"
                 fontSize={12}
+                formatter={(value: any) => `₱${numeral(value).format("0,0")}`}
               />
             </Bar>
           </BarChart>
@@ -104,7 +107,7 @@ export function RevenueBarChart({
           />
         </div>
         <div className="leading-none text-muted-foreground">
-          Total: ₱{totalRevenue.toLocaleString()} collected
+          Total: <Currency value={totalRevenue} /> collected
         </div>
       </CardFooter>
     </Card>

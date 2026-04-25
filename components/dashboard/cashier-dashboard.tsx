@@ -34,12 +34,14 @@ export function CashierDashboard({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard
           title="Today's Collections"
-          value={`₱${stats.todayCollections.toLocaleString()}`}
+          value={stats.todayCollections}
+          isCurrency
           subtitle="Collections today"
         />
         <StatCard
           title="Total Revenue"
-          value={`₱${stats.totalRevenue.toLocaleString()}`}
+          value={stats.totalRevenue}
+          isCurrency
           subtitle="All time collections"
         />
         <StatCard

@@ -17,6 +17,8 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { Currency } from "@/components/ui/currency";
+import numeral from "numeral";
 
 type PaymentTrend = {
   month: string;
@@ -73,7 +75,7 @@ export function PaymentTrendChart({
                 <ChartTooltipContent
                   hideLabel
                   formatter={(value) => [
-                    `₱${Number(value).toLocaleString()}`,
+                    <Currency key="collections" value={value as number} />,
                     "Collections",
                   ]}
                 />
@@ -90,6 +92,7 @@ export function PaymentTrendChart({
                 offset={12}
                 className="fill-foreground"
                 fontSize={12}
+                formatter={(value: any) => `₱${numeral(value).format("0,0")}`}
               />
             </Bar>
           </BarChart>
@@ -104,7 +107,7 @@ export function PaymentTrendChart({
           />
         </div>
         <div className="leading-none text-muted-foreground">
-          Total: ₱{totalCollections.toLocaleString()} collected
+          Total: <Currency value={totalCollections} /> collected
         </div>
       </CardFooter>
     </Card>
