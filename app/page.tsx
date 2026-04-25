@@ -22,7 +22,7 @@ export default function Home() {
             <Button size="icon">
               <GalleryVerticalEnd />
             </Button>
-            Manny So Christian Academy
+            Manny So Christian Academy.
           </span>
         </div>
         <div className="gap-2 flex">

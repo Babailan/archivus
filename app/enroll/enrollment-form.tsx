@@ -39,6 +39,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAction } from "next-safe-action/hooks";
 import { submitEnrollmentAction } from "./action";
 import { toast } from "sonner";
+import { Card } from "@/components/ui/card";
 
 const formSchema = z.object({
   first_name: z.string().nonempty("This field is required."),
@@ -116,17 +117,19 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
   }
 
   return (
-    <div className="p-10 mb-10">
-      <div className="mb-14 flex justify-between">
+    <div className="mb-10 bg-secondary">
+      <div className="mb-14 flex justify-between p-5 bg-background">
         <div className="flex items-center gap-2">
           <Button size={"icon"}>
             <GalleryVerticalEnd />
           </Button>
-          <span className="font-medium">Archivus Inc.</span>
+          <span className="font-medium font-garamond">
+            Maniso School Christian Academy.
+          </span>
         </div>
         <div></div>
       </div>
-      <div className="max-w-4xl m-auto">
+      <Card className="max-w-4xl m-auto p-10">
         <FieldSet>
           <FieldLegend variant="legend" className="flex gap-2 items-center">
             <UserRoundPen />
@@ -178,9 +181,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
               name="middle_name"
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel>
-                    Middle Name
-                  </FieldLabel>
+                  <FieldLabel>Middle Name</FieldLabel>
                   <Input
                     type="text"
                     placeholder="Ex: Flores"
@@ -335,7 +336,12 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
           </FieldGroup>
 
           <FieldGroup>
-            <Field orientation="horizontal" data-invalid={!acceptTerm && form.formState.isSubmitted ? "true" : "false"}>
+            <Field
+              orientation="horizontal"
+              data-invalid={
+                !acceptTerm && form.formState.isSubmitted ? "true" : "false"
+              }
+            >
               <Checkbox
                 id="accept_term"
                 onCheckedChange={(v: boolean) => setAcceptTerm(v)}
@@ -365,7 +371,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
             {isExecuting ? "Submitting..." : "Proceed to Enroll"}
           </Button>
         </FieldSet>
-      </div>
+      </Card>
     </div>
   );
 }
