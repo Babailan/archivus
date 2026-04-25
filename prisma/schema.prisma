@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Student {
-  id            Int          @id @default(autoincrement())
+  id            Int          @id
   first_name    String
   last_name     String
   middle_name   String
@@ -18,6 +18,21 @@ model Student {
   email         String
   created_at    DateTime     @default(now())
   enrollments   Enrollment[]
+}
+
+model PreEnrollment {
+  id            Int                 @id @default(autoincrement())
+  first_name    String
+  last_name     String
+  middle_name   String
+  date_of_birth DateTime
+  address       String
+  gender        GenderEnum
+  email         String
+  grade_level   GradeLevelEnum
+  school_year   String
+  status        PreEnrollmentStatus @default(pending)
+  created_at    DateTime            @default(now())
 }
 
 enum GenderEnum {
@@ -33,7 +48,7 @@ model Enrollment {
   curriculum     Curriculum       @relation(fields: [curriculum_id], references: [id])
   curriculum_id  Int
   school_year    String
-  status         EnrollmentStatus @default(pending)
+  status         EnrollmentStatus @default(approved)
 
   // These store the calculation at the MOMENT of enrollment
   total_tuition_snapshot Decimal @db.Decimal(10, 2)
@@ -56,11 +71,16 @@ model TuitionFeePayment {
   rollback_requests RollbackRequest[]
 }
 
-enum EnrollmentStatus {
+enum PreEnrollmentStatus {
   pending
   approved
   declined
+}
+
+enum EnrollmentStatus {
+  approved
   dropped
+  declined
 }
 
 enum RollbackStatus {
@@ -132,7 +152,7 @@ enum GradeLevelEnum {
 }
 
 model User {
-  id                          Int               @id @default(autoincrement())
+  id                          Int               @id
   username                    String            @unique
   email                       String            @unique
   hash_password               String

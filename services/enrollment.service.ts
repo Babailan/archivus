@@ -5,7 +5,10 @@ import {
   Prisma,
 } from "@/app/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
-import { generateReferenceCode } from "@/lib/helper";
+import {
+  generateReferenceCode,
+  generateNextCustomId,
+} from "@/lib/helper";
 
 export type EnrollmentWithDetails = Awaited<ReturnType<typeof getEnrollment>>;
 
@@ -171,6 +174,8 @@ export async function searchEnrollments(
         paymentStatus,
         total_tuition_snapshot: e.total_tuition_snapshot.toNumber(),
         total_misc_snapshot: e.total_misc_snapshot.toNumber(),
+        min_partial_payment_override:
+          e.min_partial_payment_override?.toNumber() ?? null,
         curriculum: {
           ...e.curriculum,
           miscellaneous_fee: e.curriculum.miscellaneous_fee.toNumber(),
@@ -187,8 +192,87 @@ export async function searchEnrollments(
   };
 }
 
+export async function getPreEnrollments(
+  status: EnrollmentStatus = "pending",
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const skip = (page - 1) * pageSize;
+  const [preEnrollments, total] = await Promise.all([
+    prisma.preEnrollment.findMany({
+      where: { status },
+      skip,
+      take: pageSize,
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.preEnrollment.count({ where: { status } }),
+  ]);
+
+  return { preEnrollments, total, page, pageSize };
+}
+
+export async function searchStudents(
+  q?: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const skip = (page - 1) * pageSize;
+  const where: Prisma.StudentWhereInput = {};
+
+  if (q) {
+    const chunks = q.trim().split(/\s+/).filter(Boolean);
+    if (chunks.length > 0) {
+      where.AND = chunks.map((chunk) => ({
+        OR: [
+          { first_name: { contains: chunk } },
+          { last_name: { contains: chunk } },
+          { middle_name: { contains: chunk } },
+          { email: { contains: chunk } },
+        ],
+      }));
+    }
+  }
+
+  const [students, total] = await Promise.all([
+    prisma.student.findMany({
+      where,
+      skip,
+      take: pageSize,
+      include: {
+        enrollments: {
+          orderBy: { created_at: "desc" },
+          take: 1,
+          include: { curriculum: true },
+        },
+      },
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.student.count({ where }),
+  ]);
+
+  return {
+    students: students.map((s) => ({
+      ...s,
+      enrollments: s.enrollments.map((e) => ({
+        ...e,
+        total_tuition_snapshot: e.total_tuition_snapshot.toNumber(),
+        total_misc_snapshot: e.total_misc_snapshot.toNumber(),
+        min_partial_payment_override:
+          e.min_partial_payment_override?.toNumber() ?? null,
+        curriculum: {
+          ...e.curriculum,
+          miscellaneous_fee: e.curriculum.miscellaneous_fee.toNumber(),
+        },
+      })),
+    })),
+    total,
+    page,
+    pageSize,
+  };
+}
+
 export async function getPendingEnrollmentCount() {
-  return await prisma.enrollment.count({
+  return await prisma.preEnrollment.count({
     where: { status: "pending" },
   });
 }
@@ -204,21 +288,45 @@ export async function createEnrollment(data: {
   grade_level: string;
   school_year: string;
 }) {
-  const settings = await prisma.enrollmentSettings.findFirst();
-  if (!settings) {
-    throw new Error("Enrollment settings not found");
+  return await prisma.preEnrollment.create({
+    data: {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      middle_name: data.middle_name,
+      date_of_birth: data.date_of_birth,
+      gender: data.gender,
+      address: data.address,
+      email: data.email,
+      grade_level: data.grade_level as GradeLevelEnum,
+      school_year: data.school_year,
+      status: "pending",
+    },
+  });
+}
+
+export async function approvePreEnrollment(id: number) {
+  const preEnrollment = await prisma.preEnrollment.findUnique({
+    where: { id },
+  });
+
+  if (!preEnrollment) {
+    throw new Error("Pre-enrollment not found");
+  }
+
+  if (preEnrollment.status !== "pending") {
+    throw new Error("Only pending pre-enrollments can be approved");
   }
 
   const gradeCurriculum = await prisma.gradeCurriculumSetting.findFirst({
     where: {
-      grade_level: data.grade_level as GradeLevelEnum,
-      school_year: data.school_year,
+      grade_level: preEnrollment.grade_level,
+      school_year: preEnrollment.school_year,
     },
   });
 
   if (!gradeCurriculum) {
     throw new Error(
-      `No curriculum configured for ${data.grade_level} in ${data.school_year}`,
+      `No curriculum configured for ${preEnrollment.grade_level} in ${preEnrollment.school_year}`,
     );
   }
 
@@ -245,31 +353,77 @@ export async function createEnrollment(data: {
   );
 
   return await prisma.$transaction(async (tx) => {
+    // 1. Generate Custom Student ID
+    const year = preEnrollment.school_year.split("-")[0]; // e.g., "2024" from "2024-2025"
+    const lastStudent = await tx.student.findFirst({
+      where: { id: { gte: parseInt(year) * 100000 } },
+      orderBy: { id: "desc" },
+    });
+    const nextStudentId = generateNextCustomId(
+      year,
+      lastStudent ? lastStudent.id : null,
+    );
+
+    // 2. Create Student
     const student = await tx.student.create({
       data: {
-        first_name: data.first_name,
-        last_name: data.last_name,
-        middle_name: data.middle_name,
-        date_of_birth: data.date_of_birth,
-        gender: data.gender,
-        address: data.address,
-        email: data.email,
+        id: nextStudentId,
+        first_name: preEnrollment.first_name,
+        last_name: preEnrollment.last_name,
+        middle_name: preEnrollment.middle_name,
+        date_of_birth: preEnrollment.date_of_birth,
+        gender: preEnrollment.gender,
+        address: preEnrollment.address,
+        email: preEnrollment.email,
       },
     });
 
+    // 3. Create Enrollment
     const enrollment = await tx.enrollment.create({
       data: {
         student_id: student.id,
         curriculum_id: curriculumId,
-        school_year: data.school_year,
-        status: "pending",
+        school_year: preEnrollment.school_year,
+        status: "approved",
         total_tuition_snapshot: subjectPrices,
         total_misc_snapshot: curriculum.miscellaneous_fee,
-        reference_code: generateReferenceCode(data.school_year, student.id),
+        reference_code: generateReferenceCode(
+          preEnrollment.school_year,
+          student.id,
+        ),
       },
     });
 
-    return { student, enrollment };
+    // 4. Update Pre-Enrollment status
+    await tx.preEnrollment.update({
+      where: { id },
+      data: { status: "approved" },
+    });
+
+    return {
+      student,
+      enrollment: {
+        ...enrollment,
+        total_tuition_snapshot: enrollment.total_tuition_snapshot.toNumber(),
+        total_misc_snapshot: enrollment.total_misc_snapshot.toNumber(),
+        min_partial_payment_override:
+          enrollment.min_partial_payment_override?.toNumber() ?? null,
+      },
+    };
+  });
+}
+
+export async function declinePreEnrollment(id: number) {
+  return await prisma.preEnrollment.update({
+    where: { id },
+    data: { status: "declined" },
+  });
+}
+
+export async function dropEnrollment(id: number) {
+  return await prisma.enrollment.update({
+    where: { id },
+    data: { status: "dropped" },
   });
 }
 

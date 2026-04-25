@@ -108,15 +108,31 @@ export async function DashboardSideBar() {
             <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
             <SidebarMenu className="gap-1">
               <SidebarMenuButton
-                pathname="/enrollments"
+                pathname="/pre-enrollments"
                 render={
-                  <Link href={"/enrollments"} className="relative">
-                    <ClipboardList /> Enrollments
+                  <Link href={"/pre-enrollments"} className="relative">
+                    <ClipboardList /> Pre-Enrollments
                     {pendingCount > 0 && (
-                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center font-bold">
                         {pendingCount}
                       </Badge>
                     )}
+                  </Link>
+                }
+              />
+              <SidebarMenuButton
+                pathname="/students"
+                render={
+                  <Link href={"/students"}>
+                    <Users /> Official Students
+                  </Link>
+                }
+              />
+              <SidebarMenuButton
+                pathname="/enrollments"
+                render={
+                  <Link href={"/enrollments"}>
+                    <LibraryBig /> Enrollments
                   </Link>
                 }
               />

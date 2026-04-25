@@ -22,3 +22,14 @@ export function queryFirst(value: string | string[] | undefined) {
 export function generateReferenceCode(year: string, id: number): string {
   return `EN-${year.substring(2, 4)}${id.toString().padStart(6, "0")}`;
 }
+
+export function generateNextCustomId(year: string, lastId: number | null): number {
+  const prefix = parseInt(year);
+  const startId = prefix * 100000 + 1; // e.g., 202600001
+
+  if (!lastId || lastId < startId) {
+    return startId;
+  }
+
+  return lastId + 1;
+}

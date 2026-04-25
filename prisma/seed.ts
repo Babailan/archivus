@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { faker } from "@faker-js/faker";
-import { generateReferenceCode } from "@/lib/helper";
+import { generateReferenceCode, generateNextCustomId } from "@/lib/helper";
 
 const STUDENT_COUNT = 25000;
 const SCHOOL_YEARS = [
@@ -31,10 +31,12 @@ async function seedUsers() {
   const existingUser = await prisma.user.findUnique({
     where: { username: "babi" },
   });
+  const currentYear = new Date().getFullYear().toString();
   if (!existingUser) {
     const salt = await bcrypt.genSalt(10);
     await prisma.user.create({
       data: {
+        id: parseInt(`${currentYear}00001`),
         email: "babailanxx@gmail.com",
         hash_password: await bcrypt.hash("admin", salt),
         username: "babi",
@@ -62,6 +64,7 @@ async function seedUsers() {
     const salt = await bcrypt.genSalt(10);
     await prisma.user.create({
       data: {
+        id: parseInt(`${currentYear}00002`),
         email: "cashier@archivus.edu",
         hash_password: await bcrypt.hash("cashier", salt),
         username: "cashier",
@@ -350,24 +353,36 @@ async function seedEnrollmentSettings(
 
 async function seedStudents(count: number) {
   console.log(`Creating ${count} students...`);
-  const students = [];
   const batchSize = 1000;
+  const studentsPerYear = Math.floor(count / SCHOOL_YEARS.length);
 
-  for (let i = 0; i < count; i++) {
-    students.push({
-      first_name: faker.person.firstName(),
-      last_name: faker.person.lastName(),
-      middle_name: faker.person.middleName() || "",
-      date_of_birth: generateDateOfBirth(),
-      address: faker.location.streetAddress(),
-      gender: faker.helpers.arrayElement(["male", "female"]),
-      email: faker.internet.email(),
-    });
+  for (let yearIdx = 0; yearIdx < SCHOOL_YEARS.length; yearIdx++) {
+    const sy = SCHOOL_YEARS[yearIdx];
+    const yearPrefix = sy.split("-")[0];
+    const students = [];
 
-    if (students.length >= batchSize || i === count - 1) {
-      await prisma.student.createMany({ data: students });
-      console.log(`Created ${i + 1} students...`);
-      students.length = 0;
+    for (let i = 0; i < studentsPerYear; i++) {
+      const seq = i + 1;
+      const studentId = parseInt(
+        `${yearPrefix}${seq.toString().padStart(5, "0")}`,
+      );
+
+      students.push({
+        id: studentId,
+        first_name: faker.person.firstName(),
+        last_name: faker.person.lastName(),
+        middle_name: faker.person.middleName() || "",
+        date_of_birth: generateDateOfBirth(),
+        address: faker.location.streetAddress(),
+        gender: faker.helpers.arrayElement(["male", "female"]),
+        email: faker.internet.email(),
+      });
+
+      if (students.length >= batchSize || i === studentsPerYear - 1) {
+        await prisma.student.createMany({ data: students });
+        console.log(`Created ${i + 1} students for ${sy}...`);
+        students.length = 0;
+      }
     }
   }
 }
@@ -376,9 +391,6 @@ async function seedEnrollments(
   curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[],
   _gradeCurriculumMap: Map<string, number>,
 ) {
-  const totalStudents = await prisma.student.count();
-  console.log(`Creating enrollments for ${totalStudents} students...`);
-
   const gradeLevels = [
     "grade1",
     "grade2",
@@ -388,7 +400,6 @@ async function seedEnrollments(
     "grade6",
   ];
   const enrollmentStatuses = [
-    "pending",
     "approved",
     "declined",
     "dropped",
@@ -413,7 +424,7 @@ async function seedEnrollments(
     student_id: number;
     curriculum_id: number;
     school_year: string;
-    status: "pending" | "approved" | "declined" | "dropped";
+    status: "approved" | "declined" | "dropped";
     total_tuition_snapshot: number;
     total_misc_snapshot: number;
     reference_code: string;
@@ -426,6 +437,12 @@ async function seedEnrollments(
     payment_date: Date;
   }
 
+  const students = await prisma.student.findMany({
+    select: { id: true },
+  });
+  const totalStudents = students.length;
+  console.log(`Creating enrollments for ${totalStudents} students...`);
+
   const allEnrollments: EnrollmentData[] = [];
   const enrollmentInfo: {
     studentId: number;
@@ -434,7 +451,8 @@ async function seedEnrollments(
     isOldSchoolYear: boolean;
   }[] = [];
 
-  for (let studentId = 1; studentId <= totalStudents; studentId++) {
+  for (const student of students) {
+    const studentId = student.id;
     const numEnrollments = faker.number.int({ min: 1, max: 3 });
     const usedSchoolYears = new Set<string>();
 
@@ -477,10 +495,6 @@ async function seedEnrollments(
           isOldSchoolYear,
         });
       }
-    }
-
-    if (studentId % 5000 === 0) {
-      console.log(`Generated enrollment data for ${studentId} students...`);
     }
   }
 
@@ -643,6 +657,41 @@ async function seedRollbacks() {
   console.log(`Created ${sampleSize} rollback requests`);
 }
 
+async function seedPreEnrollments(count: number) {
+  console.log(`Creating ${count} pre-enrollments...`);
+  const preEnrollments = [];
+  const gradeLevels = [
+    "grade1",
+    "grade2",
+    "grade3",
+    "grade4",
+    "grade5",
+    "grade6",
+  ] as const;
+  const statuses = ["pending", "approved", "declined"] as const;
+
+  for (let i = 0; i < count; i++) {
+    preEnrollments.push({
+      first_name: faker.person.firstName(),
+      last_name: faker.person.lastName(),
+      middle_name: faker.person.middleName() || "",
+      date_of_birth: generateDateOfBirth(),
+      address: faker.location.streetAddress(),
+      gender: faker.helpers.arrayElement(["male", "female"] as const),
+      email: faker.internet.email(),
+      grade_level: faker.helpers.arrayElement(gradeLevels),
+      school_year: "2026-2027",
+      status: faker.helpers.arrayElement(statuses),
+      created_at: faker.date.recent({ days: 30 }),
+    });
+  }
+
+  await prisma.preEnrollment.createMany({
+    data: preEnrollments,
+  });
+  console.log(`Created ${count} pre-enrollments`);
+}
+
 async function main() {
   console.log("Starting seed...");
 
@@ -667,6 +716,9 @@ async function main() {
 
   console.log("Seeding rollback requests...");
   await seedRollbacks();
+
+  console.log("Seeding pre-enrollments...");
+  await seedPreEnrollments(100);
 
   console.log("Seed completed successfully!");
 }

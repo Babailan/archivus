@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { Roles, GenderEnum } from "@/app/generated/prisma/enums";
 import bcrypt from "bcryptjs";
 import { Prisma } from "@/app/generated/prisma/client";
+import { generateNextCustomId } from "@/lib/helper";
 
 export type CreateUserInput = {
   username: string;
@@ -19,8 +20,16 @@ export async function createUser(input: CreateUserInput) {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(input.password, salt);
 
+  const year = new Date().getFullYear().toString();
+  const lastUser = await prisma.user.findFirst({
+    where: { id: { gte: parseInt(year) * 100000 } },
+    orderBy: { id: "desc" },
+  });
+  const nextUserId = generateNextCustomId(year, lastUser ? lastUser.id : null);
+
   return prisma.user.create({
     data: {
+      id: nextUserId,
       username: input.username,
       email: input.email,
       hash_password: hashedPassword,
