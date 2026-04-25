@@ -1,11 +1,17 @@
 import prisma from "@/lib/prisma";
-import { Roles } from "@/app/generated/prisma/enums";
+import { Roles, GenderEnum } from "@/app/generated/prisma/enums";
 import bcrypt from "bcryptjs";
+import { Prisma } from "@/app/generated/prisma/client";
 
 export type CreateUserInput = {
   username: string;
   email: string;
   password: string;
+  first_name: string;
+  last_name: string;
+  middle_name?: string;
+  gender: GenderEnum;
+  birthdate: Date;
   roles: Roles[];
 };
 
@@ -18,6 +24,11 @@ export async function createUser(input: CreateUserInput) {
       username: input.username,
       email: input.email,
       hash_password: hashedPassword,
+      first_name: input.first_name,
+      last_name: input.last_name,
+      middle_name: input.middle_name,
+      gender: input.gender,
+      birthdate: input.birthdate,
       role: {
         create: input.roles.map((role) => ({ role })),
       },
@@ -62,14 +73,26 @@ export type SearchUserResult = Awaited<ReturnType<typeof searchUsers>>;
 
 export async function searchUsers(q: string, page: number = 1, pageSize: number = 10) {
   const skip = (page - 1) * pageSize;
+  const where: Prisma.UserWhereInput = { inactive: false };
+
+  if (q) {
+    const chunks = q.trim().split(/\s+/).filter(Boolean);
+    if (chunks.length > 0) {
+      where.AND = chunks.map((chunk) => ({
+        OR: [
+          { username: { contains: chunk } },
+          { email: { contains: chunk } },
+          { first_name: { contains: chunk } },
+          { last_name: { contains: chunk } },
+          { middle_name: { contains: chunk } },
+        ],
+      }));
+    }
+  }
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
-      where: q
-        ? {
-            OR: [{ username: { contains: q } }, { email: { contains: q } }],
-          }
-        : undefined,
+      where,
       include: {
         role: true,
       },
@@ -78,13 +101,45 @@ export async function searchUsers(q: string, page: number = 1, pageSize: number 
       take: pageSize,
     }),
     prisma.user.count({
-      where: q
-        ? {
-            OR: [{ username: { contains: q } }, { email: { contains: q } }],
-          }
-        : undefined,
+      where,
     }),
   ]);
 
   return { users, total, page, pageSize };
+}
+
+export async function getInactiveUsers(page: number = 1, pageSize: number = 10) {
+  const skip = (page - 1) * pageSize;
+  const where: Prisma.UserWhereInput = { inactive: true };
+
+  const [users, total] = await Promise.all([
+    prisma.user.findMany({
+      where,
+      include: {
+        role: true,
+      },
+      orderBy: { created_at: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.user.count({
+      where,
+    }),
+  ]);
+
+  return { users, total, page, pageSize };
+}
+
+export async function toggleUserStatus(id: number) {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: { inactive: true },
+  });
+
+  if (!user) throw new Error("User not found");
+
+  return prisma.user.update({
+    where: { id },
+    data: { inactive: !user.inactive },
+  });
 }

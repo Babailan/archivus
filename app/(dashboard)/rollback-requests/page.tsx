@@ -1,7 +1,12 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import { getRollbackRequestsAction } from "./action";
 import { RollbackRequestsList } from "./rollback-requests-list";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export const metadata: Metadata = {
+  title: "Rollback Requests",
+};
 
 export default async function RollbackRequestsPage({
   searchParams,

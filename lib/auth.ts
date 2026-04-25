@@ -5,23 +5,29 @@ import Credentials from "next-auth/providers/credentials";
 import z from "zod";
 
 const loginSchema = z.object({
-  email: z.email(),
-  password: z.string(),
+  identifier: z.string().min(1, "Email or Username is required"),
+  password: z.string().min(1, "Password is required"),
 });
-
+ 
 export const authOption: NextAuthOptions = {
   providers: [
     Credentials({
       credentials: {
-        email: { type: "text" },
+        identifier: { type: "text" },
         password: { type: "text" },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { data, success } = loginSchema.safeParse(credentials);
         if (success) {
           try {
-            const user = await prisma.user.findUnique({
-              where: { email: data.email },
+            const user = await prisma.user.findFirst({
+              where: {
+                OR: [
+                  { email: data.identifier },
+                  { username: data.identifier },
+                ],
+                inactive: false,
+              },
               include: {
                 role: true,
               },

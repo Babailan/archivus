@@ -20,6 +20,7 @@
       }
     ],
     "paths": {
+      "@/app/generated/prisma": ["./app/generated/prisma/client"],
       "@/*": ["./*"]
     }
   },

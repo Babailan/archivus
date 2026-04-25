@@ -1,5 +1,9 @@
 import prisma from "@/lib/prisma";
-import { EnrollmentStatus, GradeLevelEnum } from "@/app/generated/prisma/enums";
+import {
+  EnrollmentStatus,
+  GradeLevelEnum,
+  Prisma,
+} from "@/app/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
 import { generateReferenceCode } from "@/lib/helper";
 
@@ -59,7 +63,12 @@ export type PaymentStatus = "unpaid" | "partial" | "fully_paid";
 
 export type EnrollmentItem = {
   id: number;
-  student: { id: number; first_name: string; last_name: string; middle_name: string };
+  student: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    middle_name: string;
+  };
   curriculum: {
     id: number;
     grade_level: string;
@@ -98,7 +107,7 @@ export async function searchEnrollments(
   page: number = 1,
   pageSize: number = 10,
 ) {
-  const where: any = {};
+  const where: Prisma.EnrollmentWhereInput = {};
   if (status && status !== "all") {
     where.status = status as EnrollmentStatus;
   }
@@ -107,7 +116,7 @@ export async function searchEnrollments(
     const chunks = q.trim().split(/\s+/).filter(Boolean);
     if (chunks.length > 0) {
       where.AND = chunks.map((chunk) => {
-        const searchConditions: any[] = [
+        const searchConditions: Prisma.EnrollmentWhereInput[] = [
           { reference_code: { contains: chunk } },
           { student: { first_name: { contains: chunk } } },
           { student: { last_name: { contains: chunk } } },

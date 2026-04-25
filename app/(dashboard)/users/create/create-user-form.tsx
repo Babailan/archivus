@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
@@ -25,12 +25,19 @@ import {
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Roles } from "@/app/generated/prisma/enums";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+ 
 export function CreateUserForm() {
   const { executeAsync, result, isExecuting } = useAction(createUserAction);
   const [roles, setRoles] = useState<Roles[]>([]);
   const ref = useRef<HTMLFormElement>(null);
-
+ 
   const toggleRole = (role: Roles) => {
     setRoles((prev) => {
       if (prev.includes(role)) {
@@ -39,24 +46,96 @@ export function CreateUserForm() {
       return [...prev, role];
     });
   };
-
-  const onSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+ 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     formData.set("roles", JSON.stringify(roles));
-
-    const { data, validationErrors } = await executeAsync(formData);
+ 
+    const { data } = await executeAsync(formData);
     if (data?.success) {
       toast.success("User created successfully");
       setRoles([]);
       ref.current?.reset();
     }
   };
-
-  console.log(result.validationErrors);
+ 
   return (
     <form ref={ref} onSubmit={onSubmit} autoComplete="off">
       <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>
+              First Name <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              name="first_name"
+              placeholder="Enter first name"
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.first_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.first_name}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>
+              Last Name <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              name="last_name"
+              placeholder="Enter last name"
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.last_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.last_name}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>Middle Name</FieldLabel>
+            <Input
+              name="middle_name"
+              placeholder="Enter middle name"
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.middle_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.middle_name}
+            </FieldError>
+          </Field>
+        </FieldGroup>
+ 
+        <FieldGroup>
+          <Field>
+            <FieldLabel>
+              Gender <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Select name="gender">
+              <SelectTrigger>
+                <SelectValue placeholder="Select Gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.gender}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>
+              Birthdate <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              type="date"
+              name="birthdate"
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.birthdate}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.birthdate}
+            </FieldError>
+          </Field>
+        </FieldGroup>
+ 
         <FieldGroup>
           <Field>
             <FieldLabel>
@@ -64,6 +143,7 @@ export function CreateUserForm() {
             </FieldLabel>
             <Input
               name="username"
+              placeholder="Enter username"
               aria-invalid={!!result?.validationErrors?.fieldErrors?.username}
             />
             <FieldError>
@@ -78,6 +158,7 @@ export function CreateUserForm() {
               type="email"
               aria-invalid={!!result?.validationErrors?.fieldErrors?.email}
               name="email"
+              placeholder="Enter email"
               autoComplete="off"
             />
             <FieldError>
@@ -94,6 +175,7 @@ export function CreateUserForm() {
               type="password"
               aria-invalid={!!result?.validationErrors?.fieldErrors?.password}
               name="password"
+              placeholder="Enter password"
             />
             <FieldError>
               {result?.validationErrors?.fieldErrors?.password}
@@ -127,7 +209,7 @@ export function CreateUserForm() {
           </Field>
         </FieldGroup>
       </FieldSet>
-
+ 
       <Dialog>
         <DialogTrigger
           render={

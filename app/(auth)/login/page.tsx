@@ -1,9 +1,14 @@
+import { Metadata } from "next";
 import { GalleryVerticalEnd } from "lucide-react";
 
 import { LoginForm } from "@/components/login/login-form";
 import Image from "next/image";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+
+export const metadata: Metadata = {
+  title: "Login",
+};
 
 export default async function LoginPage() {
   const session = await getServerSession();

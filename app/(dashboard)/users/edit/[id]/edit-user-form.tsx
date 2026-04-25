@@ -11,7 +11,7 @@ import {
   FieldLabel,
   FieldSet,
 } from "@/components/ui/field";
-import { updateUserAction } from "./action";
+import { updateUserAction, toggleUserStatusAction } from "./action";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -27,12 +27,30 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Roles } from "@/app/generated/prisma/enums";
 import { UserWithRoles } from "@/services/user.service";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AVAILABLE_ROLES: Roles[] = ["registrar", "cashier"];
 
 export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
   const router = useRouter();
   const { executeAsync, result, isExecuting } = useAction(updateUserAction);
+  const { execute: toggleStatus, isExecuting: isToggling } = useAction(
+    toggleUserStatusAction,
+    {
+      onSuccess: () => {
+        toast.success(
+          `User ${user.inactive ? "activated" : "deactivated"} successfully`,
+        );
+        router.push("/users");
+      },
+    },
+  );
   const [roles, setRoles] = useState<Roles[]>(user.roles as Roles[]);
   const ref = useRef<HTMLFormElement>(null);
 
@@ -61,6 +79,79 @@ export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
   return (
     <form ref={ref} onSubmit={onSubmit} autoComplete="off">
       <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel>
+              First Name <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              name="first_name"
+              defaultValue={user.first_name}
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.first_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.first_name}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>
+              Last Name <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              name="last_name"
+              defaultValue={user.last_name}
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.last_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.last_name}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>Middle Name</FieldLabel>
+            <Input
+              name="middle_name"
+              defaultValue={user.middle_name || ""}
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.middle_name}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.middle_name}
+            </FieldError>
+          </Field>
+        </FieldGroup>
+
+        <FieldGroup>
+          <Field>
+            <FieldLabel>
+              Gender <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Select name="gender" defaultValue={user.gender}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Gender" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+              </SelectContent>
+            </Select>
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.gender}
+            </FieldError>
+          </Field>
+          <Field>
+            <FieldLabel>
+              Birthdate <span className="text-red-600">*</span>
+            </FieldLabel>
+            <Input
+              type="date"
+              name="birthdate"
+              defaultValue={new Date(user.birthdate).toISOString().split("T")[0]}
+              aria-invalid={!!result?.validationErrors?.fieldErrors?.birthdate}
+            />
+            <FieldError>
+              {result?.validationErrors?.fieldErrors?.birthdate}
+            </FieldError>
+          </Field>
+        </FieldGroup>
         <FieldGroup>
           <Field>
             <FieldLabel>
@@ -165,6 +256,24 @@ export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Button
+        type="button"
+        variant="destructive"
+        className="w-full mt-2"
+        onClick={() => {
+          if (
+            confirm(
+              `Are you sure you want to ${user.inactive ? "activate" : "deactivate"} this user?`,
+            )
+          ) {
+            toggleStatus({ id: user.id });
+          }
+        }}
+        disabled={isToggling}
+      >
+        {user.inactive ? "Activate" : "Deactivate"} User
+      </Button>
     </form>
   );
 }

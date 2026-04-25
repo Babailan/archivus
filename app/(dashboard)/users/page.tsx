@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,10 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { searchUsers, SearchUserResult } from "@/services/user.service";
 import { SearchInput } from "@/components/ui/search-input";
+
+export const metadata: Metadata = {
+  title: "Users",
+};
 
 export default async function UserListPage({
   searchParams,
@@ -44,7 +49,12 @@ export default async function UserListPage({
         <div>
           <h1 className="text-xl font-bold">List of Users</h1>
         </div>
-        <div>
+        <div className="flex gap-2">
+          <Link href={"/users/inactive"}>
+            <Button variant="outline" className="cursor-pointer">
+              View Inactive Users
+            </Button>
+          </Link>
           <Link href={"/users/create"}>
             <Button className="cursor-pointer">
               <Plus /> New User

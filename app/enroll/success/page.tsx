@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { CheckCircle2, Copy, ArrowLeft } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Enrollment Success",
+};
 
 export default async function EnrollmentSuccessPage({
   searchParams,

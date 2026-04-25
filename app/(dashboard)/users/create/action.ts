@@ -1,6 +1,6 @@
 "use server";
-
-import { Roles } from "@/app/generated/prisma/enums";
+ 
+import { Roles, GenderEnum } from "@/app/generated/prisma/enums";
 import { actionClient, adminActionClient } from "@/lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
@@ -12,11 +12,16 @@ import {
   getUserByUsername,
 } from "@/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-
+ 
 const createUserInputSchema = zfd.formData({
   username: zfd.text(z.string({ error: "Username is required" })),
   email: zfd.text(z.string({ error: "Email is required" })),
   password: zfd.text(z.string({ error: "Password is required" })),
+  first_name: zfd.text(z.string({ error: "First name is required" })),
+  last_name: zfd.text(z.string({ error: "Last name is required" })),
+  middle_name: zfd.text(z.string().optional()),
+  gender: zfd.text(z.nativeEnum(GenderEnum, { error: "Gender is required" })),
+  birthdate: zfd.text(z.coerce.date({ error: "Valid birthdate is required" })),
   roles: zfd.text(
     z
       .string()
@@ -33,15 +38,17 @@ const createUserInputSchema = zfd.formData({
       })
       .pipe(
         z
-          .array(z.enum(Object.values(Roles)))
+          .array(z.nativeEnum(Roles))
           .min(1, "At least one role is required."),
       ),
   ),
 });
-
+ 
 export const createUserAction = adminActionClient
   .inputSchema(createUserInputSchema)
-  .action(async ({ parsedInput: { username, email, password, roles } }) => {
+  .action(async ({ parsedInput }) => {
+    const { username, email, password, roles, first_name, last_name, middle_name, gender, birthdate } = parsedInput;
+
     const existingUsername = await getUserByUsername(username);
     if (existingUsername) {
       return returnValidationErrors(createUserInputSchema, {
@@ -50,7 +57,7 @@ export const createUserAction = adminActionClient
         },
       });
     }
-
+ 
     const existingEmail = await getUserByEmail(email);
     if (existingEmail) {
       return returnValidationErrors(createUserInputSchema, {
@@ -59,9 +66,19 @@ export const createUserAction = adminActionClient
         },
       });
     }
-
+ 
     try {
-      await createUser({ username, email, password, roles });
+      await createUser({
+        username,
+        email,
+        password,
+        roles,
+        first_name,
+        last_name,
+        middle_name,
+        gender,
+        birthdate,
+      });
     } catch (err) {
       if (err instanceof PrismaClientKnownRequestError) {
         if (err.code === "P2002") {
@@ -74,7 +91,7 @@ export const createUserAction = adminActionClient
       }
       throw err;
     }
-
+ 
     revalidatePath("/users");
     return { success: true };
   });

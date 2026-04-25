@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,37 @@ import { ArrowRight, GalleryVerticalEnd, School } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+export const metadata: Metadata = {
+  title: "Home",
+};
+
 export default function Home() {
   return (
-    <>
+    <div>
+      {/* Your Navigation */}
+      <div className="flex justify-between items-center p-5 top-0 bg-background z-10 sticky">
+        <div>
+          <span className="font-medium flex items-center gap-1 font-garamond">
+            <Button size="icon">
+              <GalleryVerticalEnd />
+            </Button>
+            Manny So Christian Academy
+          </span>
+        </div>
+        <div className="gap-2 flex">
+          <Link href={"/enroll"}>
+            <Button size={"lg"} variant={"secondary"}>
+              <School /> Find your school
+            </Button>
+          </Link>
+          <Link href={"/enroll"}>
+            <Button size={"lg"} variant={"default"}>
+              <ArrowRight /> Enroll Now
+            </Button>
+          </Link>
+        </div>
+      </div>
+
       <div className="min-h-screen relative overflow-hidden">
         {/* The Background Image */}
         <div className="absolute inset-0 -z-10 bg-background">
@@ -20,29 +49,6 @@ export default function Home() {
             className="object-cover grayscale-50" // Adjust opacity for the "blend" effect
             priority
           />
-        </div>
-        {/* Your Navigation */}
-        <div className="flex justify-between items-center p-8 relative">
-          <div>
-            <span className="font-medium flex items-center gap-1 text-white font-garamond">
-              <Button size="icon">
-                <GalleryVerticalEnd />
-              </Button>
-              Manny So Christian Academy
-            </span>
-          </div>
-          <div>
-            <Link href={"/enroll"}>
-              <Button size={"lg"} variant={"secondary"}>
-                <School /> Find your school
-              </Button>
-            </Link>
-            <Link href={"/enroll"}>
-              <Button size={"lg"}>
-                <ArrowRight /> Enroll Now
-              </Button>
-            </Link>
-          </div>
         </div>
 
         {/* Your Hero Content */}
@@ -61,7 +67,7 @@ export default function Home() {
       </div>
       <SecondSection />
       <Footer />
-    </>
+    </div>
   );
 }
 

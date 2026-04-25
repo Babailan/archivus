@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/lib/auth";
 import {
@@ -27,6 +28,10 @@ function parseTimeRange(searchParams: { [key: string]: string | string[] | undef
   if (range === "12") return 12;
   return 6;
 }
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default async function DashboardPage({
   searchParams,

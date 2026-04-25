@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -11,6 +12,10 @@ import { EditUserForm } from "./edit-user-form";
 import { getUser, UserWithRoles } from "@/services/user.service";
 import { notFound } from "next/navigation";
 import { Roles } from "@/app/generated/prisma/enums";
+
+export const metadata: Metadata = {
+  title: "Edit User",
+};
 
 export default async function EditUserPage({
   params,

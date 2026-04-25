@@ -1,9 +1,14 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import { getEnrollments } from "./action";
 import { EnrollmentsListForm } from "./enrollments-list-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { queryFirst } from "@/lib/helper";
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  title: "Enrollments",
+};
+
 export default async function EnrollmentsPage({
   searchParams,
 }: {

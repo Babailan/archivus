@@ -1,5 +1,10 @@
+import { Metadata } from "next";
 import { EnrollmentForm } from "./enrollment-form";
 import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
+
+export const metadata: Metadata = {
+  title: "Enrollment",
+};
 
 export default async function EnrollmentPage() {
   const settings = await getEnrollmentSettings();

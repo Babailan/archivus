@@ -1,4 +1,9 @@
+import { Metadata } from "next";
 import { CreateUserForm } from "./create-user-form";
+
+export const metadata: Metadata = {
+  title: "Create User",
+};
 
 export default function CreateUserPage() {
   return (

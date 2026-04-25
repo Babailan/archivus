@@ -6,16 +6,22 @@ import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 import { zfd } from "zod-form-data";
-import { getUserByEmail, getUserByUsername } from "@/services/user.service";
+import { getUserByEmail, getUserByUsername, toggleUserStatus } from "@/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { GenderEnum } from "@/app/generated/prisma/enums";
 
 const updateUserInputSchema = zfd.formData({
   id: zfd.numeric(z.number()),
   username: zfd.text(z.string({ error: "Username is required" })),
   email: zfd.text(z.string({ error: "Email is required" })),
-  password: zfd.text(z.string({ error: "Password is required" })),
+  password: zfd.text(z.string().optional()),
+  first_name: zfd.text(z.string({ error: "First name is required" })),
+  last_name: zfd.text(z.string({ error: "Last name is required" })),
+  middle_name: zfd.text(z.string().optional()),
+  gender: zfd.text(z.nativeEnum(GenderEnum)),
+  birthdate: zfd.text(z.preprocess((val) => new Date(val as string), z.date())),
   roles: zfd.text(
     z
       .string()
@@ -73,8 +79,11 @@ export const updateUserAction = actionClient
     }
 
     try {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      let hashedPassword = existingUser.hash_password;
+      if (password) {
+        const salt = await bcrypt.genSalt(10);
+        hashedPassword = await bcrypt.hash(password, salt);
+      }
 
       await prisma.$transaction([
         prisma.user.update({
@@ -83,6 +92,11 @@ export const updateUserAction = actionClient
             username,
             email,
             hash_password: hashedPassword,
+            first_name,
+            last_name,
+            middle_name,
+            gender,
+            birthdate,
           },
         }),
         prisma.role.deleteMany({
@@ -109,5 +123,14 @@ export const updateUserAction = actionClient
     }
 
     revalidatePath("/users");
+    return { success: true };
+  });
+
+export const toggleUserStatusAction = actionClient
+  .inputSchema(zfd.formData({ id: zfd.numeric() }))
+  .action(async ({ parsedInput: { id } }) => {
+    await toggleUserStatus(id);
+    revalidatePath("/users");
+    revalidatePath("/users/inactive");
     return { success: true };
   });

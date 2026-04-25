@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,10 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { searchSubject } from "@/services/subject.service";
 import { SearchInput } from "@/components/ui/search-input";
+
+export const metadata: Metadata = {
+  title: "Subjects",
+};
 
 export default async function SubjectListPage({
   searchParams,

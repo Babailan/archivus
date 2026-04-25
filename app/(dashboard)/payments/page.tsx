@@ -1,7 +1,12 @@
+import { Metadata } from "next";
 import { Suspense } from "react";
 import { getPayments } from "./action";
 import { PaymentsList } from "./payments-list";
 import { Skeleton } from "@/components/ui/skeleton";
+
+export const metadata: Metadata = {
+  title: "Payments",
+};
 
 export default async function PaymentsPage({
   searchParams,

@@ -38,6 +38,10 @@ async function seedUsers() {
         email: "babailanxx@gmail.com",
         hash_password: await bcrypt.hash("admin", salt),
         username: "babi",
+        first_name: "Admin",
+        last_name: "User",
+        gender: "male",
+        birthdate: new Date("1990-01-01"),
         role: {
           create: {
             role: "admin",
@@ -61,6 +65,10 @@ async function seedUsers() {
         email: "cashier@archivus.edu",
         hash_password: await bcrypt.hash("cashier", salt),
         username: "cashier",
+        first_name: "Cashier",
+        last_name: "Staff",
+        gender: "female",
+        birthdate: new Date("1995-05-15"),
         role: {
           create: {
             role: "cashier",
@@ -434,7 +442,7 @@ const allEnrollments: EnrollmentData[] = [];
 
     const { totalAmount, isOldSchoolYear } = info;
     const isFullyPaid = faker.datatype.boolean({ probability: 70 });
-    let totalPaid = isFullyPaid
+    const totalPaid = isFullyPaid
       ? totalAmount
       : faker.number.int({
           min: Math.floor(totalAmount * 0.3),
