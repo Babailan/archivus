@@ -47,7 +47,10 @@ function formatCurrency(amount: number): string {
   return `₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
 }
 
-export function RecentRollbacksTable({ data, title = "Recent Rollback Requests" }: Props) {
+export function RecentRollbacksTable({
+  data,
+  title = "Recent Rollback Requests",
+}: Props) {
   return (
     <Card>
       <CardHeader>
@@ -67,7 +70,10 @@ export function RecentRollbacksTable({ data, title = "Recent Rollback Requests" 
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No rollback requests
                 </TableCell>
               </TableRow>
@@ -80,11 +86,16 @@ export function RecentRollbacksTable({ data, title = "Recent Rollback Requests" 
                   <TableCell className="font-medium text-red-600">
                     {formatCurrency(request.amount)}
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate" title={request.reason}>
+                  <TableCell
+                    className="max-w-[200px] truncate"
+                    title={request.reason}
+                  >
                     {request.reason}
                   </TableCell>
                   <TableCell>
-                    <Badge className={statusColors[request.status] || "bg-gray-500"}>
+                    <Badge
+                      className={statusColors[request.status] || "bg-gray-500"}
+                    >
                       {request.status}
                     </Badge>
                   </TableCell>

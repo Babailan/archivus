@@ -22,7 +22,9 @@ import { CashierDashboard } from "@/components/dashboard/cashier-dashboard";
 
 type TimeRange = 3 | 6 | 12;
 
-function parseTimeRange(searchParams: { [key: string]: string | string[] | undefined }): TimeRange {
+function parseTimeRange(searchParams: {
+  [key: string]: string | string[] | undefined;
+}): TimeRange {
   const range = searchParams.range;
   if (range === "3") return 3;
   if (range === "12") return 12;
@@ -45,15 +47,12 @@ export default async function DashboardPage({
   const isRegistrar = session?.user?.roles?.includes("registrar");
   const isCashier = session?.user?.roles?.includes("cashier");
 
-  const [
-    totalStats,
-    pendingRollbackCount,
-    pendingEnrollmentCount,
-  ] = await Promise.all([
-    getTotalStats(),
-    getPendingRollbackCount(),
-    getPendingEnrollmentCount(),
-  ]);
+  const [totalStats, pendingRollbackCount, pendingEnrollmentCount] =
+    await Promise.all([
+      getTotalStats(),
+      getPendingRollbackCount(),
+      getPendingEnrollmentCount(),
+    ]);
 
   if (isAdmin) {
     const [revenueTrends, recentRollbacks] = await Promise.all([
@@ -110,13 +109,17 @@ export default async function DashboardPage({
   }
 
   if (isCashier) {
-    const [paymentTrends, recentPayments, todayCollections, totalPaymentsCount] =
-      await Promise.all([
-        getRevenueTrends(months),
-        getRecentPayments(10),
-        getTodayCollections(),
-        getTotalPaymentsCount(),
-      ]);
+    const [
+      paymentTrends,
+      recentPayments,
+      todayCollections,
+      totalPaymentsCount,
+    ] = await Promise.all([
+      getRevenueTrends(months),
+      getRecentPayments(10),
+      getTodayCollections(),
+      getTotalPaymentsCount(),
+    ]);
 
     return (
       <div className="p-6">
@@ -137,7 +140,8 @@ export default async function DashboardPage({
     <div className="p-6">
       <h1 className="text-2xl font-semibold">Welcome to Archivus</h1>
       <p className="text-muted-foreground mt-2">
-        Your account does not have a assigned role. Please contact your administrator.
+        Your account does not have a assigned role. Please contact your
+        administrator.
       </p>
     </div>
   );

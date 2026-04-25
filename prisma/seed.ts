@@ -85,10 +85,16 @@ async function seedSubjects() {
     { subject_code: "ENG-101", subject_name: "English" },
     { subject_code: "SCI-101", subject_name: "Science" },
     { subject_code: "FIL-101", subject_name: "Filipino" },
-    { subject_code: "MAPEH-101", subject_name: "Music, Arts, Physical Education and Health" },
+    {
+      subject_code: "MAPEH-101",
+      subject_name: "Music, Arts, Physical Education and Health",
+    },
     { subject_code: "CLE-101", subject_name: "Christian Living Education" },
     { subject_code: "SS-101", subject_name: "Social Studies" },
-    { subject_code: "TLE-101", subject_name: "Technology and Livelihood Education" },
+    {
+      subject_code: "TLE-101",
+      subject_name: "Technology and Livelihood Education",
+    },
     { subject_code: "COMP-101", subject_name: "Computer Education" },
     { subject_code: "HIST-101", subject_name: "History" },
     { subject_code: "AP-101", subject_name: "Araling Panlipunan" },
@@ -98,7 +104,9 @@ async function seedSubjects() {
     { subject_code: "ART-101", subject_name: "Art" },
   ];
 
-  const createdSubjects: Awaited<ReturnType<typeof prisma.subject.findUnique>>[] = [];
+  const createdSubjects: Awaited<
+    ReturnType<typeof prisma.subject.findUnique>
+  >[] = [];
   for (const subj of allSubjects) {
     const subject = await prisma.subject.upsert({
       where: { subject_code: subj.subject_code },
@@ -126,9 +134,13 @@ async function seedSubjects() {
     { subject_code: "ART-101", price: 1000 },
   ];
 
-  const createdPrices: Awaited<ReturnType<typeof prisma.subjectPrice.findFirst>>[] = [];
+  const createdPrices: Awaited<
+    ReturnType<typeof prisma.subjectPrice.findFirst>
+  >[] = [];
   for (const priceData of subjectPrices) {
-    const subject = createdSubjects.find((s) => s!.subject_code === priceData.subject_code);
+    const subject = createdSubjects.find(
+      (s) => s!.subject_code === priceData.subject_code,
+    );
     if (!subject) continue;
     const existingPrice = await prisma.subjectPrice.findFirst({
       where: { subject_id: subject!.id },
@@ -147,12 +159,23 @@ async function seedSubjects() {
   }
 
   const subjectMap = new Map(createdSubjects.map((s) => [s!.subject_code, s!]));
-  const priceMap = new Map(createdPrices.map((p, i) => [createdSubjects[i]!.subject_code, p!]));
+  const priceMap = new Map(
+    createdPrices.map((p, i) => [createdSubjects[i]!.subject_code, p!]),
+  );
 
   return { subjectMap, priceMap, createdSubjects, createdPrices };
 }
 
-async function seedCurriculums(subjectMap: Map<string, Awaited<ReturnType<typeof prisma.subject.findUnique>>>, priceMap: Map<string, Awaited<ReturnType<typeof prisma.subjectPrice.findFirst>>>) {
+async function seedCurriculums(
+  subjectMap: Map<
+    string,
+    Awaited<ReturnType<typeof prisma.subject.findUnique>>
+  >,
+  priceMap: Map<
+    string,
+    Awaited<ReturnType<typeof prisma.subjectPrice.findFirst>>
+  >,
+) {
   const curriculumsData = [
     {
       curriculum_code: "K-12-G1-2024",
@@ -166,21 +189,43 @@ async function seedCurriculums(subjectMap: Map<string, Awaited<ReturnType<typeof
       curriculum_name: "Grade 2 Curriculum 2024",
       grade_level: "grade2" as const,
       miscellaneous_fee: 2200,
-      subjects: ["MATH-101", "ENG-101", "SCI-101", "FIL-101", "MAPEH-101", "CLE-101"],
+      subjects: [
+        "MATH-101",
+        "ENG-101",
+        "SCI-101",
+        "FIL-101",
+        "MAPEH-101",
+        "CLE-101",
+      ],
     },
     {
       curriculum_code: "K-12-G3-2024",
       curriculum_name: "Grade 3 Curriculum 2024",
       grade_level: "grade3" as const,
       miscellaneous_fee: 2400,
-      subjects: ["MATH-101", "ENG-101", "SCI-101", "FIL-101", "MAPEH-101", "CLE-101"],
+      subjects: [
+        "MATH-101",
+        "ENG-101",
+        "SCI-101",
+        "FIL-101",
+        "MAPEH-101",
+        "CLE-101",
+      ],
     },
     {
       curriculum_code: "K-12-G4-2024",
       curriculum_name: "Grade 4 Curriculum 2024",
       grade_level: "grade4" as const,
       miscellaneous_fee: 2600,
-      subjects: ["MATH-101", "ENG-101", "SCI-101", "FIL-101", "MAPEH-101", "CLE-101", "SS-101"],
+      subjects: [
+        "MATH-101",
+        "ENG-101",
+        "SCI-101",
+        "FIL-101",
+        "MAPEH-101",
+        "CLE-101",
+        "SS-101",
+      ],
     },
     {
       curriculum_code: "K-12-G5-2024",
@@ -256,7 +301,9 @@ async function seedCurriculums(subjectMap: Map<string, Awaited<ReturnType<typeof
   return createdCurricula;
 }
 
-async function seedEnrollmentSettings(curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[]) {
+async function seedEnrollmentSettings(
+  curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[],
+) {
   for (const sy of SCHOOL_YEARS) {
     const existing = await prisma.enrollmentSettings.findFirst({
       where: { school_year: sy },
@@ -269,7 +316,14 @@ async function seedEnrollmentSettings(curriculums: Awaited<ReturnType<typeof pri
         },
       });
 
-      const gradeLevels = ["grade1", "grade2", "grade3", "grade4", "grade5", "grade6"] as const;
+      const gradeLevels = [
+        "grade1",
+        "grade2",
+        "grade3",
+        "grade4",
+        "grade5",
+        "grade6",
+      ] as const;
 
       for (let idx = 0; idx < gradeLevels.length; idx++) {
         const grade = gradeLevels[idx];
@@ -320,13 +374,25 @@ async function seedStudents(count: number) {
 
 async function seedEnrollments(
   curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[],
-  _gradeCurriculumMap: Map<string, number>
+  _gradeCurriculumMap: Map<string, number>,
 ) {
   const totalStudents = await prisma.student.count();
   console.log(`Creating enrollments for ${totalStudents} students...`);
 
-  const gradeLevels = ["grade1", "grade2", "grade3", "grade4", "grade5", "grade6"];
-  const enrollmentStatuses = ["pending", "approved", "declined", "dropped"] as const;
+  const gradeLevels = [
+    "grade1",
+    "grade2",
+    "grade3",
+    "grade4",
+    "grade5",
+    "grade6",
+  ];
+  const enrollmentStatuses = [
+    "pending",
+    "approved",
+    "declined",
+    "dropped",
+  ] as const;
 
   const curriculumPriceMap = new Map<number, number>();
   for (const c of curriculums) {
@@ -335,30 +401,38 @@ async function seedEnrollments(
       where: { curriculum_id: c.id },
       include: { subject_price: true },
     });
-    const tuition = subjects.reduce((sum, cs) => sum + Number(cs.subject_price.price), 0);
+    const tuition = subjects.reduce(
+      (sum, cs) => sum + Number(cs.subject_price.price),
+      0,
+    );
     const misc = Number(c.miscellaneous_fee);
     curriculumPriceMap.set(c.id, tuition + misc);
   }
 
   interface EnrollmentData {
-  student_id: number;
-  curriculum_id: number;
-  school_year: string;
-  status: "pending" | "approved" | "declined" | "dropped";
-  total_tuition_snapshot: number;
-  total_misc_snapshot: number;
-  reference_code: string;
-}
+    student_id: number;
+    curriculum_id: number;
+    school_year: string;
+    status: "pending" | "approved" | "declined" | "dropped";
+    total_tuition_snapshot: number;
+    total_misc_snapshot: number;
+    reference_code: string;
+  }
 
-interface PaymentData {
-  enrollment_id: number;
-  amount_paid: number;
-  receipt_no: string;
-  payment_date: Date;
-}
+  interface PaymentData {
+    enrollment_id: number;
+    amount_paid: number;
+    receipt_no: string;
+    payment_date: Date;
+  }
 
-const allEnrollments: EnrollmentData[] = [];
-  const enrollmentInfo: { studentId: number; enrollmentId: number; totalAmount: number; isOldSchoolYear: boolean }[] = [];
+  const allEnrollments: EnrollmentData[] = [];
+  const enrollmentInfo: {
+    studentId: number;
+    enrollmentId: number;
+    totalAmount: number;
+    isOldSchoolYear: boolean;
+  }[] = [];
 
   for (let studentId = 1; studentId <= totalStudents; studentId++) {
     const numEnrollments = faker.number.int({ min: 1, max: 3 });
@@ -411,7 +485,10 @@ const allEnrollments: EnrollmentData[] = [];
   }
 
   console.log(`Inserting ${allEnrollments.length} enrollments...`);
-  await prisma.enrollment.createMany({ data: allEnrollments, skipDuplicates: true });
+  await prisma.enrollment.createMany({
+    data: allEnrollments,
+    skipDuplicates: true,
+  });
 
   const savedEnrollments = await prisma.enrollment.findMany({
     select: { id: true, student_id: true, school_year: true },
@@ -430,7 +507,9 @@ const allEnrollments: EnrollmentData[] = [];
     if (id) info.enrollmentId = id;
   }
 
-  console.log(`Generating payments for ${enrollmentInfo.length} approved enrollments...`);
+  console.log(
+    `Generating payments for ${enrollmentInfo.length} approved enrollments...`,
+  );
 
   const allPayments: PaymentData[] = [];
 
@@ -453,15 +532,24 @@ const allEnrollments: EnrollmentData[] = [];
     let remaining = totalPaid;
 
     for (let p = 0; p < numPayments; p++) {
-      const amount = p === numPayments - 1 ? remaining : faker.number.int({
-        min: Math.floor(totalAmount * 0.1),
-        max: Math.max(Math.floor(totalAmount * 0.1), Math.floor(remaining / 2)),
-      });
+      const amount =
+        p === numPayments - 1
+          ? remaining
+          : faker.number.int({
+              min: Math.floor(totalAmount * 0.1),
+              max: Math.max(
+                Math.floor(totalAmount * 0.1),
+                Math.floor(remaining / 2),
+              ),
+            });
       remaining -= amount;
 
       let paymentDate: Date;
       if (isOldSchoolYear) {
-        paymentDate = randomDateBetween(new Date(2020, 3, 1), new Date(2026, 8, 31));
+        paymentDate = randomDateBetween(
+          new Date(2020, 3, 1),
+          new Date(2026, 8, 31),
+        );
       } else {
         paymentDate = faker.date.recent({ days: 60 });
       }
@@ -476,9 +564,14 @@ const allEnrollments: EnrollmentData[] = [];
   }
 
   console.log(`Inserting ${allPayments.length} payments...`);
-  await prisma.tuitionFeePayment.createMany({ data: allPayments, skipDuplicates: true });
+  await prisma.tuitionFeePayment.createMany({
+    data: allPayments,
+    skipDuplicates: true,
+  });
 
-  console.log(`Created ${allEnrollments.length} enrollments and ${allPayments.length} payments`);
+  console.log(
+    `Created ${allEnrollments.length} enrollments and ${allPayments.length} payments`,
+  );
 }
 
 async function seedRollbacks() {
@@ -505,7 +598,12 @@ async function seedRollbacks() {
 
   if (!adminUser) return;
 
-  const rollbackStatuses = ["pending", "approved", "denied", "cancelled"] as const;
+  const rollbackStatuses = [
+    "pending",
+    "approved",
+    "denied",
+    "cancelled",
+  ] as const;
   const rollbackReasons = [
     "Wrong amount paid",
     "Student transferred to another school",
@@ -519,14 +617,15 @@ async function seedRollbacks() {
   const sampleSize = Math.min(approvedPayments.length, 500);
   const selectedPayments = faker.helpers.arrayElements(
     approvedPayments,
-    sampleSize
+    sampleSize,
   );
 
   for (const payment of selectedPayments) {
     if (faker.datatype.boolean({ probability: 30 })) {
       const status = faker.helpers.arrayElement(rollbackStatuses);
       const reviewedById = status !== "pending" ? adminUser.id : null;
-      const reviewedAt = status !== "pending" ? faker.date.recent({ days: 30 }) : null;
+      const reviewedAt =
+        status !== "pending" ? faker.date.recent({ days: 30 }) : null;
 
       await prisma.rollbackRequest.create({
         data: {

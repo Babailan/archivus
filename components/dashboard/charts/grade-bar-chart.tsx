@@ -1,6 +1,13 @@
 "use client";
 
-import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import {
   Card,
@@ -34,7 +41,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function GradeBarChart({ data, title = "Enrollments by Grade Level", description = "Distribution of students across grade levels" }: Props) {
+export function GradeBarChart({
+  data,
+  title = "Enrollments by Grade Level",
+  description = "Distribution of students across grade levels",
+}: Props) {
   return (
     <Card>
       <CardHeader>
@@ -43,9 +54,19 @@ export function GradeBarChart({ data, title = "Enrollments by Grade Level", desc
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <BarChart accessibilityLayer data={data} layout="vertical" margin={{ top: 20 }}>
+          <BarChart
+            accessibilityLayer
+            data={data}
+            layout="vertical"
+            margin={{ top: 20 }}
+          >
             <CartesianGrid horizontal={false} />
-            <XAxis type="number" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis
+              type="number"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+            />
             <YAxis
               dataKey="gradeLevel"
               type="category"
@@ -58,8 +79,18 @@ export function GradeBarChart({ data, title = "Enrollments by Grade Level", desc
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="count" fill="var(--color-students)" radius={8} name="Students">
-              <LabelList position="right" offset={8} className="fill-foreground" fontSize={12} />
+            <Bar
+              dataKey="count"
+              fill="var(--color-students)"
+              radius={8}
+              name="Students"
+            >
+              <LabelList
+                position="right"
+                offset={8}
+                className="fill-foreground"
+                fontSize={12}
+              />
             </Bar>
           </BarChart>
         </ChartContainer>

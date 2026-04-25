@@ -43,7 +43,10 @@ function formatDate(dateString: string): string {
   });
 }
 
-export function RecentEnrollmentsTable({ data, title = "Recent Enrollments" }: Props) {
+export function RecentEnrollmentsTable({
+  data,
+  title = "Recent Enrollments",
+}: Props) {
   return (
     <Card>
       <CardHeader>
@@ -63,20 +66,30 @@ export function RecentEnrollmentsTable({ data, title = "Recent Enrollments" }: P
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-muted-foreground"
+                >
                   No recent enrollments
                 </TableCell>
               </TableRow>
             ) : (
               data.map((enrollment) => (
                 <TableRow key={enrollment.id}>
-                  <TableCell className="font-medium">{enrollment.reference_code}</TableCell>
+                  <TableCell className="font-medium">
+                    {enrollment.reference_code}
+                  </TableCell>
                   <TableCell>
-                    {enrollment.student.last_name}, {enrollment.student.first_name}
+                    {enrollment.student.last_name},{" "}
+                    {enrollment.student.first_name}
                   </TableCell>
                   <TableCell>{enrollment.grade_level.toUpperCase()}</TableCell>
                   <TableCell>
-                    <Badge className={statusColors[enrollment.status] || "bg-gray-500"}>
+                    <Badge
+                      className={
+                        statusColors[enrollment.status] || "bg-gray-500"
+                      }
+                    >
                       {enrollment.status}
                     </Badge>
                   </TableCell>

@@ -32,7 +32,10 @@ const chartConfig = {
   status3: { label: "Dropped", color: "var(--destructive)" },
 };
 
-export function EnrollmentPieChart({ data, title = "Enrollments by Status" }: Props) {
+export function EnrollmentPieChart({
+  data,
+  title = "Enrollments by Status",
+}: Props) {
   return (
     <Card>
       <CardHeader>

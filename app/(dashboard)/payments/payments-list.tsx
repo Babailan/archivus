@@ -109,7 +109,6 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
         </Table>
       </div>
       <DataTablePagination page={page} totalPages={totalPages} />
-
     </div>
   );
 }

@@ -44,7 +44,11 @@ export type SearchCurriculumResult = Awaited<
   ReturnType<typeof searchCurriculum>
 >;
 
-export async function searchCurriculum(q: string, page: number = 1, pageSize: number = 10) {
+export async function searchCurriculum(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const skip = (page - 1) * pageSize;
 
   const select: CurriculumFindManyArgs = {};

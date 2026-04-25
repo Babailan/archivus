@@ -1,5 +1,5 @@
 "use server";
- 
+
 import { Roles, GenderEnum } from "@/app/generated/prisma/enums";
 import { actionClient, adminActionClient } from "@/lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
@@ -12,7 +12,7 @@ import {
   getUserByUsername,
 } from "@/services/user.service";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
- 
+
 const createUserInputSchema = zfd.formData({
   username: zfd.text(z.string({ error: "Username is required" })),
   email: zfd.text(z.string({ error: "Email is required" })),
@@ -37,17 +37,25 @@ const createUserInputSchema = zfd.formData({
         }
       })
       .pipe(
-        z
-          .array(z.nativeEnum(Roles))
-          .min(1, "At least one role is required."),
+        z.array(z.nativeEnum(Roles)).min(1, "At least one role is required."),
       ),
   ),
 });
- 
+
 export const createUserAction = adminActionClient
   .inputSchema(createUserInputSchema)
   .action(async ({ parsedInput }) => {
-    const { username, email, password, roles, first_name, last_name, middle_name, gender, birthdate } = parsedInput;
+    const {
+      username,
+      email,
+      password,
+      roles,
+      first_name,
+      last_name,
+      middle_name,
+      gender,
+      birthdate,
+    } = parsedInput;
 
     const existingUsername = await getUserByUsername(username);
     if (existingUsername) {
@@ -57,7 +65,7 @@ export const createUserAction = adminActionClient
         },
       });
     }
- 
+
     const existingEmail = await getUserByEmail(email);
     if (existingEmail) {
       return returnValidationErrors(createUserInputSchema, {
@@ -66,7 +74,7 @@ export const createUserAction = adminActionClient
         },
       });
     }
- 
+
     try {
       await createUser({
         username,
@@ -91,7 +99,7 @@ export const createUserAction = adminActionClient
       }
       throw err;
     }
- 
+
     revalidatePath("/users");
     return { success: true };
   });

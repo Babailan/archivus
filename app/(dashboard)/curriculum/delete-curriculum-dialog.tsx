@@ -15,9 +15,7 @@ import { deleteCurriculumAction } from "./action";
 import { toast } from "sonner";
 
 export default function DeleteCurriculumDialog({ id }: { id: number }) {
-  const { executeAsync } = useAction(
-    deleteCurriculumAction,
-  );
+  const { executeAsync } = useAction(deleteCurriculumAction);
   const handleSubmit = async () => {
     const { data } = await executeAsync({ id });
     if (data) {

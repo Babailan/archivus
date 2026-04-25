@@ -354,7 +354,6 @@ export function EnrollmentsListForm({
         </TableBody>
       </Table>
       <DataTablePagination page={page} totalPages={totalPages} />
-
     </div>
   );
 }

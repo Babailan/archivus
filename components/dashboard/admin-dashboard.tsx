@@ -58,7 +58,7 @@ export function AdminDashboard({
               subtitle="Click to review"
               className={cn(
                 "cursor-pointer hover:shadow-md transition-shadow",
-                pendingRollbackCount > 0 && "border-yellow-500 border-2"
+                pendingRollbackCount > 0 && "border-yellow-500 border-2",
               )}
             />
             {pendingRollbackCount > 0 && (

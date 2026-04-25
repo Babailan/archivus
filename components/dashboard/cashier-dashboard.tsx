@@ -5,10 +5,7 @@ import { StatCard } from "./stat-card";
 import { TimeRangeSelector } from "./time-range-selector";
 import { PaymentTrendChart } from "./charts/payment-trend-chart";
 import { RecentPaymentsTable } from "./tables/recent-payments-table";
-import type {
-  RevenueTrend,
-  RecentPayment,
-} from "@/services/dashboard.service";
+import type { RevenueTrend, RecentPayment } from "@/services/dashboard.service";
 
 type Props = {
   paymentTrends: RevenueTrend[];

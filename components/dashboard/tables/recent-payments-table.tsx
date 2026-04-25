@@ -38,7 +38,10 @@ function formatCurrency(amount: number): string {
   return `₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`;
 }
 
-export function RecentPaymentsTable({ data, title = "Recent Payments" }: Props) {
+export function RecentPaymentsTable({
+  data,
+  title = "Recent Payments",
+}: Props) {
   return (
     <Card>
       <CardHeader>
@@ -57,14 +60,19 @@ export function RecentPaymentsTable({ data, title = "Recent Payments" }: Props) 
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={4}
+                  className="text-center text-muted-foreground"
+                >
                   No recent payments
                 </TableCell>
               </TableRow>
             ) : (
               data.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell className="font-medium">{payment.receipt_no}</TableCell>
+                  <TableCell className="font-medium">
+                    {payment.receipt_no}
+                  </TableCell>
                   <TableCell>
                     {payment.student.last_name}, {payment.student.first_name}
                   </TableCell>

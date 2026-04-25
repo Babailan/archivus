@@ -111,7 +111,9 @@ export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
             <Input
               name="middle_name"
               defaultValue={user.middle_name || ""}
-              aria-invalid={!!result?.validationErrors?.fieldErrors?.middle_name}
+              aria-invalid={
+                !!result?.validationErrors?.fieldErrors?.middle_name
+              }
             />
             <FieldError>
               {result?.validationErrors?.fieldErrors?.middle_name}
@@ -144,7 +146,9 @@ export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
             <Input
               type="date"
               name="birthdate"
-              defaultValue={new Date(user.birthdate).toISOString().split("T")[0]}
+              defaultValue={
+                new Date(user.birthdate).toISOString().split("T")[0]
+              }
               aria-invalid={!!result?.validationErrors?.fieldErrors?.birthdate}
             />
             <FieldError>

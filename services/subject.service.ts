@@ -6,7 +6,11 @@ import prisma from "@/lib/prisma";
 
 export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
 
-export async function searchSubject(q: string, page: number = 1, pageSize: number = 10) {
+export async function searchSubject(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const skip = (page - 1) * pageSize;
 
   const select: SubjectFindManyArgs = {};

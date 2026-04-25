@@ -8,7 +8,7 @@ const loginSchema = z.object({
   identifier: z.string().min(1, "Email or Username is required"),
   password: z.string().min(1, "Password is required"),
 });
- 
+
 export const authOption: NextAuthOptions = {
   providers: [
     Credentials({
@@ -22,10 +22,7 @@ export const authOption: NextAuthOptions = {
           try {
             const user = await prisma.user.findFirst({
               where: {
-                OR: [
-                  { email: data.identifier },
-                  { username: data.identifier },
-                ],
+                OR: [{ email: data.identifier }, { username: data.identifier }],
                 inactive: false,
               },
               include: {

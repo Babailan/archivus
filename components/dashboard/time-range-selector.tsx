@@ -1,11 +1,21 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type TimeRange = "3" | "6" | "12";
 
-export function TimeRangeSelector({ defaultValue = "6" }: { defaultValue?: TimeRange }) {
+export function TimeRangeSelector({
+  defaultValue = "6",
+}: {
+  defaultValue?: TimeRange;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
 

@@ -33,9 +33,7 @@ export type ApprovedEnrollment = {
   min_partial_payment: number;
 };
 
-export type PaymentsResult = Awaited<
-  ReturnType<typeof getApprovedEnrollments>
->;
+export type PaymentsResult = Awaited<ReturnType<typeof getApprovedEnrollments>>;
 
 export async function getApprovedEnrollments(
   q?: string,

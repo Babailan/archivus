@@ -48,7 +48,7 @@ export function EnrollmentSettingsForm({
   const gradeCurriculumMap = new Map(
     settings?.grade_curriculum_settings.map((gcs) => {
       const curriculum = curriculums.find(
-        (c) => c.id === gcs.curriculum_id && c.grade_level === gcs.grade_level
+        (c) => c.id === gcs.curriculum_id && c.grade_level === gcs.grade_level,
       );
       return [
         gcs.grade_level,
@@ -91,17 +91,23 @@ export function EnrollmentSettingsForm({
 
     const getCurriculumId = (value: string) => {
       const curriculum = curriculums.find(
-        (c) => `${c.curriculum_name} (${c.curriculum_code})` === value
+        (c) => `${c.curriculum_name} (${c.curriculum_code})` === value,
       );
       return curriculum?.id.toString() ?? value;
     };
 
-    if (grade1) formData.append("grade1_curriculum_id", getCurriculumId(grade1));
-    if (grade2) formData.append("grade2_curriculum_id", getCurriculumId(grade2));
-    if (grade3) formData.append("grade3_curriculum_id", getCurriculumId(grade3));
-    if (grade4) formData.append("grade4_curriculum_id", getCurriculumId(grade4));
-    if (grade5) formData.append("grade5_curriculum_id", getCurriculumId(grade5));
-    if (grade6) formData.append("grade6_curriculum_id", getCurriculumId(grade6));
+    if (grade1)
+      formData.append("grade1_curriculum_id", getCurriculumId(grade1));
+    if (grade2)
+      formData.append("grade2_curriculum_id", getCurriculumId(grade2));
+    if (grade3)
+      formData.append("grade3_curriculum_id", getCurriculumId(grade3));
+    if (grade4)
+      formData.append("grade4_curriculum_id", getCurriculumId(grade4));
+    if (grade5)
+      formData.append("grade5_curriculum_id", getCurriculumId(grade5));
+    if (grade6)
+      formData.append("grade6_curriculum_id", getCurriculumId(grade6));
     formData.append("is_online_enrollment_enabled", isEnabled.toString());
     const { data, validationErrors } = await executeAsync(formData);
     console.log("Data:", data);

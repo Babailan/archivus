@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
@@ -32,12 +32,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
- 
+
 export function CreateUserForm() {
   const { executeAsync, result, isExecuting } = useAction(createUserAction);
   const [roles, setRoles] = useState<Roles[]>([]);
   const ref = useRef<HTMLFormElement>(null);
- 
+
   const toggleRole = (role: Roles) => {
     setRoles((prev) => {
       if (prev.includes(role)) {
@@ -46,12 +46,12 @@ export function CreateUserForm() {
       return [...prev, role];
     });
   };
- 
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     formData.set("roles", JSON.stringify(roles));
- 
+
     const { data } = await executeAsync(formData);
     if (data?.success) {
       toast.success("User created successfully");
@@ -59,7 +59,7 @@ export function CreateUserForm() {
       ref.current?.reset();
     }
   };
- 
+
   return (
     <form ref={ref} onSubmit={onSubmit} autoComplete="off">
       <FieldSet>
@@ -95,14 +95,16 @@ export function CreateUserForm() {
             <Input
               name="middle_name"
               placeholder="Enter middle name"
-              aria-invalid={!!result?.validationErrors?.fieldErrors?.middle_name}
+              aria-invalid={
+                !!result?.validationErrors?.fieldErrors?.middle_name
+              }
             />
             <FieldError>
               {result?.validationErrors?.fieldErrors?.middle_name}
             </FieldError>
           </Field>
         </FieldGroup>
- 
+
         <FieldGroup>
           <Field>
             <FieldLabel>
@@ -135,7 +137,7 @@ export function CreateUserForm() {
             </FieldError>
           </Field>
         </FieldGroup>
- 
+
         <FieldGroup>
           <Field>
             <FieldLabel>
@@ -209,7 +211,7 @@ export function CreateUserForm() {
           </Field>
         </FieldGroup>
       </FieldSet>
- 
+
       <Dialog>
         <DialogTrigger
           render={

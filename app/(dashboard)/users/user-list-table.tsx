@@ -114,7 +114,6 @@ export function UserListForm({
             </TableBody>
           </Table>
           <DataTablePagination page={page} totalPages={totalPages} />
-
         </>
       )}
     </>

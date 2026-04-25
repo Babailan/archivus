@@ -1,5 +1,12 @@
 import prisma from "@/lib/prisma";
-import { endOfDay, startOfDay, startOfMonth, subMonths, startOfYear, endOfYear } from "date-fns";
+import {
+  endOfDay,
+  startOfDay,
+  startOfMonth,
+  subMonths,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
 
 export type EnrollmentTrend = {
   month: string;
@@ -68,7 +75,20 @@ export type RecentRollback = {
   created_at: string;
 };
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 function getMonthsInRange(months: number): string[] {
   const now = new Date();
@@ -80,7 +100,9 @@ function getMonthsInRange(months: number): string[] {
   return result;
 }
 
-export async function getEnrollmentTrends(months: number): Promise<EnrollmentTrend[]> {
+export async function getEnrollmentTrends(
+  months: number,
+): Promise<EnrollmentTrend[]> {
   const startDate = subMonths(new Date(), months);
   startDate.setDate(1);
 
@@ -97,7 +119,7 @@ export async function getEnrollmentTrends(months: number): Promise<EnrollmentTre
   MONTHS.forEach((month) => {
     grouped[month] = 0;
   });
-  
+
   enrollments.forEach((e) => {
     const month = MONTHS[e.created_at.getMonth()];
     grouped[month] = (grouped[month] || 0) + 1;
@@ -126,7 +148,9 @@ export async function getEnrollmentByStatus(): Promise<EnrollmentByStatus[]> {
   }));
 }
 
-export async function getEnrollmentByGradeLevel(): Promise<EnrollmentByGradeLevel[]> {
+export async function getEnrollmentByGradeLevel(): Promise<
+  EnrollmentByGradeLevel[]
+> {
   const enrollments = await prisma.enrollment.findMany({
     where: { status: "approved" },
     include: {
@@ -137,7 +161,23 @@ export async function getEnrollmentByGradeLevel(): Promise<EnrollmentByGradeLeve
   });
 
   const grouped: Record<string, number> = {};
-  const gradeOrder = ["nursery", "pre-kinder", "kinder", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+  const gradeOrder = [
+    "nursery",
+    "pre-kinder",
+    "kinder",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+  ];
 
   enrollments.forEach((e) => {
     const grade = e.curriculum.grade_level;
@@ -152,7 +192,9 @@ export async function getEnrollmentByGradeLevel(): Promise<EnrollmentByGradeLeve
     }));
 }
 
-export async function getRevenueTrends(months: number): Promise<RevenueTrend[]> {
+export async function getRevenueTrends(
+  months: number,
+): Promise<RevenueTrend[]> {
   const startDate = subMonths(new Date(), months);
   startDate.setDate(1);
 
@@ -195,25 +237,31 @@ export async function getTodayCollections(): Promise<TodayCollection> {
 }
 
 export async function getTotalStats(): Promise<TotalStats> {
-  const [totalStudents, totalEnrollments, payments, activeUsers] = await Promise.all([
-    prisma.student.count(),
-    prisma.enrollment.count({ where: { status: "approved" } }),
-    prisma.tuitionFeePayment.findMany({
-      where: {
-        rollback_requests: {
-          none: { status: "approved" },
+  const [totalStudents, totalEnrollments, payments, activeUsers] =
+    await Promise.all([
+      prisma.student.count(),
+      prisma.enrollment.count({ where: { status: "approved" } }),
+      prisma.tuitionFeePayment.findMany({
+        where: {
+          rollback_requests: {
+            none: { status: "approved" },
+          },
         },
-      },
-    }),
-    prisma.user.count(),
-  ]);
+      }),
+      prisma.user.count(),
+    ]);
 
-  const totalRevenue = payments.reduce((sum, p) => sum + p.amount_paid.toNumber(), 0);
+  const totalRevenue = payments.reduce(
+    (sum, p) => sum + p.amount_paid.toNumber(),
+    0,
+  );
 
   return { totalStudents, totalEnrollments, totalRevenue, activeUsers };
 }
 
-export async function getRecentEnrollments(limit = 10): Promise<RecentEnrollment[]> {
+export async function getRecentEnrollments(
+  limit = 10,
+): Promise<RecentEnrollment[]> {
   const enrollments = await prisma.enrollment.findMany({
     take: limit,
     orderBy: { created_at: "desc" },
@@ -261,7 +309,9 @@ export async function getRecentPayments(limit = 10): Promise<RecentPayment[]> {
   }));
 }
 
-export async function getRecentRollbackRequests(limit = 10): Promise<RecentRollback[]> {
+export async function getRecentRollbackRequests(
+  limit = 10,
+): Promise<RecentRollback[]> {
   const requests = await prisma.rollbackRequest.findMany({
     take: limit,
     orderBy: { created_at: "desc" },

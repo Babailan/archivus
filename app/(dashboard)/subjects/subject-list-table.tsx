@@ -107,8 +107,7 @@ export function SubjectListForm({
             </TableBody>
           </Table>
           <DataTablePagination page={page} totalPages={totalPages} />
-
-          </>
+        </>
       )}
     </>
   );

@@ -208,7 +208,6 @@ export function RollbackRequestsList({
       </div>
       <DataTablePagination page={page} totalPages={totalPages} />
 
-
       <Dialog
         open={confirmDialog.open}
         onOpenChange={(open) => setConfirmDialog((prev) => ({ ...prev, open }))}

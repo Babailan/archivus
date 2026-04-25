@@ -26,7 +26,7 @@ const schema = z.object({
   identifier: z.string().min(1, "Email or Username is required"),
   password: z.string().min(1, "Password is required"),
 });
- 
+
 export function LoginForm({
   className,
   ...props
@@ -39,16 +39,16 @@ export function LoginForm({
     },
   });
   const [invalidCredentials, setInvalidCredentials] = useState(false);
- 
+
   const router = useRouter();
- 
+
   async function log_in(data: z.infer<typeof schema>) {
     const res = await signIn("credentials", {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
     });
- 
+
     if (res?.ok) {
       await sleep(1000);
       setInvalidCredentials(false);
@@ -67,7 +67,7 @@ export function LoginForm({
               Enter your email or username below to login to your account
             </p>
           </div>
- 
+
           {invalidCredentials && (
             <Alert variant={"destructive"}>
               <ShieldAlert />

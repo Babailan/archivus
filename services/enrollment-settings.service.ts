@@ -7,31 +7,31 @@ export type EnrollmentSettingsWithCurriculums = Awaited<
 >;
 
 export async function getEnrollmentSettings() {
-  try{
+  try {
     const settings = await prisma.enrollmentSettings.findFirst();
     if (!settings) return null;
-  
-    const gradeCurriculumSettings = await prisma.gradeCurriculumSetting.findMany({
-      where: { school_year: settings.school_year },
-      include: {
-        curriculum: {
-          select: {
-            id: true,
-            curriculum_code: true,
-            curriculum_name: true,
-            grade_level: true,
+
+    const gradeCurriculumSettings =
+      await prisma.gradeCurriculumSetting.findMany({
+        where: { school_year: settings.school_year },
+        include: {
+          curriculum: {
+            select: {
+              id: true,
+              curriculum_code: true,
+              curriculum_name: true,
+              grade_level: true,
+            },
           },
         },
-      },
-    });
-  
+      });
+
     return {
       ...settings,
       grade_curriculum_settings: gradeCurriculumSettings,
     };
-
   } catch (error) {
-    console.dir(error,{ depth: null });
+    console.dir(error, { depth: null });
     throw error;
   }
 }

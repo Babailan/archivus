@@ -13,7 +13,10 @@ import {
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 
-export async function getRollbackRequestsAction(status?: string, page?: number) {
+export async function getRollbackRequestsAction(
+  status?: string,
+  page?: number,
+) {
   return await getRollbackRequests(status, page);
 }
 

@@ -71,7 +71,11 @@ export async function getUser(id: number) {
 
 export type SearchUserResult = Awaited<ReturnType<typeof searchUsers>>;
 
-export async function searchUsers(q: string, page: number = 1, pageSize: number = 10) {
+export async function searchUsers(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const skip = (page - 1) * pageSize;
   const where: Prisma.UserWhereInput = { inactive: false };
 
@@ -108,7 +112,10 @@ export async function searchUsers(q: string, page: number = 1, pageSize: number 
   return { users, total, page, pageSize };
 }
 
-export async function getInactiveUsers(page: number = 1, pageSize: number = 10) {
+export async function getInactiveUsers(
+  page: number = 1,
+  pageSize: number = 10,
+) {
   const skip = (page - 1) * pageSize;
   const where: Prisma.UserWhereInput = { inactive: true };
 
