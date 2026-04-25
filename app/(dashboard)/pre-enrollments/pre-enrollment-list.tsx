@@ -103,10 +103,10 @@ export function PreEnrollmentList({
                 <TableCell className="text-right">
                   <div className="flex items-center justify-end gap-2">
                     <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700">
-                          <Check className="h-4 w-4 mr-1" /> Approve
-                        </Button>
+                      <DialogTrigger render={
+                        <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700" />
+                      }>
+                        <Check className="h-4 w-4 mr-1" /> Approve
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -116,8 +116,8 @@ export function PreEnrollmentList({
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                          <DialogClose render={<Button variant="outline" />}>
+                            Cancel
                           </DialogClose>
                           <Button 
                             disabled={isApproving} 
@@ -130,10 +130,10 @@ export function PreEnrollmentList({
                     </Dialog>
 
                     <Dialog>
-                      <DialogTrigger asChild>
-                        <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700">
-                          <X className="h-4 w-4 mr-1" /> Decline
-                        </Button>
+                      <DialogTrigger render={
+                        <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700" />
+                      }>
+                        <X className="h-4 w-4 mr-1" /> Decline
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
@@ -143,8 +143,8 @@ export function PreEnrollmentList({
                           </DialogDescription>
                         </DialogHeader>
                         <DialogFooter>
-                          <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
+                          <DialogClose render={<Button variant="outline" />}>
+                            Cancel
                           </DialogClose>
                           <Button 
                             variant="destructive" 
