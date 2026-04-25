@@ -3,15 +3,15 @@ import { getEnrollments } from "./action";
 import { EnrollmentsListForm } from "./enrollments-list-form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { queryFirst } from "@/lib/helper";
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 export default async function EnrollmentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; page?: string }>;
 }) {
-  const { status, page } = await searchParams;
+  const { status, q, page } = await searchParams;
   const pageNum = page ? parseInt(page) : 1;
-  const enrollmentsPromise = getEnrollments(status, pageNum);
+  const enrollmentsPromise = getEnrollments(status, q, pageNum);
 
   return (
     <div className="px-10 py-2 mb-10">

@@ -94,12 +94,36 @@ function computePaymentStatus(
 
 export async function searchEnrollments(
   status?: string,
+  q?: string,
   page: number = 1,
   pageSize: number = 10,
 ) {
-  const where: { status?: EnrollmentStatus } = {};
+  const where: any = {};
   if (status && status !== "all") {
     where.status = status as EnrollmentStatus;
+  }
+
+  if (q) {
+    const chunks = q.trim().split(/\s+/).filter(Boolean);
+    if (chunks.length > 0) {
+      where.AND = chunks.map((chunk) => {
+        const searchConditions: any[] = [
+          { reference_code: { contains: chunk } },
+          { student: { first_name: { contains: chunk } } },
+          { student: { last_name: { contains: chunk } } },
+          { student: { middle_name: { contains: chunk } } },
+          { student: { email: { contains: chunk } } },
+          { school_year: { contains: chunk } },
+          { curriculum: { curriculum_name: { contains: chunk } } },
+        ];
+
+        if (/^\d+$/.test(chunk)) {
+          searchConditions.push({ student_id: parseInt(chunk) });
+        }
+
+        return { OR: searchConditions };
+      });
+    }
   }
 
   const skip = (page - 1) * pageSize;

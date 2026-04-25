@@ -38,8 +38,9 @@ import {
 } from "@/services/enrollment.service";
 import { toast } from "sonner";
 import { Ellipsis, Check, X, Eye } from "lucide-react";
-import { use } from "react";
+import { use, useState, useEffect, useRef } from "react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { useDebounce } from "use-debounce";
 
 interface EnrollmentsListFormProps {
   enrollmentsPromise: Promise<SearchEnrollmentResult>;
@@ -65,14 +66,35 @@ export function EnrollmentsListForm({
     approveEnrollmentAction,
   );
 
-  const handleStatusChange = (value: string | null) => {
-    if (value && value !== "all") {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("status", value);
-      router.push(`/enrollments?${params.toString()}`);
-    } else {
-      router.push("/enrollments");
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
     }
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearch) {
+      params.set("q", debouncedSearch);
+    } else {
+      params.delete("q");
+    }
+    params.delete("page");
+    router.push(`/enrollments?${params.toString()}`);
+  }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops if it changes externally
+
+  const handleStatusChange = (value: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== "all") {
+      params.set("status", value);
+    } else {
+      params.delete("status");
+    }
+    params.delete("page");
+    router.push(`/enrollments?${params.toString()}`);
   };
 
   const handleDecline = async (id: number) => {
@@ -150,7 +172,12 @@ export function EnrollmentsListForm({
             </Button>
           ))}
         </div>
-        <Input placeholder="Search students..." className="max-w-sm" />
+        <Input
+          placeholder="Search name, reference, email..."
+          className="max-w-sm"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       <Table className="border">
