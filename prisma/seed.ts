@@ -659,7 +659,7 @@ async function seedRollbacks() {
 
 async function seedPreEnrollments(count: number) {
   console.log(`Creating ${count} pre-enrollments...`);
-  const preEnrollments = [];
+  const preEnrollments:any[]= [];
   const gradeLevels = [
     "grade1",
     "grade2",
@@ -685,6 +685,14 @@ async function seedPreEnrollments(count: number) {
       created_at: faker.date.recent({ days: 30 }),
     });
   }
+  preEnrollments.map((data)=> {
+    // add reference code 
+    const yearPrefix = data.school_year.split("-")[0];
+    const randomId = faker.number.int({ min: 1, max: 99999 });
+    const referenceCode = generateReferenceCode(yearPrefix, randomId);
+    data.reference_code = referenceCode;
+    return data;
+  })
 
   await prisma.preEnrollment.createMany({
     data: preEnrollments,
