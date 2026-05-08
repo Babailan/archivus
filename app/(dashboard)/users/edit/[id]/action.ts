@@ -50,7 +50,7 @@ const updateUserInputSchema = zfd.formData({
 
 export const updateUserAction = actionClient
   .inputSchema(updateUserInputSchema)
-  .action(async ({ parsedInput: { id, username, email, password, roles } }) => {
+  .action(async ({ parsedInput: { id, username, email, password, roles, first_name, last_name, middle_name, gender, birthdate } }) => {
     const existingUser = await prisma.user.findUnique({
       where: { id },
       include: { role: true },

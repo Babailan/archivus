@@ -38,7 +38,7 @@ export const submitEnrollmentAction = actionClient
         school_year: settings.school_year,
       });
 
-      return { success: true, referenceCode: result.enrollment.reference_code };
+      return { success: true, referenceCode: result.reference_code };
     } catch (error) {
       console.log(error);
       return { success: false, error: "Failed to submit enrollment" };

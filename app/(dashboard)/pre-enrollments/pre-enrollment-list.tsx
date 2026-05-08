@@ -1,7 +1,7 @@
 "use client";
 
 import { use } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -12,42 +12,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAction } from "next-safe-action/hooks";
 import { approvePreEnrollmentAction, declinePreEnrollmentAction } from "./action";
 import { toast } from "sonner";
-import { Check, X } from "lucide-react";
+import { Ellipsis, Check, X, PencilLine } from "lucide-react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { format } from "date-fns";
+import { PreEnrollment } from "@/app/generated/prisma";
 
 export function PreEnrollmentList({
   dataPromise,
-  statusFilter,
 }: {
   dataPromise: Promise<any>;
-  statusFilter: string;
 }) {
   const { preEnrollments, total, page, pageSize } = use(dataPromise);
   const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const { executeAsync: approveAsync, isExecuting: isApproving } = useAction(
-    approvePreEnrollmentAction,
-  );
-  const { executeAsync: declineAsync, isExecuting: isDeclining } = useAction(
-    declinePreEnrollmentAction,
-  );
+  const { executeAsync: approveAsync } = useAction(approvePreEnrollmentAction);
+  const { executeAsync: declineAsync } = useAction(declinePreEnrollmentAction);
 
-  const handleApprove = async (id: number) => {
+  const handleAccept = async (id: number) => {
     const formData = new FormData();
     formData.append("id", id.toString());
     const { data } = await approveAsync(formData);
@@ -58,7 +48,7 @@ export function PreEnrollmentList({
     }
   };
 
-  const handleDecline = async (id: number) => {
+  const handleDeny = async (id: number) => {
     const formData = new FormData();
     formData.append("id", id.toString());
     const { data } = await declineAsync(formData);
@@ -74,6 +64,7 @@ export function PreEnrollmentList({
       <Table className="border">
         <TableHeader>
           <TableRow>
+            <TableHead>Reference Code</TableHead>
             <TableHead>Student Name</TableHead>
             <TableHead>Grade Level</TableHead>
             <TableHead>School Year</TableHead>
@@ -92,8 +83,11 @@ export function PreEnrollmentList({
               </TableCell>
             </TableRow>
           ) : (
-            preEnrollments.map((item: any) => (
+            preEnrollments.map((item: PreEnrollment) => (
               <TableRow key={item.id}>
+                <TableCell>
+                  {item.reference_code}
+                </TableCell>
                 <TableCell>
                   {item.last_name}, {item.first_name} {item.middle_name}
                 </TableCell>
@@ -101,62 +95,37 @@ export function PreEnrollmentList({
                 <TableCell>{item.school_year}</TableCell>
                 <TableCell>{format(new Date(item.created_at), "MMM d, yyyy")}</TableCell>
                 <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Dialog>
-                      <DialogTrigger render={
-                        <Button size="sm" variant="outline" className="text-green-600 hover:text-green-700" />
-                      }>
-                        <Check className="h-4 w-4 mr-1" /> Approve
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Approve Application</DialogTitle>
-                          <DialogDescription>
-                            Confirming this will create an official Student record and assign a permanent ID.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <DialogClose render={<Button variant="outline" />}>
-                            Cancel
-                          </DialogClose>
-                          <Button 
-                            disabled={isApproving} 
-                            onClick={() => handleApprove(item.id)}
-                          >
-                            Approve
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-
-                    <Dialog>
-                      <DialogTrigger render={
-                        <Button size="sm" variant="outline" className="text-red-600 hover:text-red-700" />
-                      }>
-                        <X className="h-4 w-4 mr-1" /> Decline
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Decline Application</DialogTitle>
-                          <DialogDescription>
-                            Are you sure you want to decline this application?
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                          <DialogClose render={<Button variant="outline" />}>
-                            Cancel
-                          </DialogClose>
-                          <Button 
-                            variant="destructive" 
-                            disabled={isDeclining} 
-                            onClick={() => handleDecline(item.id)}
-                          >
-                            Decline
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button size="sm" variant="ghost">
+                          <Ellipsis className="h-4 w-4" />
+                        </Button>
+                      }
+                    />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => router.push(`/pre-enrollments/${item.id}`)}
+                      >
+                        <PencilLine className="mr-2 h-4 w-4" />
+                        View
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleAccept(item.id)}
+                        className="text-green-600"
+                      >
+                        <Check className="mr-2 h-4 w-4" />
+                        Accept
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => handleDeny(item.id)}
+                        className="text-red-600"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Deny
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))

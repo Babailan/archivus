@@ -48,6 +48,7 @@ import {
 } from "../action";
 import { toast } from "sonner";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
 
 const formSchema = z.object({
   id: z.number(),
@@ -166,7 +167,7 @@ export function PreEnrollmentEditForm({
         Back to List
       </Button>
 
-      <div className="bg-secondary p-6 rounded-lg">
+      <Card className="p-6 rounded-lg">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldSet>
             <FieldLegend variant="legend" className="flex gap-2 items-center">
@@ -416,7 +417,7 @@ export function PreEnrollmentEditForm({
             </Dialog>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

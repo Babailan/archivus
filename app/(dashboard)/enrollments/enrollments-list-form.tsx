@@ -243,7 +243,7 @@ export function EnrollmentsListForm({
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    {enrollment.status == "pending" && (
+                    {enrollment.status === "approved" && (
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           render={

@@ -22,6 +22,7 @@ model Student {
 
 model PreEnrollment {
   id            Int                 @id @default(autoincrement())
+  reference_code String?           @unique
   first_name    String
   last_name     String
   middle_name   String

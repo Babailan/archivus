@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import {
   EnrollmentStatus,
   GradeLevelEnum,
+  PreEnrollmentStatus,
   Prisma,
 } from "@/app/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
@@ -193,7 +194,7 @@ export async function searchEnrollments(
 }
 
 export async function getPreEnrollments(
-  status: EnrollmentStatus = "pending",
+  status: PreEnrollmentStatus = "pending",
   page: number = 1,
   pageSize: number = 10,
 ) {
@@ -288,7 +289,7 @@ export async function createEnrollment(data: {
   grade_level: string;
   school_year: string;
 }) {
-  return await prisma.preEnrollment.create({
+  const preEnrollment = await prisma.preEnrollment.create({
     data: {
       first_name: data.first_name,
       last_name: data.last_name,
@@ -302,6 +303,18 @@ export async function createEnrollment(data: {
       status: "pending",
     },
   });
+
+  const referenceCode = generateReferenceCode(
+    data.school_year,
+    preEnrollment.id,
+  );
+
+  const updated = await prisma.preEnrollment.update({
+    where: { id: preEnrollment.id },
+    data: { reference_code: referenceCode },
+  });
+
+  return updated;
 }
 
 export async function approvePreEnrollment(id: number) {
@@ -417,6 +430,46 @@ export async function declinePreEnrollment(id: number) {
   return await prisma.preEnrollment.update({
     where: { id },
     data: { status: "declined" },
+  });
+}
+
+export async function getPreEnrollmentById(id: number) {
+  const preEnrollment = await prisma.preEnrollment.findUnique({
+    where: { id },
+  });
+  if (!preEnrollment) {
+    throw new Error("Pre-enrollment not found");
+  }
+  return preEnrollment;
+}
+
+export async function updatePreEnrollment(
+  id: number,
+  data: {
+    first_name: string;
+    last_name: string;
+    middle_name: string;
+    date_of_birth: Date;
+    gender: "male" | "female";
+    address: string;
+    email: string;
+    grade_level: GradeLevelEnum;
+    school_year: string;
+  },
+) {
+  return await prisma.preEnrollment.update({
+    where: { id },
+    data: {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      middle_name: data.middle_name,
+      date_of_birth: data.date_of_birth,
+      gender: data.gender,
+      address: data.address,
+      email: data.email,
+      grade_level: data.grade_level,
+      school_year: data.school_year,
+    },
   });
 }
 

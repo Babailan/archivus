@@ -22,10 +22,7 @@ export default async function PreEnrollmentsPage({
     <div className="px-10 py-2 mb-10">
       <h1 className="text-2xl font-bold mb-6">Pre-Enrollments (Pending)</h1>
       <Suspense fallback={<Skeleton className="h-96" />}>
-        <PreEnrollmentList
-          dataPromise={dataPromise}
-          statusFilter={status || "pending"}
-        />
+        <PreEnrollmentList dataPromise={dataPromise} />
       </Suspense>
     </div>
   );
