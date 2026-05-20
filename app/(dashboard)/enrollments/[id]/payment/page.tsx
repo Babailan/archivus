@@ -3,6 +3,15 @@ import { getEnrollmentById } from "../../action";
 import { PaymentForm } from "./payment-form";
 import { getPaymentHistoryAction } from "./action";
 import { PaymentHistory } from "./payment-history";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export default async function PaymentPage({
   params,
@@ -25,6 +34,25 @@ export default async function PaymentPage({
 
   return (
     <div className="px-10 py-2 mb-10">
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/dashboard" />}>
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/enrollments" />}>
+              Enrollments
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Payment</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <h1 className="text-2xl font-bold mb-6">
         Payment - {enrollment.student.last_name},{" "}
         {enrollment.student.first_name}

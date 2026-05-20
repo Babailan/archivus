@@ -183,6 +183,7 @@ export function EnrollmentsListForm({
       <Table className="border">
         <TableHeader>
           <TableRow>
+            <TableHead>Ref</TableHead>
             <TableHead>Student Name</TableHead>
             <TableHead>Grade Level</TableHead>
             <TableHead>School Year</TableHead>
@@ -205,6 +206,9 @@ export function EnrollmentsListForm({
           ) : (
             enrollments.map((enrollment) => (
               <TableRow key={enrollment.id}>
+                <TableCell>
+                  {enrollment.reference_code}
+                </TableCell>
                 <TableCell>
                   {enrollment.student.last_name},{" "}
                   {enrollment.student.first_name}{" "}

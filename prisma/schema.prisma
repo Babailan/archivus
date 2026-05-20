@@ -20,7 +20,7 @@ model Student {
   enrollments   Enrollment[]
 }
 
-model PreEnrollment {
+model StudentVerification {
   id            Int                 @id @default(autoincrement())
   reference_code String?           @unique
   first_name    String
@@ -32,7 +32,7 @@ model PreEnrollment {
   email         String
   grade_level   GradeLevelEnum
   school_year   String
-  status        PreEnrollmentStatus @default(pending)
+  status        StudentVerificationStatus @default(pending)
   created_at    DateTime            @default(now())
 }
 
@@ -72,10 +72,11 @@ model TuitionFeePayment {
   rollback_requests RollbackRequest[]
 }
 
-enum PreEnrollmentStatus {
+enum StudentVerificationStatus {
   pending
   approved
   declined
+	@@map("StudentVerificationStatus")
 }
 
 enum EnrollmentStatus {

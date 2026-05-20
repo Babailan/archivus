@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/tooltip";
 import { PanelLeftIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { Badge } from "./badge";
+import Link from "next/link";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -496,7 +498,6 @@ const sidebarMenuButtonVariants = cva(
     },
   },
 );
-
 function SidebarMenuButton({
   render,
   variant = "default",
@@ -504,29 +505,77 @@ function SidebarMenuButton({
   tooltip,
   className,
   pathname,
+  count,
+  title,
+  href,
+  icon,
   ...props
-}: useRender.ComponentProps<"button"> &
+}: Omit<useRender.ComponentProps<"button">, "render"> &
   React.ComponentProps<"button"> & {
+    render?: useRender.ComponentProps<"button">["render"];
     isActive?: boolean;
-    pathname?: string;
+    pathname?: string | string[];
+    count?: number;
+    title?: string;
+    href?: string;
+    icon?: React.ReactNode;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar();
   const path = usePathname();
+
+  const isActive = Array.isArray(pathname)
+    ? pathname.some((p) => path === p || path.startsWith(p + "/"))
+    : pathname === "/dashboard"
+      ? path === "/dashboard"
+      : pathname
+        ? path === pathname || path.startsWith(pathname + "/")
+        : false;
+
+  type RenderProp = useRender.ComponentProps<"button">["render"];
+
+  const resolvedRender: RenderProp =
+    render ??
+    (href ? (
+      <Link href={href} className="flex items-center gap-2 w-full">
+        {icon}
+        {title}
+      </Link>
+    ) : undefined);
+
+  const renderWithBadge: RenderProp =
+    count && count > 0 ? (
+      <div className="flex items-center w-full">
+        {resolvedRender as React.ReactNode}
+        <Badge className={cn("ml-auto h-5 w-5 shrink-0 rounded-full p-0 flex items-center justify-center",isActive && "bg-secondary text-primary")}>
+          {count}
+        </Badge>
+      </div>
+    ) : (
+      resolvedRender
+    );
+
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
       {
-        className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        className: cn(
+          sidebarMenuButtonVariants({ variant, size }),
+          isActive ? "text-secondary! bg-primary!" : className,
+        ),
       },
       props,
     ),
-    render: !tooltip ? render : <TooltipTrigger render={render} />,
+    render: !tooltip ? (
+      renderWithBadge
+    ) : (
+      <TooltipTrigger render={renderWithBadge} />
+    ),
     state: {
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
       size,
-      active: path == pathname,
+      active: isActive,
     },
   });
 
@@ -535,9 +584,7 @@ function SidebarMenuButton({
   }
 
   if (typeof tooltip === "string") {
-    tooltip = {
-      children: tooltip,
-    };
+    tooltip = { children: tooltip };
   }
 
   return (
@@ -552,7 +599,6 @@ function SidebarMenuButton({
     </Tooltip>
   );
 }
-
 function SidebarMenuAction({
   className,
   render,

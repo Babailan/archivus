@@ -1,31 +1,5 @@
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { faker } from "@faker-js/faker";
-import { generateReferenceCode, generateNextCustomId } from "@/lib/helper";
-
-const STUDENT_COUNT = 25000;
-const SCHOOL_YEARS = [
-  "2020-2021",
-  "2021-2022",
-  "2022-2023",
-  "2023-2024",
-  "2024-2025",
-  "2025-2026",
-  "2026-2027",
-];
-
-function randomDateBetween(start: Date, end: Date): Date {
-  return faker.date.between({ from: start, to: end });
-}
-
-function generateDateOfBirth(): Date {
-  const ages = [5, 6, 7, 8, 9, 10, 11, 12];
-  const age = faker.helpers.arrayElement(ages);
-  const year = 2026 - age - faker.number.int({ min: 0, max: 2 });
-  const month = faker.number.int({ min: 1, max: 12 });
-  const day = faker.number.int({ min: 1, max: 28 });
-  return new Date(year, month - 1, day);
-}
 
 async function seedUsers() {
   const existingUser = await prisma.user.findUnique({
@@ -166,7 +140,7 @@ async function seedSubjects() {
     createdPrices.map((p, i) => [createdSubjects[i]!.subject_code, p!]),
   );
 
-  return { subjectMap, priceMap, createdSubjects, createdPrices };
+  return { subjectMap, priceMap };
 }
 
 async function seedCurriculums(
@@ -307,6 +281,16 @@ async function seedCurriculums(
 async function seedEnrollmentSettings(
   curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[],
 ) {
+  const SCHOOL_YEARS = [
+    "2020-2021",
+    "2021-2022",
+    "2022-2023",
+    "2023-2024",
+    "2024-2025",
+    "2025-2026",
+    "2026-2027",
+  ];
+
   for (const sy of SCHOOL_YEARS) {
     const existing = await prisma.enrollmentSettings.findFirst({
       where: { school_year: sy },
@@ -351,382 +335,20 @@ async function seedEnrollmentSettings(
   }
 }
 
-async function seedStudents(count: number) {
-  console.log(`Creating ${count} students...`);
-  const batchSize = 1000;
-  const studentsPerYear = Math.floor(count / SCHOOL_YEARS.length);
-
-  for (let yearIdx = 0; yearIdx < SCHOOL_YEARS.length; yearIdx++) {
-    const sy = SCHOOL_YEARS[yearIdx];
-    const yearPrefix = sy.split("-")[0];
-    const students = [];
-
-    for (let i = 0; i < studentsPerYear; i++) {
-      const seq = i + 1;
-      const studentId = parseInt(
-        `${yearPrefix}${seq.toString().padStart(5, "0")}`,
-      );
-
-      students.push({
-        id: studentId,
-        first_name: faker.person.firstName(),
-        last_name: faker.person.lastName(),
-        middle_name: faker.person.middleName() || "",
-        date_of_birth: generateDateOfBirth(),
-        address: faker.location.streetAddress(),
-        gender: faker.helpers.arrayElement(["male", "female"]),
-        email: faker.internet.email(),
-      });
-
-      if (students.length >= batchSize || i === studentsPerYear - 1) {
-        await prisma.student.createMany({ data: students });
-        console.log(`Created ${i + 1} students for ${sy}...`);
-        students.length = 0;
-      }
-    }
-  }
-}
-
-async function seedEnrollments(
-  curriculums: Awaited<ReturnType<typeof prisma.curriculum.findUnique>>[],
-  _gradeCurriculumMap: Map<string, number>,
-) {
-  const gradeLevels = [
-    "grade1",
-    "grade2",
-    "grade3",
-    "grade4",
-    "grade5",
-    "grade6",
-  ];
-  const enrollmentStatuses = [
-    "approved",
-    "declined",
-    "dropped",
-  ] as const;
-
-  const curriculumPriceMap = new Map<number, number>();
-  for (const c of curriculums) {
-    if (!c) continue;
-    const subjects = await prisma.curriculumSubjects.findMany({
-      where: { curriculum_id: c.id },
-      include: { subject_price: true },
-    });
-    const tuition = subjects.reduce(
-      (sum, cs) => sum + Number(cs.subject_price.price),
-      0,
-    );
-    const misc = Number(c.miscellaneous_fee);
-    curriculumPriceMap.set(c.id, tuition + misc);
-  }
-
-  interface EnrollmentData {
-    student_id: number;
-    curriculum_id: number;
-    school_year: string;
-    status: "approved" | "declined" | "dropped";
-    total_tuition_snapshot: number;
-    total_misc_snapshot: number;
-    reference_code: string;
-  }
-
-  interface PaymentData {
-    enrollment_id: number;
-    amount_paid: number;
-    receipt_no: string;
-    payment_date: Date;
-  }
-
-  const students = await prisma.student.findMany({
-    select: { id: true },
-  });
-  const totalStudents = students.length;
-  console.log(`Creating enrollments for ${totalStudents} students...`);
-
-  const allEnrollments: EnrollmentData[] = [];
-  const enrollmentInfo: {
-    studentId: number;
-    enrollmentId: number;
-    totalAmount: number;
-    isOldSchoolYear: boolean;
-  }[] = [];
-
-  for (const student of students) {
-    const studentId = student.id;
-    const numEnrollments = faker.number.int({ min: 1, max: 3 });
-    const usedSchoolYears = new Set<string>();
-
-    for (let e = 0; e < numEnrollments; e++) {
-      let schoolYear: string;
-      let attempts = 0;
-      do {
-        schoolYear = faker.helpers.arrayElement(SCHOOL_YEARS);
-        attempts++;
-      } while (usedSchoolYears.has(schoolYear) && attempts < 10);
-      usedSchoolYears.add(schoolYear);
-
-      const gradeLevel = faker.helpers.arrayElement(gradeLevels);
-      const curriculum = curriculums.find((c) => c!.grade_level === gradeLevel);
-      if (!curriculum) continue;
-
-      const totalAmount = curriculumPriceMap.get(curriculum.id) || 0;
-      const totalTuition = totalAmount - Number(curriculum.miscellaneous_fee);
-      const totalMisc = Number(curriculum.miscellaneous_fee);
-      const status = faker.helpers.arrayElement(enrollmentStatuses);
-      const isOldSchoolYear = schoolYear.startsWith("202");
-
-      const referenceCode = generateReferenceCode(schoolYear, studentId);
-
-      allEnrollments.push({
-        student_id: studentId,
-        curriculum_id: curriculum.id,
-        school_year: schoolYear,
-        status,
-        total_tuition_snapshot: totalTuition,
-        total_misc_snapshot: totalMisc,
-        reference_code: referenceCode,
-      });
-
-      if (status === "approved") {
-        enrollmentInfo.push({
-          studentId,
-          enrollmentId: 0,
-          totalAmount,
-          isOldSchoolYear,
-        });
-      }
-    }
-  }
-
-  console.log(`Inserting ${allEnrollments.length} enrollments...`);
-  await prisma.enrollment.createMany({
-    data: allEnrollments,
-    skipDuplicates: true,
-  });
-
-  const savedEnrollments = await prisma.enrollment.findMany({
-    select: { id: true, student_id: true, school_year: true },
-    orderBy: { id: "asc" },
-  });
-
-  const enrollmentIdMap = new Map<string, number>();
-  for (const enroll of savedEnrollments) {
-    const key = `${enroll.student_id}-${enroll.school_year}`;
-    enrollmentIdMap.set(key, enroll.id);
-  }
-
-  for (const info of enrollmentInfo) {
-    const key = `${info.studentId}-2025-2026`;
-    const id = enrollmentIdMap.get(key);
-    if (id) info.enrollmentId = id;
-  }
-
-  console.log(
-    `Generating payments for ${enrollmentInfo.length} approved enrollments...`,
-  );
-
-  const allPayments: PaymentData[] = [];
-
-  for (const info of enrollmentInfo) {
-    if (!info.enrollmentId) continue;
-
-    const shouldHavePayments = faker.datatype.boolean({ probability: 85 });
-    if (!shouldHavePayments) continue;
-
-    const { totalAmount, isOldSchoolYear } = info;
-    const isFullyPaid = faker.datatype.boolean({ probability: 70 });
-    const totalPaid = isFullyPaid
-      ? totalAmount
-      : faker.number.int({
-          min: Math.floor(totalAmount * 0.3),
-          max: Math.floor(totalAmount * 0.9),
-        });
-
-    const numPayments = faker.number.int({ min: 1, max: 3 });
-    let remaining = totalPaid;
-
-    for (let p = 0; p < numPayments; p++) {
-      const amount =
-        p === numPayments - 1
-          ? remaining
-          : faker.number.int({
-              min: Math.floor(totalAmount * 0.1),
-              max: Math.max(
-                Math.floor(totalAmount * 0.1),
-                Math.floor(remaining / 2),
-              ),
-            });
-      remaining -= amount;
-
-      let paymentDate: Date;
-      if (isOldSchoolYear) {
-        paymentDate = randomDateBetween(
-          new Date(2020, 3, 1),
-          new Date(2026, 8, 31),
-        );
-      } else {
-        paymentDate = faker.date.recent({ days: 60 });
-      }
-
-      allPayments.push({
-        enrollment_id: info.enrollmentId,
-        amount_paid: amount,
-        receipt_no: `RCP-${faker.string.alphanumeric(8).toUpperCase()}`,
-        payment_date: paymentDate,
-      });
-    }
-  }
-
-  console.log(`Inserting ${allPayments.length} payments...`);
-  await prisma.tuitionFeePayment.createMany({
-    data: allPayments,
-    skipDuplicates: true,
-  });
-
-  console.log(
-    `Created ${allEnrollments.length} enrollments and ${allPayments.length} payments`,
-  );
-}
-
-async function seedRollbacks() {
-  console.log("Creating rollback requests...");
-
-  const approvedPayments = await prisma.tuitionFeePayment.findMany({
-    include: {
-      enrollment: {
-        include: { student: true },
-      },
-    },
-    take: 5000,
-  });
-
-  if (approvedPayments.length === 0) return;
-
-  const adminUser = await prisma.user.findFirst({
-    where: {
-      role: {
-        some: { role: "admin" },
-      },
-    },
-  });
-
-  if (!adminUser) return;
-
-  const rollbackStatuses = [
-    "pending",
-    "approved",
-    "denied",
-    "cancelled",
-  ] as const;
-  const rollbackReasons = [
-    "Wrong amount paid",
-    "Student transferred to another school",
-    "Enrollment cancelled by parent",
-    "Duplicate payment",
-    "Financial hardship",
-    "Student withdrew",
-    "Administrative error",
-  ];
-
-  const sampleSize = Math.min(approvedPayments.length, 500);
-  const selectedPayments = faker.helpers.arrayElements(
-    approvedPayments,
-    sampleSize,
-  );
-
-  for (const payment of selectedPayments) {
-    if (faker.datatype.boolean({ probability: 30 })) {
-      const status = faker.helpers.arrayElement(rollbackStatuses);
-      const reviewedById = status !== "pending" ? adminUser.id : null;
-      const reviewedAt =
-        status !== "pending" ? faker.date.recent({ days: 30 }) : null;
-
-      await prisma.rollbackRequest.create({
-        data: {
-          payment_id: payment.id,
-          requested_by_id: adminUser.id,
-          reason: faker.helpers.arrayElement(rollbackReasons),
-          status,
-          reviewed_by_id: reviewedById,
-          reviewed_at: reviewedAt,
-        },
-      });
-    }
-  }
-
-  console.log(`Created ${sampleSize} rollback requests`);
-}
-
-async function seedPreEnrollments(count: number) {
-  console.log(`Creating ${count} pre-enrollments...`);
-  const preEnrollments:any[]= [];
-  const gradeLevels = [
-    "grade1",
-    "grade2",
-    "grade3",
-    "grade4",
-    "grade5",
-    "grade6",
-  ] as const;
-  const statuses = ["pending", "approved", "declined"] as const;
-
-  for (let i = 0; i < count; i++) {
-    preEnrollments.push({
-      first_name: faker.person.firstName(),
-      last_name: faker.person.lastName(),
-      middle_name: faker.person.middleName() || "",
-      date_of_birth: generateDateOfBirth(),
-      address: faker.location.streetAddress(),
-      gender: faker.helpers.arrayElement(["male", "female"] as const),
-      email: faker.internet.email(),
-      grade_level: faker.helpers.arrayElement(gradeLevels),
-      school_year: "2026-2027",
-      status: faker.helpers.arrayElement(statuses),
-      created_at: faker.date.recent({ days: 30 }),
-    });
-  }
-  preEnrollments.map((data)=> {
-    // add reference code 
-    const yearPrefix = data.school_year.split("-")[0];
-    const randomId = faker.number.int({ min: 1, max: 99999 });
-    const referenceCode = generateReferenceCode(yearPrefix, randomId);
-    data.reference_code = referenceCode;
-    return data;
-  })
-
-  await prisma.preEnrollment.createMany({
-    data: preEnrollments,
-  });
-  console.log(`Created ${count} pre-enrollments`);
-}
-
 async function main() {
-  console.log("Starting seed...");
+  console.log("Starting lightweight seed...");
 
   console.log("Seeding users...");
   await seedUsers();
 
   console.log("Seeding subjects and prices...");
-  const { subjectMap, priceMap, createdSubjects, createdPrices } =
-    await seedSubjects();
+  const { subjectMap, priceMap } = await seedSubjects();
 
   console.log("Seeding curriculums...");
   const curricula = await seedCurriculums(subjectMap, priceMap);
 
   console.log("Seeding enrollment settings...");
   await seedEnrollmentSettings(curricula);
-
-  console.log("Seeding students...");
-  await seedStudents(STUDENT_COUNT);
-
-  console.log("Seeding enrollments and payments...");
-  await seedEnrollments(curricula, new Map());
-
-  console.log("Seeding rollback requests...");
-  await seedRollbacks();
-
-  console.log("Seeding pre-enrollments...");
-  await seedPreEnrollments(100);
 
   console.log("Seed completed successfully!");
 }

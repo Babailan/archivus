@@ -20,7 +20,6 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import Link from "next/link";
 import { AvatarFallback, AvatarBadge, Avatar } from "../ui/avatar";
 import {
   DropdownMenuTrigger,
@@ -54,7 +53,7 @@ export async function DashboardSideBar() {
       <SidebarContent>
         <SidebarGroup>
           <div className="flex gap-2 items-center">
-            <Button size={"icon"}>
+            <Button size="icon">
               <GalleryVerticalEnd />
             </Button>
             <span className="font-medium">Archivus Inc.</span>
@@ -63,12 +62,10 @@ export async function DashboardSideBar() {
         <SidebarGroup>
           <SidebarMenu className="gap-1">
             <SidebarMenuButton
+              href="/dashboard"
               pathname="/dashboard"
-              render={
-                <Link href={"/dashboard"}>
-                  <LayoutDashboard /> Dashboard
-                </Link>
-              }
+              icon={<LayoutDashboard />}
+              title="Dashboard"
             />
           </SidebarMenu>
         </SidebarGroup>
@@ -77,28 +74,22 @@ export async function DashboardSideBar() {
             <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
             <SidebarMenu className="gap-1">
               <SidebarMenuButton
+                href="/subjects"
                 pathname="/subjects"
-                render={
-                  <Link href={"/subjects"}>
-                    <Book /> Subjects
-                  </Link>
-                }
-              ></SidebarMenuButton>
+                icon={<Book />}
+                title="Subjects"
+              />
               <SidebarMenuButton
+                href="/curriculum"
                 pathname="/curriculum"
-                render={
-                  <Link href={"/curriculum"}>
-                    <LibraryBig /> Curriculum
-                  </Link>
-                }
-              ></SidebarMenuButton>
+                icon={<LibraryBig />}
+                title="Curriculum"
+              />
               <SidebarMenuButton
+                href="/users"
                 pathname="/users"
-                render={
-                  <Link href={"/users"}>
-                    <Users /> Users
-                  </Link>
-                }
+                icon={<Users />}
+                title="Users"
               />
             </SidebarMenu>
           </SidebarGroup>
@@ -108,41 +99,29 @@ export async function DashboardSideBar() {
             <SidebarGroupLabel>Registrar Office</SidebarGroupLabel>
             <SidebarMenu className="gap-1">
               <SidebarMenuButton
-                pathname="/pre-enrollments"
-                render={
-                  <Link href={"/pre-enrollments"} className="relative">
-                    <ClipboardList /> Pre-Enrollments
-                    {pendingCount > 0 && (
-                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center font-bold">
-                        {pendingCount}
-                      </Badge>
-                    )}
-                  </Link>
-                }
+                href="/student-verification"
+                pathname="/student-verification"
+                icon={<ClipboardList />}
+                title="Student Verification"
+                count={pendingCount}
               />
               <SidebarMenuButton
+                href="/students"
                 pathname="/students"
-                render={
-                  <Link href={"/students"}>
-                    <Users /> Official Students
-                  </Link>
-                }
+                icon={<Users />}
+                title="Official Students"
               />
               <SidebarMenuButton
+                href="/enrollments"
                 pathname="/enrollments"
-                render={
-                  <Link href={"/enrollments"}>
-                    <LibraryBig /> Enrollments
-                  </Link>
-                }
+                icon={<LibraryBig />}
+                title="Enrollments"
               />
               <SidebarMenuButton
+                href="/enrollment-settings"
                 pathname="/enrollment-settings"
-                render={
-                  <Link href={"/enrollment-settings"}>
-                    <Settings /> Enrollment Settings
-                  </Link>
-                }
+                icon={<Settings />}
+                title="Enrollment Settings"
               />
             </SidebarMenu>
           </SidebarGroup>
@@ -152,27 +131,19 @@ export async function DashboardSideBar() {
           <SidebarMenu className="gap-1">
             {(isAdmin || isCashier) && (
               <SidebarMenuButton
+                href="/payments"
                 pathname="/payments"
-                render={
-                  <Link href={"/payments"}>
-                    <Wallet /> Payments
-                  </Link>
-                }
+                icon={<Wallet />}
+                title="Payments"
               />
             )}
             {isAdmin && (
               <SidebarMenuButton
+                href="/rollback-requests"
                 pathname="/rollback-requests"
-                render={
-                  <Link href={"/rollback-requests"} className="relative">
-                    <Wallet /> Rollback Requests
-                    {pendingRollbackCount > 0 && (
-                      <Badge className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                        {pendingRollbackCount}
-                      </Badge>
-                    )}
-                  </Link>
-                }
+                icon={<Wallet />}
+                title="Rollback Requests"
+                count={pendingRollbackCount}
               />
             )}
           </SidebarMenu>
@@ -221,9 +192,7 @@ export async function HeaderBar() {
                 <AvatarFallback>
                   {session?.user?.name?.[0]?.toUpperCase() ?? "U"}
                 </AvatarFallback>
-                <AvatarBadge
-                  className={getBadgeColor(session?.user?.roles)}
-                ></AvatarBadge>
+                <AvatarBadge className={getBadgeColor(session?.user?.roles)} />
               </Avatar>
             }
           />

@@ -59,7 +59,7 @@ export function RevenueBarChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <BarChart accessibilityLayer data={data} margin={{ top: 20 }}>
             <CartesianGrid vertical={false} />
             <XAxis

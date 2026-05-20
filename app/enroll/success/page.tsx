@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CheckCircle2, Copy, ArrowLeft } from "lucide-react";
+import { CheckCircle2, ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Enrollment Success",
@@ -11,11 +11,6 @@ export default async function EnrollmentSuccessPage({
   searchParams: Promise<{ ref?: string }>;
 }) {
   const { ref } = await searchParams;
-
-  async function copyToClipboard(text: string) {
-    "use server";
-    await navigator.clipboard.writeText(text);
-  }
 
   if (!ref) {
     return (

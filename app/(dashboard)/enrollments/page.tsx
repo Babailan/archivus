@@ -3,7 +3,16 @@ import { Suspense } from "react";
 import { getEnrollments } from "./action";
 import { EnrollmentsListForm } from "./enrollments-list-form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { queryFirst } from "@/lib/helper";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
+
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Enrollments",
@@ -19,7 +28,20 @@ export default async function EnrollmentsPage({
   const enrollmentsPromise = getEnrollments(status, q, pageNum);
 
   return (
-    <div className="px-10 py-2 mb-10">
+    <div className="p-10 mb-10">
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/dashboard" />}>
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Enrollments</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <h1 className="text-2xl font-bold mb-6">Enrollments</h1>
       <Suspense fallback={<Skeleton className="h-96" />}>
         <EnrollmentsListForm

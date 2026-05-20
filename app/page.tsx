@@ -2,8 +2,7 @@ import { Metadata } from "next";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, GalleryVerticalEnd, School } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +15,7 @@ export default function Home() {
   return (
     <div>
       {/* Your Navigation */}
-      <div className="flex justify-between items-center p-5 top-0 bg-background z-10 sticky">
+      <div className="flex border-b justify-between items-center p-5 top-0 bg-background z-10 sticky">
         <div>
           <span className="font-medium flex items-center gap-1 font-garamond">
             <Button size="icon">
@@ -78,17 +77,12 @@ function SecondSection() {
         <h1 className="text-[clamp(1rem,4vw,10rem)] font-garamond">
           What we can offer?
         </h1>
-        <p className="">
-          Cambridge and Boston were key sites during the revolutionary period. A
-          special self-guided, mobile tour from Harvard offers unique insights
-          about notable places on and around campus and reveals the historical
-          context behind them.
-        </p>
+    
       </div>
       <div className="grid gap-5 grid-cols-3 mt-5">
         <Card className="rounded-none pt-0 bg-primary text-white">
           <AspectRatio ratio={16 / 9}>
-            <Image src={"/holistic_image.jpg"} alt="Holistic Images" fill />
+            <Image src={"/holistic.jpg"} alt="Holistic Images" fill />
           </AspectRatio>
           <CardContent className="p-10 flex flex-col gap-3">
             <h1 className="text-3xl font-garamond">Holistic development</h1>
@@ -101,27 +95,30 @@ function SecondSection() {
         </Card>
         <Card className="rounded-none pt-0 bg-primary text-white">
           <AspectRatio ratio={16 / 9}>
-            <Image src={"/holistic_image.jpg"} alt="Holistic Images" fill />
+            <Image src={"/diversity.jpg"} alt="Holistic Images" fill />
           </AspectRatio>
           <CardContent className="p-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-garamond">Holistic development</h1>
+            <h1 className="text-3xl font-garamond">Diversity</h1>
             <p className="text-base">
-              Education extends beyond the classroom. A school should offer
-              opportunities for students to grow physically, emotionally, and
-              socially.
+              Diversity is the vast tapestry of human differences that
+              encompasses everything from innate characteristics like race, age,
+              and gender to acquired traits such as education, political
+              beliefs, and socioeconomic background.
             </p>
           </CardContent>
         </Card>
         <Card className="rounded-none pt-0 bg-primary text-white">
           <AspectRatio ratio={16 / 9}>
-            <Image src={"/holistic_image.jpg"} alt="Holistic Images" fill />
+            <Image src={"/culture.png"} alt="Holistic Images" fill />
           </AspectRatio>
           <CardContent className="p-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-garamond">Holistic development</h1>
+            <h1 className="text-3xl font-garamond">Culture Richness</h1>
             <p className="text-base">
-              Education extends beyond the classroom. A school should offer
-              opportunities for students to grow physically, emotionally, and
-              socially.
+              Culture is the invisible blueprint that shapes how a group of
+              people lives, thinks, and interacts with the world. It is a
+              complex system of shared beliefs, values, customs, behaviors, and
+              artifacts that are passed down from one generation to the next
+              through learning rather than genetics.
             </p>
           </CardContent>
         </Card>
@@ -173,7 +170,7 @@ const Footer = () => {
           </div>
 
           {/* Social Section */}
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <h3 className="font-semibold mb-4 uppercase tracking-wider text-sm">
               Connect
             </h3>
@@ -191,7 +188,7 @@ const Footer = () => {
                 🐙
               </a>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Bottom Credits */}

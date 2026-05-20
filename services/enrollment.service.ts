@@ -2,14 +2,11 @@ import prisma from "@/lib/prisma";
 import {
   EnrollmentStatus,
   GradeLevelEnum,
-  PreEnrollmentStatus,
   Prisma,
+  StudentVerificationStatus,
 } from "@/app/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
-import {
-  generateReferenceCode,
-  generateNextCustomId,
-} from "@/lib/helper";
+import { generateReferenceCode, generateNextCustomId } from "@/lib/helper";
 
 export type EnrollmentWithDetails = Awaited<ReturnType<typeof getEnrollment>>;
 
@@ -87,6 +84,7 @@ export type EnrollmentItem = {
   paymentStatus: PaymentStatus;
   payments: Array<{ amount_paid: number }>;
   created_at: Date;
+  reference_code: string;
 };
 
 function computePaymentStatus(
@@ -122,17 +120,14 @@ export async function searchEnrollments(
       where.AND = chunks.map((chunk) => {
         const searchConditions: Prisma.EnrollmentWhereInput[] = [
           { reference_code: { contains: chunk } },
-          { student: { first_name: { contains: chunk } } },
-          { student: { last_name: { contains: chunk } } },
-          { student: { middle_name: { contains: chunk } } },
-          { student: { email: { contains: chunk } } },
+          { reference_code: { contains: `EN-${chunk}` } },
+          { student: { first_name: { contains: chunk , mode: "insensitive"} } },
+          { student: { last_name: { contains: chunk , mode: "insensitive"} } },
+          { student: { middle_name: { contains: chunk , mode: "insensitive"} } },
+          { student: { email: { contains: chunk , mode: "insensitive"} } },
           { school_year: { contains: chunk } },
           { curriculum: { curriculum_name: { contains: chunk } } },
         ];
-
-        if (/^\d+$/.test(chunk)) {
-          searchConditions.push({ student_id: parseInt(chunk) });
-        }
 
         return { OR: searchConditions };
       });
@@ -192,24 +187,51 @@ export async function searchEnrollments(
     pageSize,
   };
 }
-
-export async function getPreEnrollments(
-  status: PreEnrollmentStatus = "pending",
+export async function searchStudentVerifications(
+  status: StudentVerificationStatus = "pending",
   page: number = 1,
   pageSize: number = 10,
+  q?: string,
 ) {
   const skip = (page - 1) * pageSize;
-  const [preEnrollments, total] = await Promise.all([
-    prisma.preEnrollment.findMany({
-      where: { status },
+
+  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+
+  const searchFilter: Prisma.StudentVerificationWhereInput = q
+    ? {
+        OR: [
+          // match full query against reference-like fields
+          {
+            reference_code: {
+              contains: q.trim(),
+              mode: "insensitive" as const,
+            },
+          },
+          // match each chunk against name/email fields
+          ...chunks.map((chunk) => ({
+            OR: [
+              { first_name: { contains: chunk, mode: "insensitive" as const } },
+              { last_name: { contains: chunk, mode: "insensitive" as const } },
+              { email: { contains: chunk, mode: "insensitive" as const } },
+            ],
+          })),
+        ],
+      }
+    : {};
+
+  const where: Prisma.StudentVerificationWhereInput = { status, ...searchFilter };
+
+  const [studentVerifications, total] = await Promise.all([
+    prisma.studentVerification.findMany({
+      where,
       skip,
       take: pageSize,
       orderBy: { created_at: "desc" },
     }),
-    prisma.preEnrollment.count({ where: { status } }),
+    prisma.studentVerification.count({ where }),
   ]);
 
-  return { preEnrollments, total, page, pageSize };
+  return { studentVerifications, total, page, pageSize };
 }
 
 export async function searchStudents(
@@ -225,10 +247,10 @@ export async function searchStudents(
     if (chunks.length > 0) {
       where.AND = chunks.map((chunk) => ({
         OR: [
-          { first_name: { contains: chunk } },
-          { last_name: { contains: chunk } },
-          { middle_name: { contains: chunk } },
-          { email: { contains: chunk } },
+          { first_name: { contains: chunk, mode: "insensitive" } },
+          { last_name: { contains: chunk, mode: "insensitive" } },
+          { middle_name: { contains: chunk, mode: "insensitive" } },
+          { email: { contains: chunk, mode: "insensitive" } },
         ],
       }));
     }
@@ -273,7 +295,7 @@ export async function searchStudents(
 }
 
 export async function getPendingEnrollmentCount() {
-  return await prisma.preEnrollment.count({
+  return await prisma.studentVerification.count({
     where: { status: "pending" },
   });
 }
@@ -289,7 +311,7 @@ export async function createEnrollment(data: {
   grade_level: string;
   school_year: string;
 }) {
-  const preEnrollment = await prisma.preEnrollment.create({
+  const studentVerification = await prisma.studentVerification.create({
     data: {
       first_name: data.first_name,
       last_name: data.last_name,
@@ -306,40 +328,40 @@ export async function createEnrollment(data: {
 
   const referenceCode = generateReferenceCode(
     data.school_year,
-    preEnrollment.id,
+    studentVerification.id,
   );
 
-  const updated = await prisma.preEnrollment.update({
-    where: { id: preEnrollment.id },
+  const updated = await prisma.studentVerification.update({
+    where: { id: studentVerification.id },
     data: { reference_code: referenceCode },
   });
 
   return updated;
 }
 
-export async function approvePreEnrollment(id: number) {
-  const preEnrollment = await prisma.preEnrollment.findUnique({
+export async function approveStudentVerification(id: number) {
+  const studentVerification = await prisma.studentVerification.findUnique({
     where: { id },
   });
 
-  if (!preEnrollment) {
-    throw new Error("Pre-enrollment not found");
+  if (!studentVerification) {
+    throw new Error("Student verification not found");
   }
 
-  if (preEnrollment.status !== "pending") {
-    throw new Error("Only pending pre-enrollments can be approved");
+  if (studentVerification.status !== "pending") {
+    throw new Error("Only pending student verifications can be approved");
   }
 
   const gradeCurriculum = await prisma.gradeCurriculumSetting.findFirst({
     where: {
-      grade_level: preEnrollment.grade_level,
-      school_year: preEnrollment.school_year,
+      grade_level: studentVerification.grade_level,
+      school_year: studentVerification.school_year,
     },
   });
 
   if (!gradeCurriculum) {
     throw new Error(
-      `No curriculum configured for ${preEnrollment.grade_level} in ${preEnrollment.school_year}`,
+      `No curriculum configured for ${studentVerification.grade_level} in ${studentVerification.school_year}`,
     );
   }
 
@@ -367,7 +389,7 @@ export async function approvePreEnrollment(id: number) {
 
   return await prisma.$transaction(async (tx) => {
     // 1. Generate Custom Student ID
-    const year = preEnrollment.school_year.split("-")[0]; // e.g., "2024" from "2024-2025"
+    const year = studentVerification.school_year.split("-")[0]; // e.g., "2024" from "2024-2025"
     const lastStudent = await tx.student.findFirst({
       where: { id: { gte: parseInt(year) * 100000 } },
       orderBy: { id: "desc" },
@@ -381,13 +403,13 @@ export async function approvePreEnrollment(id: number) {
     const student = await tx.student.create({
       data: {
         id: nextStudentId,
-        first_name: preEnrollment.first_name,
-        last_name: preEnrollment.last_name,
-        middle_name: preEnrollment.middle_name,
-        date_of_birth: preEnrollment.date_of_birth,
-        gender: preEnrollment.gender,
-        address: preEnrollment.address,
-        email: preEnrollment.email,
+        first_name: studentVerification.first_name,
+        last_name: studentVerification.last_name,
+        middle_name: studentVerification.middle_name,
+        date_of_birth: studentVerification.date_of_birth,
+        gender: studentVerification.gender,
+        address: studentVerification.address,
+        email: studentVerification.email,
       },
     });
 
@@ -396,19 +418,19 @@ export async function approvePreEnrollment(id: number) {
       data: {
         student_id: student.id,
         curriculum_id: curriculumId,
-        school_year: preEnrollment.school_year,
+        school_year: studentVerification.school_year,
         status: "approved",
         total_tuition_snapshot: subjectPrices,
         total_misc_snapshot: curriculum.miscellaneous_fee,
         reference_code: generateReferenceCode(
-          preEnrollment.school_year,
+          studentVerification.school_year,
           student.id,
         ),
       },
     });
 
-    // 4. Update Pre-Enrollment status
-    await tx.preEnrollment.update({
+    // 4. Update Student Verification status
+    await tx.studentVerification.update({
       where: { id },
       data: { status: "approved" },
     });
@@ -426,24 +448,24 @@ export async function approvePreEnrollment(id: number) {
   });
 }
 
-export async function declinePreEnrollment(id: number) {
-  return await prisma.preEnrollment.update({
+export async function declineStudentVerification(id: number) {
+  return await prisma.studentVerification.update({
     where: { id },
     data: { status: "declined" },
   });
 }
 
-export async function getPreEnrollmentById(id: number) {
-  const preEnrollment = await prisma.preEnrollment.findUnique({
+export async function getStudentVerificationById(id: number) {
+  const studentVerification = await prisma.studentVerification.findUnique({
     where: { id },
   });
-  if (!preEnrollment) {
-    throw new Error("Pre-enrollment not found");
+  if (!studentVerification) {
+    throw new Error("Student verification not found");
   }
-  return preEnrollment;
+  return studentVerification;
 }
 
-export async function updatePreEnrollment(
+export async function updateStudentVerification(
   id: number,
   data: {
     first_name: string;
@@ -457,7 +479,7 @@ export async function updatePreEnrollment(
     school_year: string;
   },
 ) {
-  return await prisma.preEnrollment.update({
+  return await prisma.studentVerification.update({
     where: { id },
     data: {
       first_name: data.first_name,

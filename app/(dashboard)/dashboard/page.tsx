@@ -2,6 +2,12 @@ import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOption } from "@/lib/auth";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import {
   getEnrollmentTrends,
   getEnrollmentByStatus,
   getEnrollmentByGradeLevel,
@@ -62,6 +68,13 @@ export default async function DashboardPage({
 
     return (
       <div className="p-6">
+        <Breadcrumb className="mb-5">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <AdminDashboard
           revenueTrends={revenueTrends}
           recentRollbacks={recentRollbacks}
@@ -93,6 +106,13 @@ export default async function DashboardPage({
 
     return (
       <div className="p-6">
+        <Breadcrumb className="mb-5">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <RegistrarDashboard
           enrollmentTrends={enrollmentTrends}
           enrollmentByStatus={enrollmentByStatus}
@@ -123,6 +143,13 @@ export default async function DashboardPage({
 
     return (
       <div className="p-6">
+        <Breadcrumb className="mb-5">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <CashierDashboard
           paymentTrends={paymentTrends}
           recentPayments={recentPayments}
@@ -138,6 +165,13 @@ export default async function DashboardPage({
 
   return (
     <div className="p-6">
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbPage>Dashboard</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <h1 className="text-2xl font-semibold">Welcome to Archivus</h1>
       <p className="text-muted-foreground mt-2">
         Your account does not have a assigned role. Please contact your

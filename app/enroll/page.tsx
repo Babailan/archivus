@@ -2,6 +2,8 @@ import { Metadata } from "next";
 import { EnrollmentForm } from "./enrollment-form";
 import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Enrollment",
 };

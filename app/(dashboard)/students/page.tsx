@@ -3,6 +3,15 @@ import { Suspense } from "react";
 import { fetchStudents } from "./action";
 import { StudentList } from "./student-list";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -19,12 +28,23 @@ export default async function StudentsPage({
   const dataPromise = fetchStudents(q, pageNum);
 
   return (
-    <div className="px-10 py-2 mb-10">
+    <div className="p-10 mb-10">
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink render={<Link href="/dashboard" />}>
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Official Students</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <h1 className="text-2xl font-bold mb-6">Official Students</h1>
       <Suspense fallback={<Skeleton className="h-96" />}>
-        <StudentList
-          dataPromise={dataPromise}
-        />
+        <StudentList dataPromise={dataPromise} />
       </Suspense>
     </div>
   );
