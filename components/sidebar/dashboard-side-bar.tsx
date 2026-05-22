@@ -12,6 +12,7 @@ import {
 import {
   Book,
   ClipboardList,
+  FileText,
   GalleryVerticalEnd,
   LayoutDashboard,
   LibraryBig,
@@ -122,6 +123,12 @@ export async function DashboardSideBar() {
                 pathname="/enrollment-settings"
                 icon={<Settings />}
                 title="Enrollment Settings"
+              />
+              <SidebarMenuButton
+                href="/documents"
+                pathname="/documents"
+                icon={<FileText />}
+                title="Documents"
               />
             </SidebarMenu>
           </SidebarGroup>

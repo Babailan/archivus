@@ -10,10 +10,10 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import { useAction } from "next-safe-action/hooks";
-import { deleteSubjectAction } from "./action";
+import { deleteDocumentAction } from "./action";
 import { toast } from "sonner";
 
-export default function DeleteSubjectDialog({
+export default function DeleteDocumentDialog({
   id,
   open,
   onOpenChange,
@@ -22,21 +22,21 @@ export default function DeleteSubjectDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { executeAsync, isExecuting } = useAction(deleteSubjectAction);
+  const { executeAsync, isExecuting } = useAction(deleteDocumentAction);
   const handleSubmit = async () => {
     const { data } = await executeAsync({ id });
     if (data) {
-      toast.success("Subject deleted successfully");
+      toast.success("Document deleted successfully");
       onOpenChange(false);
     }
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Subject</DialogTitle>
+          <DialogTitle>Delete Document</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this subject?
+            Are you sure you want to delete this document?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Ellipsis, Search } from "lucide-react";
 import { format } from "date-fns";
-import { NumericFormat } from "react-number-format";
 import {
   Empty,
   EmptyDescription,
@@ -27,64 +26,54 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useRouter, useSearchParams } from "next/navigation";
 import { use, useState } from "react";
-import { SearchSubjectResult } from "@/services/subject.service";
-import EditSubjectDialog from "./edit-subject-dialog";
-import DeleteSubjectDialog from "./delete-subject-dialog";
+import { SearchDocumentResult } from "@/services/document.service";
+import EditDocumentDialog from "./edit-document-dialog";
+import DeleteDocumentDialog from "./delete-document-dialog";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 
-export function SubjectListForm({
-  subjectsPromise,
+export function DocumentListTable({
+  documentsPromise,
 }: {
-  subjectsPromise: Promise<SearchSubjectResult>;
+  documentsPromise: Promise<SearchDocumentResult>;
 }) {
-  const { subjects: subj, total, page, pageSize } = use(subjectsPromise);
+  const { documents, total, page, pageSize } = use(documentsPromise);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const totalPages = Math.ceil(total / pageSize);
 
   return (
     <>
-      {!subj.length && (
+      {!documents.length && (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
               <Search />
             </EmptyMedia>
             <EmptyTitle>No data</EmptyTitle>
-            <EmptyDescription>Subject doesn&apos;t exist.</EmptyDescription>
+            <EmptyDescription>No documents found.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       )}
-      {!!subj.length && (
+      {!!documents.length && (
         <>
           <Table className="my-5 border">
             <TableHeader>
               <TableRow>
-                <TableHead>Subject Code</TableHead>
-                <TableHead>Subject Name</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>ID</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Date Created</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {subj.map((subject) => (
-                <TableRow key={subject.id}>
-                  <TableCell>{subject.subject_code.toUpperCase()}</TableCell>
-                  <TableCell>{subject.subject_name.toUpperCase()}</TableCell>
-                  <TableCell>
-                    <NumericFormat
-                      displayType="text"
-                      prefix="₱ "
-                      value={subject.prices[0]?.price}
-                      thousandSeparator
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {format(subject.created_at, "MMM, d yyyy")}
-                  </TableCell>
+              {documents.map((doc) => (
+                <TableRow key={doc.id}>
+                  <TableCell>{doc.id}</TableCell>
+                  <TableCell>{doc.name.toUpperCase()}</TableCell>
+                  <TableCell>{doc.description ?? "—"}</TableCell>
+                  <TableCell>{format(doc.created_at, "MMM, d yyyy")}</TableCell>
                   <TableCell className="flex justify-end">
                     <DropdownMenu>
                       <DropdownMenuTrigger
@@ -96,29 +85,28 @@ export function SubjectListForm({
                       />
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setEditingId(subject.id)}>
+                          <DropdownMenuItem onClick={() => setEditingId(doc.id)}>
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setDeletingId(subject.id)}>
+                          <DropdownMenuItem onClick={() => setDeletingId(doc.id)}>
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    <EditSubjectDialog
-                      id={subject.id}
-                      subject_code={subject.subject_code}
-                      subject_name={subject.subject_name}
-                      prices={subject.prices}
-                      open={editingId === subject.id}
+                    <EditDocumentDialog
+                      id={doc.id}
+                      name={doc.name}
+                      description={doc.description}
+                      open={editingId === doc.id}
                       onOpenChange={(open) => { if (!open) setEditingId(null); }}
                     />
-                    <DeleteSubjectDialog
-                      id={subject.id}
-                      open={deletingId === subject.id}
+                    <DeleteDocumentDialog
+                      id={doc.id}
+                      open={deletingId === doc.id}
                       onOpenChange={(open) => { if (!open) setDeletingId(null); }}
                     />
                   </TableCell>

@@ -203,6 +203,14 @@ model EnrollmentSettings {
   updated_at                   DateTime @updatedAt
 }
 
+model Document {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  inactive    Boolean  @default(false)
+  created_at  DateTime @default(now())
+}
+
 model RollbackRequest {
   id              Int               @id @default(autoincrement())
   payment         TuitionFeePayment @relation(fields: [payment_id], references: [id])

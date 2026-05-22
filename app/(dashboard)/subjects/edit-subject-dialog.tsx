@@ -8,30 +8,33 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldSet } from "@/components/ui/field";
-import Link from "next/link";
-import { InferSafeActionFnResult } from "next-safe-action";
 import { updateSubjectAction } from "./action";
 import { NumericFormat } from "react-number-format";
 import { PesoInput } from "@/components/ui/peso-input";
 import { useAction } from "next-safe-action/hooks";
 import React from "react";
 import numeral from "numeral";
-import { SearchSubjectResult } from "@/services/subject.service";
-import { toast, useSonner } from "sonner";
+import { toast } from "sonner";
 import { format } from "date-fns";
-
-type props = Awaited<SearchSubjectResult>["subjects"][number];
 
 export default function EditSubjectDialog({
   prices,
   subject_code,
   subject_name,
   id,
-}: props) {
+  open,
+  onOpenChange,
+}: {
+  prices: { price: number }[];
+  subject_code: string;
+  subject_name: string;
+  id: number;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { isExecuting, result, executeAsync } = useAction(updateSubjectAction);
 
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -39,7 +42,6 @@ export default function EditSubjectDialog({
     e.stopPropagation();
     const formdata = new FormData(e.currentTarget);
     const validateForm = new FormData();
-    // don't put if the value is the same
     validateForm.append("id", id.toString());
     if (formdata.get("subject_code") !== subject_code) {
       validateForm.append("subject_code", formdata.get("subject_code")!);
@@ -58,18 +60,12 @@ export default function EditSubjectDialog({
       toast.success("Subject updated successfully", {
         description: format(new Date(), "MMM, d yyyy"),
       });
+      onOpenChange(false);
     }
   }
   return (
-    <Dialog>
-      <DialogTrigger
-        render={
-          <Button variant={"ghost"} className="w-full justify-start">
-            Edit
-          </Button>
-        }
-      />
-      <DialogContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Subject</DialogTitle>
         </DialogHeader>
@@ -97,16 +93,10 @@ export default function EditSubjectDialog({
               <DialogDescription>
                 You can update this subject without changing existing records.
                 Any curriculum already using this subject will have its price
-                locked at the current value. Alternatively, you can{" "}
-                <Link
-                  href={"/subjects/create"}
-                  className="text-blue-600 hover:text-blue-600"
-                >
-                  create a new subject instead
-                </Link>
+                locked at the current value.
               </DialogDescription>
             </DialogFooter>
-            <Button className="w-full mt-2" disabled={isExecuting}>
+            <Button type="submit" className="w-full mt-2" disabled={isExecuting}>
               {isExecuting ? "Updating..." : "Update Subject"}
             </Button>
           </FieldSet>
