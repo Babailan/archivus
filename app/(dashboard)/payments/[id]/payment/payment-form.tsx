@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
-import { recordPaymentAction } from "../../action";
+import { recordPaymentAction } from "./action";
 import { toast } from "sonner";
 import { CircleDollarSign, Calculator } from "lucide-react";
 import { EnrollmentWithDetails } from "@/services/enrollment.service";

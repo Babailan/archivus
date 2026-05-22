@@ -119,15 +119,6 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
 
   return (
     <div className="space-y-6">
-      <Button
-        variant="ghost"
-        onClick={() => router.push("/enrollments")}
-        className="mb-4"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to Enrollments
-      </Button>
-
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>

@@ -95,7 +95,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
                     <Button
                       size="sm"
                       onClick={() =>
-                        router.push(`/enrollments/${payment.id}/payment`)
+                        router.push(`/payments/${payment.id}/payment`)
                       }
                     >
                       <Wallet className="w-4 h-4 mr-2" />

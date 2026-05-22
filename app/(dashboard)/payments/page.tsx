@@ -27,7 +27,7 @@ export default async function PaymentsPage({
   const paymentsPromise = getPayments(q, pageNum);
 
   return (
-    <div className="px-10 py-2 mb-10">
+    <div className="p-10 mb-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>

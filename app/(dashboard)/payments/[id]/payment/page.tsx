@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getEnrollmentById } from "../../action";
+import { getEnrollmentById } from "./action";
 import { PaymentForm } from "./payment-form";
 import { getPaymentHistoryAction } from "./action";
 import { PaymentHistory } from "./payment-history";
@@ -33,7 +33,7 @@ export default async function PaymentPage({
   }
 
   return (
-    <div className="px-10 py-2 mb-10">
+    <div className="p-10 mb-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>

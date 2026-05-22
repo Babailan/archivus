@@ -143,48 +143,6 @@ export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
                       >
                         <Eye className="h-4 w-4 mr-1" /> View
                       </Button>
-
-                      {latestEnrollment &&
-                        latestEnrollment.status !== "dropped" && (
-                          <Dialog>
-                            <DialogTrigger
-                              render={() => (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <UserMinus className="h-4 w-4 mr-1" /> Drop
-                                </Button>
-                              )}
-                            ></DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Drop Student</DialogTitle>
-                                <DialogDescription>
-                                  Are you sure you want to drop this student
-                                  from their current enrollment?
-                                </DialogDescription>
-                              </DialogHeader>
-                              <DialogFooter>
-                                <DialogClose
-                                  render={() => (
-                                    <Button variant="outline">Cancel</Button>
-                                  )}
-                                ></DialogClose>
-                                <Button
-                                  variant="destructive"
-                                  disabled={isDropping}
-                                  onClick={() =>
-                                    handleDrop(latestEnrollment.id)
-                                  }
-                                >
-                                  Drop Student
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        )}
                     </div>
                   </TableCell>
                 </TableRow>

@@ -17,12 +17,14 @@ export default function Home() {
       {/* Your Navigation */}
       <div className="flex border-b justify-between items-center p-5 top-0 bg-background z-10 sticky">
         <div>
-          <span className="font-medium flex items-center gap-1 font-garamond">
-            <Button size="icon">
-              <GalleryVerticalEnd />
-            </Button>
-            Manny So Christian Academy.
-          </span>
+          <div className="flex gap-2">
+            <AspectRatio ratio={1 / 1} className="size-16">
+              <Image src={"/school_logo.png"} alt={""} fill />
+            </AspectRatio>
+            <span className="font-medium flex items-center gap-1 font-garamond">
+              Manny So Christian Academy.
+            </span>
+          </div>
         </div>
         <div className="gap-2 flex">
           <Link href={"/enroll"}>
@@ -77,7 +79,6 @@ function SecondSection() {
         <h1 className="text-[clamp(1rem,4vw,10rem)] font-garamond">
           What we can offer?
         </h1>
-    
       </div>
       <div className="grid gap-5 grid-cols-3 mt-5">
         <Card className="rounded-none pt-0 bg-primary text-white">

@@ -38,34 +38,12 @@ export const approveEnrollmentAction = actionClient
     return { success: true };
   });
 
-const recordPaymentInputSchema = zfd.formData({
-  enrollment_id: zfd.numeric(z.number()),
-  amount_paid: zfd.numeric(z.number()),
-  receipt_no: zfd.text(z.string().min(1)),
-});
-
-export const recordPaymentAction = actionClient
-  .inputSchema(recordPaymentInputSchema)
-  .action(async ({ parsedInput }) => {
-    const result = await recordPayment({
-      enrollment_id: parsedInput.enrollment_id,
-      amount_paid: parsedInput.amount_paid,
-      receipt_no: parsedInput.receipt_no,
-    });
-    revalidatePath("/enrollments");
-    return { success: true, isFullyPaid: result.isFullyPaid };
-  });
-
 export async function getEnrollments(
   status?: string,
   q?: string,
   page?: number,
 ) {
   return await searchEnrollments(status, q, page);
-}
-
-export async function getEnrollmentById(id: number) {
-  return await getEnrollment(id);
 }
 
 const updateStudentInputSchema = zfd.formData({

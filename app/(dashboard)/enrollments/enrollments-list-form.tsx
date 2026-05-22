@@ -147,7 +147,6 @@ export function EnrollmentsListForm({
 
   const statusFilters = [
     { value: "all", label: "All" },
-    { value: "pending", label: "Pending" },
     { value: "approved", label: "Approved" },
     { value: "declined", label: "Declined" },
     { value: "dropped", label: "Dropped" },
@@ -206,9 +205,7 @@ export function EnrollmentsListForm({
           ) : (
             enrollments.map((enrollment) => (
               <TableRow key={enrollment.id}>
-                <TableCell>
-                  {enrollment.reference_code}
-                </TableCell>
+                <TableCell>{enrollment.reference_code}</TableCell>
                 <TableCell>
                   {enrollment.student.last_name},{" "}
                   {enrollment.student.first_name}{" "}
