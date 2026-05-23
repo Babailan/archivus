@@ -6,8 +6,10 @@ import { z } from "zod";
 import {
   searchStudents,
   dropEnrollment,
+  createEnrollmentForStudent,
 } from "@/services/enrollment.service";
 import { updateStudentWithDocuments } from "@/services/student.service";
+import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 import { revalidatePath } from "next/cache";
 
 const dropEnrollmentSchema = zfd.formData({
@@ -60,5 +62,28 @@ export async function fetchStudents(
   pageSize?: number,
 ) {
   return await searchStudents(q, page, pageSize);
+}
+
+const createEnrollmentSchema = zfd.formData({
+  student_id: zfd.numeric(z.number()),
+  grade_level: zfd.text(z.string()),
+  school_year: zfd.text(z.string()),
+});
+
+export const createEnrollmentAction = actionClient
+  .inputSchema(createEnrollmentSchema)
+  .action(async ({ parsedInput }) => {
+    await createEnrollmentForStudent({
+      student_id: parsedInput.student_id,
+      grade_level: parsedInput.grade_level as any,
+      school_year: parsedInput.school_year,
+    });
+    revalidatePath(`/students/${parsedInput.student_id}`);
+    revalidatePath("/enrollments");
+    return { success: true };
+  });
+
+export async function getEnrollmentData() {
+  return await getEnrollmentSettings();
 }
 

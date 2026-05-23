@@ -326,10 +326,7 @@ export async function createEnrollment(data: {
     },
   });
 
-  const referenceCode = generateReferenceCode(
-    data.school_year,
-    studentVerification.id,
-  );
+  const referenceCode = generateReferenceCode();
 
   const updated = await prisma.studentVerification.update({
     where: { id: studentVerification.id },
@@ -422,10 +419,7 @@ export async function approveStudentVerification(id: number) {
         status: "approved",
         total_tuition_snapshot: subjectPrices,
         total_misc_snapshot: curriculum.miscellaneous_fee,
-        reference_code: generateReferenceCode(
-          studentVerification.school_year,
-          student.id,
-        ),
+        reference_code: generateReferenceCode(),
       },
     });
 
@@ -517,6 +511,10 @@ export async function getStudentByEnrollmentId(id: number) {
           },
         },
       },
+      enrollment_rollback_requests: {
+        orderBy: { created_at: "desc" },
+        take: 5,
+      },
     },
   });
 
@@ -528,6 +526,10 @@ export async function getStudentByEnrollmentId(id: number) {
   );
   const totalTuition = enrollment.total_tuition_snapshot.toNumber();
   const balance = totalTuition - totalPaid.toNumber();
+
+  const pendingRollback = enrollment.enrollment_rollback_requests.find(
+    (r) => r.status === "pending",
+  );
 
   return {
     student: {
@@ -554,9 +556,12 @@ export async function getStudentByEnrollmentId(id: number) {
             : "unpaid",
       total_paid: totalPaid.toNumber(),
       balance,
+      hasPendingRollbackRequest: !!pendingRollback,
+      pendingRollbackRequestId: pendingRollback?.id ?? null,
     },
   };
 }
+
 
 export async function updateStudent(data: {
   id: number;
@@ -630,4 +635,71 @@ export async function recordPayment(data: {
   });
 
   return { isFullyPaid };
+}
+
+export async function createEnrollmentForStudent(data: {
+  student_id: number;
+  grade_level: GradeLevelEnum;
+  school_year: string;
+}) {
+  const gradeCurriculum = await prisma.gradeCurriculumSetting.findFirst({
+    where: {
+      grade_level: data.grade_level,
+      school_year: data.school_year,
+    },
+    include: { curriculum: true },
+  });
+
+  if (!gradeCurriculum) {
+    throw new Error(
+      `No curriculum configured for ${data.grade_level} in ${data.school_year}`,
+    );
+  }
+
+  const curriculum = await prisma.curriculum.findUnique({
+    where: { id: gradeCurriculum.curriculum_id },
+    include: {
+      curriculum_subjects: {
+        include: {
+          subject_price: true,
+        },
+      },
+    },
+  });
+
+  if (!curriculum) {
+    throw new Error("Curriculum not found");
+  }
+
+  const subjectPrices = curriculum.curriculum_subjects.reduce(
+    (sum, cs) => sum.add(cs.subject_price.price),
+    curriculum.miscellaneous_fee,
+  );
+
+  const enrollment = await prisma.enrollment.create({
+    data: {
+      student_id: data.student_id,
+      curriculum_id: gradeCurriculum.curriculum_id,
+      school_year: data.school_year,
+      status: "approved",
+      total_tuition_snapshot: subjectPrices,
+      total_misc_snapshot: curriculum.miscellaneous_fee,
+      reference_code: generateReferenceCode(),
+    },
+    include: {
+      curriculum: true,
+    },
+  });
+
+  return {
+    ...enrollment,
+    total_tuition_snapshot: enrollment.total_tuition_snapshot.toNumber(),
+    total_misc_snapshot: enrollment.total_misc_snapshot.toNumber(),
+    min_partial_payment_override:
+      enrollment.min_partial_payment_override?.toNumber() ?? null,
+    curriculum: {
+      ...enrollment.curriculum,
+      miscellaneous_fee: enrollment.curriculum.miscellaneous_fee.toNumber(),
+    },
+  };
 }

@@ -24,7 +24,8 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { dropEnrollmentAction } from "@/app/(dashboard)/enrollments/action";
-import { Trash2 } from "lucide-react";
+import { Trash2, RotateCcw, Clock } from "lucide-react";
+import Link from "next/link";
 
 type StudentData = {
   id: number;
@@ -48,6 +49,8 @@ type EnrollmentData = {
   total_paid: number;
   balance: number;
   payment_status: string;
+  hasPendingRollbackRequest: boolean;
+  pendingRollbackRequestId: number | null;
 };
 
 interface StudentFormProps {
@@ -58,11 +61,13 @@ interface StudentFormProps {
 const statusColors: Record<string, string> = {
   approved: "bg-blue-500",
   dropped: "bg-red-500",
+  cancelled: "bg-gray-500",
 };
 
 const statusLabels: Record<string, string> = {
   approved: "Approved",
   dropped: "Dropped",
+  cancelled: "Cancelled",
 };
 
 const paymentStatusColors: Record<string, string> = {
@@ -94,49 +99,65 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
     }
   };
 
+  const isActive = enrollment.status === "approved";
+  const isCancelled = enrollment.status === "cancelled";
+  const isDropped = enrollment.status === "dropped";
+  const hasPending = enrollment.hasPendingRollbackRequest;
+
   return (
     <div className="space-y-6">
+      {/* Pending Rollback Banner */}
+      {hasPending && (
+        <div className="flex items-center gap-3 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-3">
+          <Clock className="h-4 w-4 shrink-0 text-yellow-500" />
+          <p className="text-sm text-yellow-600 font-medium">
+            A rollback request is pending admin review for this enrollment.{" "}
+            <Link
+              href={`/enrollments/${enrollment.id}/rollback`}
+              className="underline underline-offset-2"
+            >
+              View or cancel the request
+            </Link>
+          </p>
+        </div>
+      )}
+
+      {/* Cancelled Banner */}
+      {isCancelled && (
+        <div className="flex items-center gap-3 rounded-lg border border-gray-500/30 bg-gray-500/10 px-4 py-3">
+          <RotateCcw className="h-4 w-4 shrink-0 text-gray-500" />
+          <p className="text-sm text-muted-foreground font-medium">
+            This enrollment has been cancelled. No further actions are available.
+          </p>
+        </div>
+      )}
+
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
-            <CardDescription>
-              Student details - read only
-            </CardDescription>
+            <CardDescription>Student details — read only</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <FieldGroup>
                 <Field>
                   <FieldLabel>First Name</FieldLabel>
-                  <Input
-                    value={student.first_name}
-                    disabled
-                  />
+                  <Input value={student.first_name} disabled />
                 </Field>
                 <Field>
                   <FieldLabel>Last Name</FieldLabel>
-                  <Input
-                    value={student.last_name}
-                    disabled
-                  />
+                  <Input value={student.last_name} disabled />
                 </Field>
                 <Field>
                   <FieldLabel>Middle Name</FieldLabel>
-                  <Input
-                    value={student.middle_name}
-                    disabled
-                  />
+                  <Input value={student.middle_name} disabled />
                 </Field>
               </FieldGroup>
               <FieldGroup>
                 <Field>
                   <FieldLabel>Date of Birth</FieldLabel>
-                  <Input
-                    type="date"
-                    value={student.date_of_birth}
-                    disabled
-                  />
+                  <Input type="date" value={student.date_of_birth} disabled />
                 </Field>
                 <Field>
                   <FieldLabel>Gender</FieldLabel>
@@ -149,18 +170,11 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
               <FieldGroup>
                 <Field>
                   <FieldLabel>Address</FieldLabel>
-                  <Input
-                    value={student.address}
-                    disabled
-                  />
+                  <Input value={student.address} disabled />
                 </Field>
                 <Field>
                   <FieldLabel>Email</FieldLabel>
-                  <Input
-                    type="email"
-                    value={student.email}
-                    disabled
-                  />
+                  <Input type="email" value={student.email} disabled />
                 </Field>
               </FieldGroup>
             </div>
@@ -176,9 +190,7 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">
-                    Reference Code
-                  </p>
+                  <p className="text-sm text-muted-foreground">Reference Code</p>
                   <p className="font-medium">{enrollment.reference_code}</p>
                 </div>
                 <div>
@@ -192,9 +204,9 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
                 <div>
                   <p className="text-sm text-muted-foreground">Status</p>
                   <span
-                    className={`inline-block px-2 py-1 rounded-full text-xs text-white ${statusColors[enrollment.status]}`}
+                    className={`inline-block px-2 py-1 rounded-full text-xs text-white ${statusColors[enrollment.status] ?? "bg-gray-400"}`}
                   >
-                    {statusLabels[enrollment.status]}
+                    {statusLabels[enrollment.status] ?? enrollment.status}
                   </span>
                 </div>
               </div>
@@ -205,17 +217,13 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">
-                      Total Tuition
-                    </p>
+                    <p className="text-sm text-muted-foreground">Total Tuition</p>
                     <p className="font-medium text-lg">
                       ₱{enrollment.total_tuition_snapshot.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">
-                      Miscellaneous
-                    </p>
+                    <p className="text-sm text-muted-foreground">Miscellaneous</p>
                     <p className="font-medium text-lg">
                       ₱{enrollment.total_misc_snapshot.toLocaleString()}
                     </p>
@@ -248,34 +256,78 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
         </Card>
       </div>
 
-      <Dialog>
-        <DialogTrigger
-          render={
-            <Button size="lg" className="w-full md:w-auto bg-red-600 hover:bg-red-700">
-              <Trash2 className="mr-2 h-4 w-4" />
-              Drop Enrollment
-            </Button>
-          }
-        />
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Drop Enrollment</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to drop this enrollment? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose render={<Button variant="outline">Cancel</Button>} />
-            <DialogClose
+      {/* Actions — only shown for active, non-pending enrollments */}
+      {isActive && !hasPending && (
+        <div className="flex flex-wrap gap-3">
+          {/* Request Rollback */}
+          <Button
+            variant="outline"
+            size="lg"
+            className="border-orange-500 text-orange-600 hover:bg-orange-50"
+            asChild
+          >
+            <Link href={`/enrollments/${enrollment.id}/rollback`}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Request Rollback
+            </Link>
+          </Button>
+
+          {/* Drop Enrollment */}
+          <Dialog>
+            <DialogTrigger
               render={
-                <Button onClick={onDrop} disabled={isExecuting} variant="destructive">
+                <Button
+                  size="lg"
+                  className="bg-red-600 hover:bg-red-700"
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
                   Drop Enrollment
                 </Button>
               }
             />
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Drop Enrollment</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to drop this enrollment? This action
+                  cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                <DialogClose
+                  render={
+                    <Button
+                      onClick={onDrop}
+                      disabled={isExecuting}
+                      variant="destructive"
+                    >
+                      Drop Enrollment
+                    </Button>
+                  }
+                />
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+      )}
+
+      {/* Pending rollback — show link to manage request */}
+      {isActive && hasPending && (
+        <Button variant="outline" size="lg" asChild>
+          <Link href={`/enrollments/${enrollment.id}/rollback`}>
+            <Clock className="mr-2 h-4 w-4" />
+            Manage Rollback Request
+          </Link>
+        </Button>
+      )}
+
+      {/* Dropped / Cancelled — no actions */}
+      {(isDropped || isCancelled) && (
+        <p className="text-sm text-muted-foreground">
+          No actions available for this enrollment.
+        </p>
+      )}
     </div>
   );
 }
