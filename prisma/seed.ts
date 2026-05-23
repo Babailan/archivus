@@ -291,46 +291,45 @@ async function seedEnrollmentSettings(
     "2026-2027",
   ];
 
+  // EnrollmentSettings is a singleton - ensure exactly 1 row exists with id: 1
+  await prisma.enrollmentSettings.deleteMany({});
+  await prisma.enrollmentSettings.create({
+    data: {
+      id: 1,
+      school_year: "2024-2025",
+      is_online_enrollment_enabled: true,
+    },
+  });
+
+  // Seed GradeCurriculumSetting for all school years
   for (const sy of SCHOOL_YEARS) {
-    const existing = await prisma.enrollmentSettings.findFirst({
-      where: { school_year: sy },
-    });
-    if (!existing) {
-      await prisma.enrollmentSettings.create({
-        data: {
-          school_year: sy,
-          is_online_enrollment_enabled: true,
-        },
-      });
+    const gradeLevels = [
+      "grade1",
+      "grade2",
+      "grade3",
+      "grade4",
+      "grade5",
+      "grade6",
+    ] as const;
 
-      const gradeLevels = [
-        "grade1",
-        "grade2",
-        "grade3",
-        "grade4",
-        "grade5",
-        "grade6",
-      ] as const;
-
-      for (let idx = 0; idx < gradeLevels.length; idx++) {
-        const grade = gradeLevels[idx];
-        const curriculum = curriculums[idx];
-        if (!curriculum) continue;
-        await prisma.gradeCurriculumSetting.upsert({
-          where: {
-            school_year_grade_level: {
-              school_year: sy,
-              grade_level: grade,
-            },
-          },
-          update: {},
-          create: {
+    for (let idx = 0; idx < gradeLevels.length; idx++) {
+      const grade = gradeLevels[idx];
+      const curriculum = curriculums[idx];
+      if (!curriculum) continue;
+      await prisma.gradeCurriculumSetting.upsert({
+        where: {
+          school_year_grade_level: {
             school_year: sy,
             grade_level: grade,
-            curriculum_id: curriculum.id,
           },
-        });
-      }
+        },
+        update: {},
+        create: {
+          school_year: sy,
+          grade_level: grade,
+          curriculum_id: curriculum.id,
+        },
+      });
     }
   }
 }
