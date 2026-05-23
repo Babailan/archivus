@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <div>
       {/* Your Navigation */}
-      <div className="flex border-b justify-between items-center p-5 top-0 bg-background z-10 sticky">
+      <div className="flex border-b justify-between items-center p-5 top-0 bg-background z-20 sticky">
         <div>
           <div className="flex gap-2">
             <AspectRatio ratio={1 / 1} className="size-16">
@@ -74,55 +74,81 @@ export default function Home() {
 
 function SecondSection() {
   return (
-    <div className="md:p-15">
-      <div className="grid grid-cols-2">
-        <h1 className="text-[clamp(1rem,4vw,10rem)] font-garamond">
-          What we can offer?
-        </h1>
-      </div>
-      <div className="grid gap-5 grid-cols-3 mt-5">
-        <Card className="rounded-none pt-0 bg-primary text-white">
-          <AspectRatio ratio={16 / 9}>
+    <div className="lg:p-20 p-20 bg-secondary flex-col flex gap-10">
+      <h1 className="text-[clamp(1rem,4vw,10rem)] font-garamond text-center">
+        What sets us aparts?
+      </h1>
+      <div className="flex flex-col lg:gap-40 gap-10">
+        <div className="lg:grid-cols-2 lg:grid">
+          <AspectRatio ratio={16 / 9} className="z-10 lg:block hidden">
             <Image src={"/holistic.jpg"} alt="Holistic Images" fill />
           </AspectRatio>
-          <CardContent className="p-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-garamond">Holistic development</h1>
-            <p className="text-base">
-              Education extends beyond the classroom. A school should offer
-              opportunities for students to grow physically, emotionally, and
-              socially.
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-none pt-0 bg-primary text-white">
-          <AspectRatio ratio={16 / 9}>
+          <Card className="shadow-2xl pt-0 rounded-none  relative lg:top-20 lg:-left-20">
+            <AspectRatio ratio={9 / 4} className="z-10 block lg:hidden">
+              <Image src={"/holistic.jpg"} alt="Holistic Images" fill />
+            </AspectRatio>
+            <div className="lg:pt-20 lg:pb-20 lg:pr-5 lg:pl-30 p-10 flex flex-col gap-2">
+              <h1 className="text-3xl font-garamond font-bold text-primary">
+                Learner-Centered
+              </h1>
+              <p className="text-base">
+                At Manny So Christian Academy, students have the space and
+                encouragement to take control of their own learning journey. Our
+                teacher-guides cultivate an environment that nurtures
+                independence and curiosity. With ample time, space, and support,
+                students are empowered to pursue authentic interests.
+              </p>
+            </div>
+          </Card>
+        </div>
+        <div className="lg:grid-cols-2 lg:grid">
+          <Card className="shadow-2xl pt-0 rounded-none  relative lg:top-20">
+            <AspectRatio ratio={9 / 4} className="z-10 block lg:hidden">
+              <Image src={"/diversity.jpg"} alt="Holistic Images" fill />
+            </AspectRatio>
+            <div className="lg:pt-20 lg:pb-20 lg:pr-30 lg:pl-10 p-10 flex flex-col gap-2">
+              <h1 className="text-3xl font-garamond font-bold text-primary">
+                Active Learning
+              </h1>
+              <p className="text-base">
+                Learning happens through active engagement, and communication
+                and collaboration are essential skills for success. We dedicate
+                roughly half of each student's experience to collaborative
+                discussions, problem-solving, and real-world applications. The
+                other half focuses on developing fluency in essential skills and
+                content, all at a pace that suits the individual learner.
+              </p>
+            </div>
+          </Card>
+          <AspectRatio
+            ratio={16 / 9}
+            className="z-10 lg:block hidden lg:-left-20"
+          >
             <Image src={"/diversity.jpg"} alt="Holistic Images" fill />
           </AspectRatio>
-          <CardContent className="p-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-garamond">Diversity</h1>
-            <p className="text-base">
-              Diversity is the vast tapestry of human differences that
-              encompasses everything from innate characteristics like race, age,
-              and gender to acquired traits such as education, political
-              beliefs, and socioeconomic background.
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="rounded-none pt-0 bg-primary text-white">
-          <AspectRatio ratio={16 / 9}>
+        </div>
+
+        <div className="lg:grid-cols-2 lg:grid">
+          <AspectRatio ratio={16 / 9} className="z-10 lg:block hidden">
             <Image src={"/culture.png"} alt="Holistic Images" fill />
           </AspectRatio>
-          <CardContent className="p-10 flex flex-col gap-3">
-            <h1 className="text-3xl font-garamond">Culture Richness</h1>
-            <p className="text-base">
-              Culture is the invisible blueprint that shapes how a group of
-              people lives, thinks, and interacts with the world. It is a
-              complex system of shared beliefs, values, customs, behaviors, and
-              artifacts that are passed down from one generation to the next
-              through learning rather than genetics.
-            </p>
-          </CardContent>
-        </Card>
+          <Card className="shadow-2xl pt-0 rounded-none  relative lg:top-20 lg:-left-20">
+            <AspectRatio ratio={9 / 4} className="z-10 block lg:hidden">
+              <Image src={"/culture.png"} alt="Holistic Images" fill />
+            </AspectRatio>
+            <div className="lg:pt-20 lg:pb-20 lg:pr-5 lg:pl-30 p-10 flex flex-col gap-2">
+              <h1 className="text-3xl font-garamond font-bold text-primary">
+                Flexible & Accelerated Pacing
+              </h1>
+              <p className="text-base">
+                Mastery of skills and content knowledge matters more than seat
+                time. Freed from traditional pacing, our students often
+                accelerate their learning by 1.5-2 grade levels per year and
+                tackle grade-school work for their future academic success.
+              </p>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );
@@ -132,7 +158,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-primary text-white">
+    <footer className="bg-primary text-white mt-20">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row justify-between gap-10">
           {/* Brand Section */}
