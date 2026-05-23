@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Student {
-  id            Int          @id
+  id            Int               @id
   first_name    String
   last_name     String
   middle_name   String
@@ -16,8 +16,9 @@ model Student {
   address       String
   gender        GenderEnum
   email         String
-  created_at    DateTime     @default(now())
+  created_at    DateTime          @default(now())
   enrollments   Enrollment[]
+  documents     StudentDocument[]
 }
 
 model StudentVerification {
@@ -204,11 +205,22 @@ model EnrollmentSettings {
 }
 
 model Document {
-  id          Int      @id @default(autoincrement())
+  id          Int               @id @default(autoincrement())
   name        String
   description String?
-  inactive    Boolean  @default(false)
+  inactive    Boolean           @default(false)
+  created_at  DateTime          @default(now())
+  students    StudentDocument[]
+}
+
+model StudentDocument {
+  student     Student  @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  student_id  Int
+  document    Document @relation(fields: [document_id], references: [id], onDelete: Cascade)
+  document_id Int
   created_at  DateTime @default(now())
+
+  @@id([student_id, document_id])
 }
 
 model RollbackRequest {

@@ -136,10 +136,9 @@ export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
                         size="sm"
                         onClick={() =>
                           router.push(
-                            `/enrollments/${latestEnrollment?.id}/student`,
+                            `/students/${student.id}`,
                           )
                         }
-                        disabled={!latestEnrollment}
                       >
                         <Eye className="h-4 w-4 mr-1" /> View
                       </Button>
