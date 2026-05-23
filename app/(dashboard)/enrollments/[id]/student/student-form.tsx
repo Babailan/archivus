@@ -1,19 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -31,8 +23,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { updateStudentAction } from "@/app/(dashboard)/enrollments/action";
-import { ArrowLeft, Save } from "lucide-react";
+import { dropEnrollmentAction } from "@/app/(dashboard)/enrollments/action";
+import { Trash2 } from "lucide-react";
 
 type StudentData = {
   id: number;
@@ -64,16 +56,12 @@ interface StudentFormProps {
 }
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-500",
   approved: "bg-blue-500",
-  declined: "bg-gray-500",
   dropped: "bg-red-500",
 };
 
 const statusLabels: Record<string, string> = {
-  pending: "Pending",
   approved: "Approved",
-  declined: "Declined",
   dropped: "Dropped",
 };
 
@@ -91,29 +79,18 @@ const paymentStatusLabels: Record<string, string> = {
 
 export function StudentForm({ student, enrollment }: StudentFormProps) {
   const router = useRouter();
-  const [formData, setFormData] = useState<StudentData>(student);
-  const { executeAsync, isExecuting } = useAction(updateStudentAction);
+  const { executeAsync, isExecuting } = useAction(dropEnrollmentAction);
 
-  const handleChange = (field: keyof StudentData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const onDrop = async () => {
+    const formData = new FormData();
+    formData.set("id", enrollment.id.toString());
 
-  const onSubmit = async () => {
-    const formDataToSend = new FormData();
-    formDataToSend.set("id", student.id.toString());
-    formDataToSend.set("first_name", formData.first_name);
-    formDataToSend.set("last_name", formData.last_name);
-    formDataToSend.set("middle_name", formData.middle_name);
-    formDataToSend.set("date_of_birth", formData.date_of_birth);
-    formDataToSend.set("address", formData.address);
-    formDataToSend.set("gender", formData.gender);
-    formDataToSend.set("email", formData.email);
-
-    const { data } = await executeAsync(formDataToSend);
+    const { data } = await executeAsync(formData);
     if (data?.success) {
-      toast.success("Student updated successfully");
+      toast.success("Enrollment dropped successfully");
+      router.push("/enrollments");
     } else {
-      toast.error("Failed to update student");
+      toast.error("Failed to drop enrollment");
     }
   };
 
@@ -124,33 +101,31 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
             <CardDescription>
-              Student details - all fields are editable
+              Student details - read only
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <div className="space-y-4">
               <FieldGroup>
                 <Field>
                   <FieldLabel>First Name</FieldLabel>
                   <Input
-                    value={formData.first_name}
-                    onChange={(e) => handleChange("first_name", e.target.value)}
+                    value={student.first_name}
+                    disabled
                   />
                 </Field>
                 <Field>
                   <FieldLabel>Last Name</FieldLabel>
                   <Input
-                    value={formData.last_name}
-                    onChange={(e) => handleChange("last_name", e.target.value)}
+                    value={student.last_name}
+                    disabled
                   />
                 </Field>
                 <Field>
                   <FieldLabel>Middle Name</FieldLabel>
                   <Input
-                    value={formData.middle_name}
-                    onChange={(e) =>
-                      handleChange("middle_name", e.target.value)
-                    }
+                    value={student.middle_name}
+                    disabled
                   />
                 </Field>
               </FieldGroup>
@@ -159,48 +134,36 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
                   <FieldLabel>Date of Birth</FieldLabel>
                   <Input
                     type="date"
-                    value={formData.date_of_birth}
-                    onChange={(e) =>
-                      handleChange("date_of_birth", e.target.value)
-                    }
+                    value={student.date_of_birth}
+                    disabled
                   />
                 </Field>
                 <Field>
                   <FieldLabel>Gender</FieldLabel>
-                  <Select
-                    value={formData.gender}
-                    onValueChange={(val) =>
-                      handleChange("gender", val as "male" | "female")
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    value={student.gender === "male" ? "Male" : "Female"}
+                    disabled
+                  />
                 </Field>
               </FieldGroup>
               <FieldGroup>
                 <Field>
                   <FieldLabel>Address</FieldLabel>
                   <Input
-                    value={formData.address}
-                    onChange={(e) => handleChange("address", e.target.value)}
+                    value={student.address}
+                    disabled
                   />
                 </Field>
                 <Field>
                   <FieldLabel>Email</FieldLabel>
                   <Input
                     type="email"
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
+                    value={student.email}
+                    disabled
                   />
                 </Field>
               </FieldGroup>
-            </form>
+            </div>
           </CardContent>
         </Card>
 
@@ -288,26 +251,25 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
       <Dialog>
         <DialogTrigger
           render={
-            <Button size="lg" className="w-full md:w-auto">
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+            <Button size="lg" className="w-full md:w-auto bg-red-600 hover:bg-red-700">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Drop Enrollment
             </Button>
           }
         />
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Save Changes</DialogTitle>
+            <DialogTitle>Drop Enrollment</DialogTitle>
             <DialogDescription>
-              Are you sure you want to save the changes to this student&apos;s
-              information?
+              Are you sure you want to drop this enrollment? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose render={<Button variant="outline">Cancel</Button>} />
             <DialogClose
               render={
-                <Button onClick={onSubmit} disabled={isExecuting}>
-                  Save
+                <Button onClick={onDrop} disabled={isExecuting} variant="destructive">
+                  Drop Enrollment
                 </Button>
               }
             />

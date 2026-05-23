@@ -30,14 +30,14 @@ import {
 } from "@/components/ui/dialog";
 
 import { useAction } from "next-safe-action/hooks";
-import { declineEnrollmentAction, approveEnrollmentAction } from "./action";
+import { approveEnrollmentAction } from "./action";
 import {
   PaymentStatus,
   EnrollmentItem,
   SearchEnrollmentResult,
 } from "@/services/enrollment.service";
 import { toast } from "sonner";
-import { Ellipsis, Check, X, Eye } from "lucide-react";
+import { Ellipsis, Check, Eye } from "lucide-react";
 import { use, useState, useEffect, useRef } from "react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useDebounce } from "use-debounce";
@@ -59,9 +59,6 @@ export function EnrollmentsListForm({
   const formatSchoolYear = (schoolYear: string) => {
     return schoolYear;
   };
-  const { executeAsync: declineAsync, isExecuting: isDeclining } = useAction(
-    declineEnrollmentAction,
-  );
   const { executeAsync: approveAsync, isExecuting: isApproving } = useAction(
     approveEnrollmentAction,
   );
@@ -97,17 +94,6 @@ export function EnrollmentsListForm({
     router.push(`/enrollments?${params.toString()}`);
   };
 
-  const handleDecline = async (id: number) => {
-    const formData = new FormData();
-    formData.append("id", id.toString());
-    const { data } = await declineAsync(formData);
-    if (data?.success) {
-      toast.success("Enrollment declined");
-    } else {
-      toast.error("Failed to decline enrollment");
-    }
-  };
-
   const handleApprove = async (id: number) => {
     const formData = new FormData();
     formData.append("id", id.toString());
@@ -122,14 +108,12 @@ export function EnrollmentsListForm({
   const statusLabels: Record<string, string> = {
     pending: "Pending",
     approved: "Approved",
-    declined: "Declined",
     dropped: "Dropped",
   };
 
   const statusColors: Record<string, string> = {
     pending: "bg-yellow-500",
     approved: "bg-blue-500",
-    declined: "bg-gray-500",
     dropped: "bg-red-500",
   };
 
@@ -148,7 +132,6 @@ export function EnrollmentsListForm({
   const statusFilters = [
     { value: "all", label: "All" },
     { value: "approved", label: "Approved" },
-    { value: "declined", label: "Declined" },
     { value: "dropped", label: "Dropped" },
   ];
 
@@ -292,51 +275,6 @@ export function EnrollmentsListForm({
                                         disabled={isApproving}
                                       >
                                         Approve
-                                      </Button>
-                                    }
-                                  />
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </DropdownMenuGroup>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuGroup>
-                            <Dialog>
-                              <DialogTrigger
-                                render={
-                                  <Button
-                                    className={"w-full"}
-                                    variant={"destructive"}
-                                  >
-                                    <X className="mr-2" />
-                                    Decline
-                                  </Button>
-                                }
-                              />
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>Decline Enrollment</DialogTitle>
-                                  <DialogDescription>
-                                    Are you sure you want to decline this
-                                    enrollment? This action cannot be undone.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose
-                                    render={
-                                      <Button variant="outline">Cancel</Button>
-                                    }
-                                  />
-                                  <DialogClose
-                                    render={
-                                      <Button
-                                        variant="destructive"
-                                        onClick={() =>
-                                          handleDecline(enrollment.id)
-                                        }
-                                        disabled={isDeclining}
-                                      >
-                                        Decline
                                       </Button>
                                     }
                                   />

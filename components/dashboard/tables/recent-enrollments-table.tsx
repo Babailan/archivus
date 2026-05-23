@@ -29,10 +29,8 @@ type Props = {
 };
 
 const statusColors: Record<string, string> = {
-  pending: "bg-yellow-500",
-  approved: "bg-green-500",
-  declined: "bg-red-500",
-  dropped: "bg-gray-500",
+  approved: "bg-blue-500",
+  dropped: "bg-red-500",
 };
 
 function formatDate(dateString: string): string {

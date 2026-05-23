@@ -19,17 +19,13 @@ type Props = {
 };
 
 const statusColors: Record<string, string> = {
-  Pending: "var(--chart-1)",
   Approved: "var(--chart-2)",
-  Declined: "var(--muted-foreground)",
   Dropped: "var(--destructive)",
 };
 
 const chartConfig = {
-  status0: { label: "Pending", color: "var(--chart-1)" },
-  status1: { label: "Approved", color: "var(--chart-2)" },
-  status2: { label: "Declined", color: "var(--muted-foreground)" },
-  status3: { label: "Dropped", color: "var(--destructive)" },
+  status0: { label: "Approved", color: "var(--chart-2)" },
+  status1: { label: "Dropped", color: "var(--destructive)" },
 };
 
 export function EnrollmentPieChart({

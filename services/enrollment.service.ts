@@ -502,13 +502,6 @@ export async function dropEnrollment(id: number) {
   });
 }
 
-export async function declineEnrollment(id: number) {
-  return await prisma.enrollment.update({
-    where: { id },
-    data: { status: "declined" },
-  });
-}
-
 export async function getStudentByEnrollmentId(id: number) {
   const enrollment = await prisma.enrollment.findUnique({
     where: { id },

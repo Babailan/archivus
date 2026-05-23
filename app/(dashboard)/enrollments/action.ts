@@ -4,27 +4,15 @@ import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 import {
-  declineEnrollment,
   approveEnrollment,
   searchEnrollments,
   recordPayment,
   getEnrollment,
   getStudentByEnrollmentId,
   updateStudent,
+  dropEnrollment,
 } from "@/services/enrollment.service";
 import { revalidatePath } from "next/cache";
-
-const declineEnrollmentInputSchema = zfd.formData({
-  id: zfd.numeric(z.number()),
-});
-
-export const declineEnrollmentAction = actionClient
-  .inputSchema(declineEnrollmentInputSchema)
-  .action(async ({ parsedInput }) => {
-    await declineEnrollment(parsedInput.id);
-    revalidatePath("/enrollments");
-    return { success: true };
-  });
 
 const approveEnrollmentInputSchema = zfd.formData({
   id: zfd.numeric(z.number()),
@@ -34,6 +22,18 @@ export const approveEnrollmentAction = actionClient
   .inputSchema(approveEnrollmentInputSchema)
   .action(async ({ parsedInput }) => {
     await approveEnrollment(parsedInput.id);
+    revalidatePath("/enrollments");
+    return { success: true };
+  });
+
+const dropEnrollmentInputSchema = zfd.formData({
+  id: zfd.numeric(z.number()),
+});
+
+export const dropEnrollmentAction = actionClient
+  .inputSchema(dropEnrollmentInputSchema)
+  .action(async ({ parsedInput }) => {
+    await dropEnrollment(parsedInput.id);
     revalidatePath("/enrollments");
     return { success: true };
   });

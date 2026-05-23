@@ -49,7 +49,7 @@ export async function DashboardSideBar() {
   const isCashier = session?.user?.roles?.includes("cashier");
 
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="floating">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>

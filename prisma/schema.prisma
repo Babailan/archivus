@@ -83,7 +83,6 @@ enum StudentVerificationStatus {
 enum EnrollmentStatus {
   approved
   dropped
-  declined
 }
 
 enum RollbackStatus {

@@ -136,9 +136,7 @@ export async function getEnrollmentByStatus(): Promise<EnrollmentByStatus[]> {
   });
 
   const statusMap: Record<string, string> = {
-    pending: "Pending",
     approved: "Approved",
-    declined: "Declined",
     dropped: "Dropped",
   };
 
