@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -32,8 +32,8 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { updateStudentDetailAction } from "../action";
-import { ArrowLeft, Save, FileText } from "lucide-react";
+import { updateStudentDetailAction, createEnrollmentAction, getEnrollmentData } from "../action";
+import { ArrowLeft, Save, FileText, Plus } from "lucide-react";
 
 type StudentData = {
   id: number;
@@ -66,8 +66,24 @@ export function StudentEditForm({
   const router = useRouter();
   const [formData, setFormData] = useState<StudentData>(student);
   const [selectedDocuments, setSelectedDocuments] = useState<number[]>(checkedDocumentIds);
+  const [enrollmentGrade, setEnrollmentGrade] = useState<string>("");
+  const [enrollmentData, setEnrollmentData] = useState<any>(null);
+  const [isLoadingEnrollmentData, setIsLoadingEnrollmentData] = useState(false);
 
   const { executeAsync, isExecuting } = useAction(updateStudentDetailAction);
+  const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } = useAction(
+    createEnrollmentAction
+  );
+
+  useEffect(() => {
+    const loadEnrollmentData = async () => {
+      setIsLoadingEnrollmentData(true);
+      const data = await getEnrollmentData();
+      setEnrollmentData(data);
+      setIsLoadingEnrollmentData(false);
+    };
+    loadEnrollmentData();
+  }, []);
 
   const handleChange = (field: keyof StudentData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -105,6 +121,27 @@ export function StudentEditForm({
     }
   };
 
+  const onCreateEnrollment = async () => {
+    if (!enrollmentGrade) {
+      toast.error("Please select a grade level");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("student_id", student.id.toString());
+    formData.set("grade_level", enrollmentGrade);
+    formData.set("school_year", enrollmentData.school_year);
+
+    const { data } = await createEnrollment(formData);
+    if (data?.success) {
+      toast.success("New enrollment created successfully");
+      setEnrollmentGrade("");
+      router.refresh();
+    } else {
+      toast.error("Failed to create enrollment");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -116,6 +153,52 @@ export function StudentEditForm({
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Students
         </Button>
+        {enrollmentData && (
+          <Dialog>
+            <DialogTrigger
+              render={
+                <Button size="sm" variant="default">
+                  <Plus className="mr-2 h-4 w-4" />
+                  New Enrollment
+                </Button>
+              }
+            />
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Enrollment</DialogTitle>
+                <DialogDescription>
+                  Select a grade level for the new enrollment in {enrollmentData.school_year}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Field>
+                  <FieldLabel>Grade Level</FieldLabel>
+                  <Select value={enrollmentGrade} onValueChange={(value) => setEnrollmentGrade(value || "")}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a grade level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {enrollmentData.grade_curriculum_settings?.map((setting: any) => (
+                        <SelectItem key={setting.grade_level} value={setting.grade_level}>
+                          {setting.curriculum.grade_level} - {setting.curriculum.curriculum_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                <Button
+                  onClick={onCreateEnrollment}
+                  disabled={isCreatingEnrollment || !enrollmentGrade}
+                >
+                  {isCreatingEnrollment ? "Creating..." : "Create Enrollment"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">

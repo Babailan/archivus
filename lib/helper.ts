@@ -19,8 +19,16 @@ export function queryFirst(value: string | string[] | undefined) {
   return value ?? "";
 }
 
-export function generateReferenceCode(year: string, id: number): string {
-  return `EN-${year.substring(2, 4)}${id.toString().padStart(6, "0")}`;
+export function generateReferenceCode(): string {
+  // Generates 8 bytes of random data (16 hex characters)
+  const array = new Uint8Array(8);
+  crypto.getRandomValues(array);
+  
+  const hex = Array.from(array)
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  return `EN-${hex}`;
 }
 
 export function generateNextCustomId(year: string, lastId: number | null): number {

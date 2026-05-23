@@ -59,8 +59,9 @@ model Enrollment {
   // Optional override for minimum partial payment. If null, defaults to 20% of total tuition.
   min_partial_payment_override Decimal? @db.Decimal(10, 2)
 
-  payments   TuitionFeePayment[]
-  created_at DateTime            @default(now())
+  payments                     TuitionFeePayment[]
+  created_at                   DateTime                    @default(now())
+  enrollment_rollback_requests EnrollmentRollbackRequest[]
 }
 
 model TuitionFeePayment {
@@ -83,6 +84,7 @@ enum StudentVerificationStatus {
 enum EnrollmentStatus {
   approved
   dropped
+  cancelled
 }
 
 enum RollbackStatus {
@@ -154,20 +156,22 @@ enum GradeLevelEnum {
 }
 
 model User {
-  id                          Int               @id
-  username                    String            @unique
-  email                       String            @unique
-  hash_password               String
-  first_name                  String
-  last_name                   String
-  middle_name                 String?
-  gender                      GenderEnum
-  birthdate                   DateTime
-  role                        Role[]
-  inactive                    Boolean           @default(false)
-  created_at                  DateTime          @default(now())
-  rollback_requests_requested RollbackRequest[] @relation("RollbackRequestedBy")
-  rollback_requests_reviewed  RollbackRequest[] @relation("RollbackReviewedBy")
+  id                                     Int                         @id
+  username                               String                      @unique
+  email                                  String                      @unique
+  hash_password                          String
+  first_name                             String
+  last_name                              String
+  middle_name                            String?
+  gender                                 GenderEnum
+  birthdate                              DateTime
+  role                                   Role[]
+  inactive                               Boolean                     @default(false)
+  created_at                             DateTime                    @default(now())
+  rollback_requests_requested            RollbackRequest[]           @relation("RollbackRequestedBy")
+  rollback_requests_reviewed             RollbackRequest[]           @relation("RollbackReviewedBy")
+  enrollment_rollback_requests_requested EnrollmentRollbackRequest[] @relation("EnrollmentRollbackRequestedBy")
+  enrollment_rollback_requests_reviewed  EnrollmentRollbackRequest[] @relation("EnrollmentRollbackReviewedBy")
 }
 
 enum Roles {
@@ -236,6 +240,24 @@ model RollbackRequest {
   created_at      DateTime          @default(now())
 
   @@index([payment_id])
+  @@index([status])
+  @@index([requested_by_id])
+}
+
+model EnrollmentRollbackRequest {
+  id              Int            @id @default(autoincrement())
+  enrollment      Enrollment     @relation(fields: [enrollment_id], references: [id])
+  enrollment_id   Int
+  requested_by    User           @relation("EnrollmentRollbackRequestedBy", fields: [requested_by_id], references: [id])
+  requested_by_id Int
+  reason          String
+  status          RollbackStatus @default(pending)
+  reviewed_by     User?          @relation("EnrollmentRollbackReviewedBy", fields: [reviewed_by_id], references: [id])
+  reviewed_by_id  Int?
+  reviewed_at     DateTime?
+  created_at      DateTime       @default(now())
+
+  @@index([enrollment_id])
   @@index([status])
   @@index([requested_by_id])
 }
