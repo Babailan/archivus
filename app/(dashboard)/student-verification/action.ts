@@ -4,12 +4,12 @@ import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 import {
-  approveStudentVerification,
-  declineStudentVerification,
-  getStudentVerificationById,
-  searchStudentVerifications,
-  updateStudentVerification,
+  
 } from "@/services/enrollment.service";
+import { revalidatePath } from "next/cache";
+import { updateStudentVerification,searchStudentVerifications,approveStudentVerification,
+  declineStudentVerification,
+  getStudentVerificationById, } from "@/services/student-verification.service";
 
 const updateStudentVerificationSchema = zfd.formData({
   id: zfd.numeric(z.number()),
@@ -22,6 +22,8 @@ const updateStudentVerificationSchema = zfd.formData({
   email: zfd.text(),
   grade_level: zfd.text(),
   school_year: zfd.text(),
+  lrn: zfd.text(),
+  contact_number: zfd.text(),
 });
 
 export const updateStudentVerificationAction = actionClient
@@ -37,11 +39,12 @@ export const updateStudentVerificationAction = actionClient
       email: parsedInput.email,
       grade_level: parsedInput.grade_level as any,
       school_year: parsedInput.school_year,
+      lrn: parsedInput.lrn,
+      contact_number: parsedInput.contact_number,
     });
     revalidatePath("/student-verification");
     return { success: true };
   });
-import { revalidatePath } from "next/cache";
 
 const approveStudentVerificationSchema = zfd.formData({
   id: zfd.numeric(z.number()),

@@ -16,9 +16,12 @@ model Student {
   address       String
   gender        GenderEnum
   email         String
+  contact_number String
+  lrn           String
   created_at    DateTime          @default(now())
   enrollments   Enrollment[]
   documents     StudentDocument[]
+  
 }
 
 model StudentVerification {
@@ -33,6 +36,8 @@ model StudentVerification {
   email         String
   grade_level   GradeLevelEnum
   school_year   String
+  contact_number String
+  lrn           String
   status        StudentVerificationStatus @default(pending)
   created_at    DateTime            @default(now())
 }

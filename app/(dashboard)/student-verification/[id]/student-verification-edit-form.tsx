@@ -49,7 +49,7 @@ import {
 import { toast } from "sonner";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { approveStudentVerification, declineStudentVerification } from "@/services/enrollment.service";
+import { PatternFormat } from "react-number-format";
 
 const formSchema = z.object({
   id: z.number(),
@@ -68,50 +68,66 @@ const formSchema = z.object({
   school_year: z.string({
     error: () => "School year is required",
   }),
+  lrn: z
+    .string({
+      error: () => "This field is required.",
+    })
+    .regex(/^\d{12}$/, "LRN must be exactly 12 digits."),
+  contact_number: z
+    .string({
+      error: () => "This field is required.",
+    })
+    .transform((v) => v.replace(/\s/g, ""))
+    .refine(
+      (v) => /^\d{11}$/.test(v),
+      "Contact number must be exactly 11 digits.",
+    ),
 });
 
-type PreEnrollment = Awaited<ReturnType<typeof fetchStudentVerificationById>>;
+type StudentVerification = Awaited<
+  ReturnType<typeof fetchStudentVerificationById>
+>;
 
-type PreEnrollmentEditFormProps = {
-  preEnrollment: PreEnrollment;
+type StudentVerificationEditFormProps = {
+  studentVerification: StudentVerification;
   approveAction: typeof approveStudentVerificationAction;
   declineAction: typeof declineStudentVerificationAction;
 };
 
-export function PreEnrollmentEditForm({
-  preEnrollment,
+export function StudentVerificationEditForm({
+  studentVerification,
   approveAction,
   declineAction,
-}: PreEnrollmentEditFormProps) {
+}: StudentVerificationEditFormProps) {
   const router = useRouter();
   const { executeAsync: updateAsync, isExecuting: isUpdating } = useAction(
     updateStudentVerificationAction,
   );
-  const { executeAsync: approveAsync, isExecuting: isApproving } = useAction(
-    approveAction,
-  );
-  const { executeAsync: declineAsync, isExecuting: isDeclining } = useAction(
-    declineAction,
-  );
+  const { executeAsync: approveAsync, isExecuting: isApproving } =
+    useAction(approveAction);
+  const { executeAsync: declineAsync, isExecuting: isDeclining } =
+    useAction(declineAction);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      id: preEnrollment.id,
-      first_name: preEnrollment.first_name,
-      last_name: preEnrollment.last_name,
-      middle_name: preEnrollment.middle_name || "",
-      date_of_birth: new Date(preEnrollment.date_of_birth),
-      gender: preEnrollment.gender,
-      address: preEnrollment.address,
-      email: preEnrollment.email,
-      grade_level: preEnrollment.grade_level,
-      school_year: preEnrollment.school_year,
+      id: studentVerification.id,
+      first_name: studentVerification.first_name,
+      last_name: studentVerification.last_name,
+      middle_name: studentVerification.middle_name || "",
+      date_of_birth: new Date(studentVerification.date_of_birth),
+      gender: studentVerification.gender,
+      address: studentVerification.address,
+      email: studentVerification.email,
+      grade_level: studentVerification.grade_level,
+      school_year: studentVerification.school_year,
+      lrn: studentVerification.lrn,
+      contact_number: studentVerification.contact_number,
     },
   });
 
   const [date, setDate] = useState<Date | undefined>(
-    new Date(preEnrollment.date_of_birth),
+    new Date(studentVerification.date_of_birth),
   );
   const [openDatePicker, setOpenDatePicker] = useState(false);
 
@@ -127,6 +143,8 @@ export function PreEnrollmentEditForm({
     formData.append("email", data.email);
     formData.append("grade_level", data.grade_level);
     formData.append("school_year", data.school_year);
+    formData.append("lrn", data.lrn);
+    formData.append("contact_number", data.contact_number);
 
     const { data: result } = await updateAsync(formData);
 
@@ -139,7 +157,7 @@ export function PreEnrollmentEditForm({
 
   const handleApprove = async () => {
     const formData = new FormData();
-    formData.append("id", preEnrollment.id.toString());
+    formData.append("id", studentVerification.id.toString());
     const { data } = await approveAsync(formData);
     if (data?.success) {
       toast.success("Application approved!");
@@ -151,7 +169,7 @@ export function PreEnrollmentEditForm({
 
   const handleDecline = async () => {
     const formData = new FormData();
-    formData.append("id", preEnrollment.id.toString());
+    formData.append("id", studentVerification.id.toString());
     const { data } = await declineAsync(formData);
     if (data?.success) {
       toast.success("Application denied");
@@ -168,11 +186,34 @@ export function PreEnrollmentEditForm({
           <FieldSet>
             <FieldLegend variant="legend" className="flex gap-2 items-center">
               <UserRoundPen />
-              Pre-Enrollment Details
+              Edit Applicant Information
             </FieldLegend>
             <p className="text-sm text-muted-foreground mb-6">
               Review and modify the applicant&apos;s information.
             </p>
+
+            <FieldGroup className="flex-row">
+              <Controller
+                control={form.control}
+                name="lrn"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.error}>
+                    <FieldLabel>
+                      LRN (Learner Reference Number){" "}
+                      <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <PatternFormat
+                      customInput={Input}
+                      format="############"
+                      placeholder="Ex: 123456789012"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+            </FieldGroup>
 
             <FieldGroup>
               <Controller
@@ -302,14 +343,35 @@ export function PreEnrollmentEditForm({
                   </Field>
                 )}
               />
-
+              <Controller
+                control={form.control}
+                name="contact_number"
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.error}>
+                    <FieldLabel>
+                      Contact Number <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <PatternFormat
+                      customInput={Input}
+                      format="#### ### ####"
+                      placeholder="Ex: +63 912 345 6789"
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                    />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
               <Controller
                 control={form.control}
                 name="grade_level"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
                     <FieldLabel>Grade Level</FieldLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger aria-invalid={fieldState.invalid}>
                         <SelectValue placeholder="Select grade" />
                       </SelectTrigger>
@@ -366,12 +428,14 @@ export function PreEnrollmentEditForm({
                 <DialogHeader>
                   <DialogTitle>Approve Application</DialogTitle>
                   <DialogDescription>
-                    Confirming this will create an official Student record
-                    and assign a permanent ID.
+                    Confirming this will create an official Student record and
+                    assign a permanent ID.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                  <DialogClose
+                    render={<Button variant="outline">Cancel</Button>}
+                  />
                   <Button
                     disabled={isApproving}
                     onClick={handleApprove}
@@ -400,7 +464,9 @@ export function PreEnrollmentEditForm({
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
-                  <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                  <DialogClose
+                    render={<Button variant="outline">Cancel</Button>}
+                  />
                   <Button
                     variant="destructive"
                     disabled={isDeclining}

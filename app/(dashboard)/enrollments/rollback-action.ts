@@ -61,6 +61,7 @@ export const approveEnrollmentRollbackAction = actionClient
     try {
       await approveEnrollmentRollbackRequest(parsedInput.id);
       revalidatePath("/rollback-requests");
+      revalidatePath("/enrollment-rollback-requests");
       revalidatePath("/enrollments");
       return { success: true };
     } catch (error) {
@@ -74,6 +75,7 @@ export const denyEnrollmentRollbackAction = actionClient
     try {
       await denyEnrollmentRollbackRequest(parsedInput.id);
       revalidatePath("/rollback-requests");
+      revalidatePath("/enrollment-rollback-requests");
       return { success: true };
     } catch (error) {
       return { success: false, error: (error as Error).message };

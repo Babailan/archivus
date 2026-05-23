@@ -15,7 +15,6 @@ import * as z from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  GalleryHorizontalEnd,
   GalleryVerticalEnd,
   SendHorizonal,
   UserRoundPen,
@@ -40,6 +39,7 @@ import { useAction } from "next-safe-action/hooks";
 import { submitEnrollmentAction } from "./action";
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
+import { PatternFormat } from "react-number-format";
 
 const formSchema = z.object({
   first_name: z.string().nonempty("This field is required."),
@@ -54,6 +54,15 @@ const formSchema = z.object({
   }),
   address: z.string().nonempty("This field is required."),
   email: z.string().email("Invalid email address."),
+  lrn: z.string({
+    error: () => "This field is required.",
+  })
+     .regex(/^\d{12}$/, "LRN must be exactly 12 digits."),
+  contact_number: z.string({
+  error: () => "This field is required.",
+})
+   .transform((v) => v.replace(/\s/g, ""))
+   .refine((v) => /^\d{11}$/.test(v), "Contact number must be exactly 11 digits.")
 });
 
 interface EnrollmentFormProps {
@@ -100,6 +109,8 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
     formdata.append("grade_level", data.grade_level);
     formdata.append("address", data.address);
     formdata.append("email", data.email);
+    formdata.append("lrn", data.lrn);
+    formdata.append("contact_number", data.contact_number);
 
     const { data: result } = await executeAsync(formdata);
 
@@ -138,6 +149,22 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
           <p className="text-sm text-muted-foreground mb-6">
             Please fill out the form below to enroll as an applicant.
           </p>
+          <FieldGroup className="flex-row">
+            <Controller
+              control={form.control}
+              name="lrn"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.error}>
+                  <FieldLabel>
+                      LRN (Learner Reference Number) <span className="text-red-600">*</span>
+                    </FieldLabel>
+                    <PatternFormat customInput={Input} format="############" placeholder="Ex: 123456789012" {...field} aria-invalid={fieldState.invalid} />
+                    <FieldError errors={[fieldState.error]} />
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+
           <FieldGroup>
             <Controller
               control={form.control}
@@ -305,7 +332,28 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
                 </Field>
               )}
             />
+            
+            <Controller
+              control={form.control}
+              name="contact_number"
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.error}>
+                  <FieldLabel>
+                    Contact Number <span className="text-red-600">*</span>
+                  </FieldLabel>
+                  <PatternFormat
+                    customInput={Input}
+                    format="#### ### ####"
+                    placeholder="Ex: +63 912 345 6789"
+                    {...field}
+                    aria-invalid={fieldState.invalid}
+                  />
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )}
+            />
           </FieldGroup>
+          
           <FieldGroup>
             <Controller
               control={form.control}

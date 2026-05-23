@@ -5,7 +5,7 @@ import {
   approveStudentVerificationAction,
   declineStudentVerificationAction,
 } from "../action";
-import { PreEnrollmentEditForm } from "./pre-edit-form";
+import { StudentVerificationEditForm } from "./student-verification-edit-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,9 +28,9 @@ export async function generateMetadata({
   if (isNaN(idNum)) return { title: "View New Student" };
 
   try {
-    const preEnrollment = await fetchStudentVerificationById(idNum);
+    const studentVerification = await fetchStudentVerificationById(idNum);
     return {
-      title: `View New Student: ${preEnrollment.first_name} ${preEnrollment.last_name}`,
+      title: `View New Student: ${studentVerification.first_name} ${studentVerification.last_name}`,
     };
   } catch {
     return { title: "View New-Student" };
@@ -49,14 +49,14 @@ export default async function PreEnrollmentViewPage({
     notFound();
   }
 
-  let preEnrollment;
+  let studentVerification;
   try {
-    preEnrollment = await fetchStudentVerificationById(idNum);
+    studentVerification = await fetchStudentVerificationById(idNum);
   } catch {
     notFound();
   }
 
-  if (preEnrollment.status !== "pending") {
+  if (studentVerification.status !== "pending") {
     notFound();
   }
 
@@ -82,8 +82,8 @@ export default async function PreEnrollmentViewPage({
         </BreadcrumbList>
       </Breadcrumb>
       <h1 className="text-2xl font-bold mb-6">View New Student</h1>
-      <PreEnrollmentEditForm
-        preEnrollment={preEnrollment}
+      <StudentVerificationEditForm
+        studentVerification={studentVerification}
         approveAction={approveStudentVerificationAction}
         declineAction={declineStudentVerificationAction}
       />

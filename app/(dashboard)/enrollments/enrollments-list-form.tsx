@@ -106,13 +106,13 @@ export function EnrollmentsListForm({
   };
 
   const statusLabels: Record<string, string> = {
-    pending: "Pending",
+    cancelled: "Cancelled",
     approved: "Approved",
     dropped: "Dropped",
   };
 
   const statusColors: Record<string, string> = {
-    pending: "bg-yellow-500",
+    cancelled: "bg-gray-500",
     approved: "bg-blue-500",
     dropped: "bg-red-500",
   };
@@ -133,6 +133,7 @@ export function EnrollmentsListForm({
     { value: "all", label: "All" },
     { value: "approved", label: "Approved" },
     { value: "dropped", label: "Dropped" },
+    { value: "cancelled", label: "Cancelled" },
   ];
 
   return (
@@ -227,64 +228,6 @@ export function EnrollmentsListForm({
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    {enrollment.status === "approved" && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          render={
-                            <Button variant="ghost" size="icon-sm">
-                              <Ellipsis />
-                            </Button>
-                          }
-                        />
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuGroup>
-                            <Dialog>
-                              <DialogTrigger
-                                render={
-                                  <Button
-                                    variant={"secondary"}
-                                    className={"w-full"}
-                                  >
-                                    <Check className="mr-2" />
-                                    Approve
-                                  </Button>
-                                }
-                              />
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>Approve Enrollment</DialogTitle>
-                                  <DialogDescription>
-                                    Are you sure you want to approve this
-                                    enrollment? The student can proceed to
-                                    payment.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <DialogFooter>
-                                  <DialogClose
-                                    render={
-                                      <Button variant="outline">Cancel</Button>
-                                    }
-                                  />
-                                  <DialogClose
-                                    render={
-                                      <Button
-                                        variant="default"
-                                        onClick={() =>
-                                          handleApprove(enrollment.id)
-                                        }
-                                        disabled={isApproving}
-                                      >
-                                        Approve
-                                      </Button>
-                                    }
-                                  />
-                                </DialogFooter>
-                              </DialogContent>
-                            </Dialog>
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
                   </div>
                 </TableCell>
               </TableRow>
