@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Search } from "lucide-react";
+import { Ellipsis, Pencil, Search, Trash } from "lucide-react";
 import { format } from "date-fns";
 import { NumericFormat } from "react-number-format";
 import {
@@ -97,13 +97,14 @@ export function SubjectListForm({
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
                           <DropdownMenuItem onClick={() => setEditingId(subject.id)}>
+                            <Pencil/>
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setDeletingId(subject.id)}>
-                            Delete
+                          <DropdownMenuItem variant="destructive" onClick={() => setDeletingId(subject.id)}>
+                           <Trash/>  Delete
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>

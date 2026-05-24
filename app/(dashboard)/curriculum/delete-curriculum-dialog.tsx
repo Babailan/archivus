@@ -13,8 +13,17 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteCurriculumAction } from "./action";
 import { toast } from "sonner";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-export default function DeleteCurriculumDialog({ id }: { id: number }) {
+export default function DeleteCurriculumDialog({
+  id,
+  open,
+  onOpenChange
+}: {
+  id: number | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { executeAsync } = useAction(deleteCurriculumAction);
   const handleSubmit = async () => {
     const { data } = await executeAsync({ id });
@@ -23,14 +32,7 @@ export default function DeleteCurriculumDialog({ id }: { id: number }) {
     }
   };
   return (
-    <Dialog>
-      <DialogTrigger
-        render={
-          <Button variant="destructive" className="w-full justify-start">
-            Delete
-          </Button>
-        }
-      ></DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Delete Curriculum</DialogTitle>

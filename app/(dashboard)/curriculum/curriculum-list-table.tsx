@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { use } from "react";
+import { use, useState } from "react";
 import { format } from "date-fns";
 import { SearchCurriculumResult } from "@/services/curriculum.service";
 import EditCurriculumDialog from "./edit-curriculum-dialog";
@@ -25,6 +25,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -38,6 +39,7 @@ export function CurriculumListForm({
   curriculumsPromise: Promise<SearchCurriculumResult>;
 }) {
   const { curriculums, total, page, pageSize } = use(curriculumsPromise);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const totalPages = Math.ceil(total / pageSize);
 
   return (
@@ -90,13 +92,14 @@ export function CurriculumListForm({
                         }
                       />
                       <DropdownMenuContent>
-                        <DropdownMenuGroup>
-                          <EditCurriculumDialog id={curriculum.id} />
-                        </DropdownMenuGroup>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                          <DeleteCurriculumDialog id={curriculum.id} />
-                        </DropdownMenuGroup>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onClick={() => setDeletingId(curriculum.id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -104,6 +107,11 @@ export function CurriculumListForm({
               ))}
             </TableBody>
           </Table>
+          <DeleteCurriculumDialog
+            id={deletingId}
+            open={deletingId != null}
+            onOpenChange={(v) => !v && setDeletingId(null)}
+          />
           <DataTablePagination page={page} totalPages={totalPages} />
         </>
       )}

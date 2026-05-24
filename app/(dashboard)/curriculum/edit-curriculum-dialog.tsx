@@ -1,19 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function EditCurriculumDialog({ id }: { id: number }) {
+  const router = useRouter();
   return (
-    <DropdownMenuItem
-      render={
-        <Link href={`/curriculum/edit/${id}`}>
-          <Button variant={"ghost"} className="w-full justify-start">
-            Edit
-          </Button>
-        </Link>
-      }
-    />
+    <DropdownMenuItem onClick={()=> router.push(`/curriculum/edit/${id}`)}>Edit</DropdownMenuItem>
   );
 }
