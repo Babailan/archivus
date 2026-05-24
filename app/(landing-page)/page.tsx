@@ -14,32 +14,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div>
-      {/* Your Navigation */}
-      <div className="flex border-b justify-between items-center p-5 top-0 bg-background z-20 sticky">
-        <div>
-          <div className="flex gap-2">
-            <AspectRatio ratio={1 / 1} className="size-16">
-              <Image src={"/school_logo.png"} alt={""} fill />
-            </AspectRatio>
-            <span className="font-medium flex items-center gap-1 font-garamond">
-              Manny So Christian Academy.
-            </span>
-          </div>
-        </div>
-        <div className="gap-2 flex">
-          <Link href={"/enroll"}>
-            <Button size={"lg"} variant={"secondary"}>
-              <School /> Find your school
-            </Button>
-          </Link>
-          <Link href={"/enroll"}>
-            <Button size={"lg"} variant={"default"}>
-              <ArrowRight /> Enroll Now
-            </Button>
-          </Link>
-        </div>
-      </div>
-
+  
       <div className="min-h-screen relative overflow-hidden">
         {/* The Background Image */}
         <div className="absolute inset-0 -z-10 bg-background">
@@ -67,7 +42,6 @@ export default function Home() {
         </div>
       </div>
       <SecondSection />
-      <Footer />
     </div>
   );
 }
@@ -154,78 +128,3 @@ function SecondSection() {
   );
 }
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-primary text-white mt-20">
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between gap-10">
-          {/* Brand Section */}
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold mb-4 font-garamond">
-              Maniso Christian Academy
-            </h2>
-            <p className="max-w-sm text-sm leading-relaxed">
-              We believe that the best learning happens when we work together,
-              sharing insights and solving problems as a community.
-            </p>
-          </div>
-
-          {/* Links Section */}
-          <div className="flex-1 md:ml-12">
-            <h3 className="font-semibold mb-4 uppercase tracking-wider text-sm">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="hover:text-primary transition-colors">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition-colors">
-                  Our Projects
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Social Section */}
-          {/* <div className="flex-1">
-            <h3 className="font-semibold mb-4 uppercase tracking-wider text-sm">
-              Connect
-            </h3>
-            <div className="flex space-x-4">
-              <a
-                href="#"
-                className="p-2 bg-secondary rounded-full transition-all"
-              >
-                🐦
-              </a>
-              <a
-                href="#"
-                className="p-2 bg-secondary rounded-full transition-all"
-              >
-                🐙
-              </a>
-            </div>
-          </div> */}
-        </div>
-
-        {/* Bottom Credits */}
-        <div className="mt-12 pt-8 border-t text-center text-sm ">
-          <p>
-            &copy; {currentYear} Manny So Christian Academy. All rights
-            reserved.
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-};
