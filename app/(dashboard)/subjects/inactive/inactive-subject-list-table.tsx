@@ -8,8 +8,20 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
+<<<<<<< HEAD
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Search } from "lucide-react";
+=======
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Ellipsis, RotateCcw, Search } from "lucide-react";
+>>>>>>> 5af488d21300c90329e780965d846f9ab0eec2b0
 import { format } from "date-fns";
 import { NumericFormat } from "react-number-format";
 import {
@@ -20,15 +32,22 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { use, useState } from "react";
+<<<<<<< HEAD
 import { SearchInactiveSubjectResult } from "@/services/subject.service";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useAction } from "next-safe-action/hooks";
 import { undoSubjectAction } from "../action";
 import { toast } from "sonner";
+=======
+import { SearchSubjectResult } from "@/services/subject.service";
+import RestoreSubjectDialog from "./restore-subject-dialog";
+import { DataTablePagination } from "@/components/ui/data-table-pagination";
+>>>>>>> 5af488d21300c90329e780965d846f9ab0eec2b0
 
 export function InactiveSubjectListForm({
   subjectsPromise,
 }: {
+<<<<<<< HEAD
   subjectsPromise: Promise<SearchInactiveSubjectResult>;
 }) {
   const { subjects: subj, total, page, pageSize } = use(subjectsPromise);
@@ -45,6 +64,14 @@ export function InactiveSubjectListForm({
     setUndoingId(null);
   };
 
+=======
+  subjectsPromise: Promise<SearchSubjectResult>;
+}) {
+  const { subjects: subj, total, page, pageSize } = use(subjectsPromise);
+  const [restoringId, setRestoringId] = useState<number | null>(null);
+  const totalPages = Math.ceil(total / pageSize);
+
+>>>>>>> 5af488d21300c90329e780965d846f9ab0eec2b0
   return (
     <>
       {!subj.length && (
@@ -66,7 +93,11 @@ export function InactiveSubjectListForm({
                 <TableHead>Subject Code</TableHead>
                 <TableHead>Subject Name</TableHead>
                 <TableHead>Price</TableHead>
+<<<<<<< HEAD
                 <TableHead>Date Created</TableHead>
+=======
+                <TableHead>Date Deactivated</TableHead>
+>>>>>>> 5af488d21300c90329e780965d846f9ab0eec2b0
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -84,6 +115,7 @@ export function InactiveSubjectListForm({
                     />
                   </TableCell>
                   <TableCell>
+<<<<<<< HEAD
                     {format(subject.created_at, "MMM, d yyyy")}
                   </TableCell>
                   <TableCell className="flex justify-end">
@@ -96,6 +128,33 @@ export function InactiveSubjectListForm({
                     >
                       <RotateCcw /> Undo
                     </Button>
+=======
+                    {format(subject.updated_at, "MMM, d yyyy")}
+                  </TableCell>
+                  <TableCell className="flex justify-end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={
+                          <Button size={"icon-sm"} variant={"ghost"}>
+                            <Ellipsis />
+                          </Button>
+                        }
+                      />
+                      <DropdownMenuContent>
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem onClick={() => setRestoringId(subject.id)}>
+                            <RotateCcw/>
+                            Restore
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    <RestoreSubjectDialog
+                      id={subject.id}
+                      open={restoringId === subject.id}
+                      onOpenChange={(open) => { if (!open) setRestoringId(null); }}
+                    />
+>>>>>>> 5af488d21300c90329e780965d846f9ab0eec2b0
                   </TableCell>
                 </TableRow>
               ))}
