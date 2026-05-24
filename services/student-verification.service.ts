@@ -67,6 +67,7 @@ export async function searchStudentVerifications(
             OR: [
               { first_name: { contains: chunk, mode: "insensitive" as const } },
               { last_name: { contains: chunk, mode: "insensitive" as const } },
+              { middle_name: { contains: chunk, mode: "insensitive" as const } },
               { email: { contains: chunk, mode: "insensitive" as const } },
               { lrn: { contains: chunk, mode: "insensitive" as const } },
             ],

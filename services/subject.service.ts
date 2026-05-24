@@ -13,29 +13,26 @@ export async function searchSubject(
 ) {
   const skip = (page - 1) * pageSize;
 
-  const select: SubjectFindManyArgs = {};
-  if (q) {
-    select.where = {
-      OR: [
-        { subject_name: { contains: q } },
-        { subject_code: { contains: q } },
-      ],
-      inactive: false,
-    };
-    select.orderBy = {
-      created_at: "desc",
-    };
-  } else {
-    select.where = { inactive: false };
-    select.orderBy = {
-      created_at: "desc",
-    };
-  }
+  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+
+  const searchFilter = q
+    ? {
+        OR: [
+          ...chunks.map((chunk) => ({
+            OR: [
+              { subject_name: { contains: chunk, mode: "insensitive" as const } },
+              { subject_code: { contains: chunk, mode: "insensitive" as const } },
+            ],
+          })),
+        ],
+      }
+    : {};
+
+  const where = { inactive: false, ...searchFilter };
 
   const [find, total] = await Promise.all([
     prisma.subject.findMany({
-      where: { inactive: false },
-      ...select,
+      where,
       include: {
         prices: {
           take: 1,
@@ -46,8 +43,11 @@ export async function searchSubject(
       },
       skip,
       take: pageSize,
+      orderBy: {
+        created_at: "desc",
+      },
     }),
-    prisma.subject.count({ where: select.where }),
+    prisma.subject.count({ where }),
   ]);
 
   return {

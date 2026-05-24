@@ -51,33 +51,34 @@ export async function searchCurriculum(
 ) {
   const skip = (page - 1) * pageSize;
 
-  const select: CurriculumFindManyArgs = {};
-  if (q) {
-    select.where = {
-      OR: [
-        { curriculum_name: { contains: q } },
-        { curriculum_code: { contains: q } },
-      ],
-      inactive: false,
-    };
-    select.orderBy = {
-      created_at: "desc",
-    };
-  } else {
-    select.where = { inactive: false };
-    select.orderBy = {
-      created_at: "desc",
-    };
-  }
+  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+
+  const searchFilter = q
+    ? {
+        OR: [
+          ...chunks.map((chunk) => ({
+            OR: [
+              { curriculum_name: { contains: chunk, mode: "insensitive" as const } },
+              { curriculum_code: { contains: chunk, mode: "insensitive" as const } },
+            ],
+          })),
+        ],
+      }
+    : {};
+
+  const where = { inactive: false, ...searchFilter };
 
   try {
     const [find, total] = await Promise.all([
       prisma.curriculum.findMany({
-        ...select,
+        where,
         skip,
         take: pageSize,
+        orderBy: {
+          created_at: "desc",
+        },
       }),
-      prisma.curriculum.count({ where: select.where }),
+      prisma.curriculum.count({ where }),
     ]);
 
     const curriculums = find.map((c) => ({
