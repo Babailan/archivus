@@ -49,7 +49,12 @@ export default async function SubjectListPage({
         <div>
           <h1 className="text-xl font-bold">List of Subjects</h1>
         </div>
-        <div>
+        <div className="flex gap-2">
+          <Link href={"/subjects/inactive"}>
+            <Button variant="outline" className="cursor-pointer">
+              View Inactive
+            </Button>
+          </Link>
           <Link href={"/subjects/create"}>
             <Button className="cursor-pointer">
               <Plus /> New Subject
