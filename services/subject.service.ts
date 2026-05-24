@@ -113,3 +113,69 @@ export async function findSubjectByCode(subject_code: string) {
     where: { subject_code },
   });
 }
+
+export type SearchInactiveSubjectResult = Awaited<
+  ReturnType<typeof searchInactiveSubject>
+>;
+
+export async function searchInactiveSubject(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const skip = (page - 1) * pageSize;
+
+  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+
+  const searchFilter = q
+    ? {
+        OR: [
+          ...chunks.map((chunk) => ({
+            OR: [
+              { subject_name: { contains: chunk, mode: "insensitive" as const } },
+              { subject_code: { contains: chunk, mode: "insensitive" as const } },
+            ],
+          })),
+        ],
+      }
+    : {};
+
+  const where = { inactive: true, ...searchFilter };
+
+  const [find, total] = await Promise.all([
+    prisma.subject.findMany({
+      where,
+      include: {
+        prices: {
+          take: 1,
+          orderBy: {
+            created_at: "desc",
+          },
+        },
+      },
+      skip,
+      take: pageSize,
+      orderBy: {
+        created_at: "desc",
+      },
+    }),
+    prisma.subject.count({ where }),
+  ]);
+
+  return {
+    subjects: find.map((v) => ({
+      ...v,
+      prices: v.prices.map((p) => ({ ...p, price: p.price.toNumber() })),
+    })),
+    total,
+    page,
+    pageSize,
+  };
+}
+
+export async function undoSubject(id: number) {
+  await prisma.subject.update({
+    where: { id },
+    data: { inactive: false },
+  });
+}

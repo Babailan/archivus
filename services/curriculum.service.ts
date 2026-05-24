@@ -196,3 +196,63 @@ export async function deleteCurriculum(id: number) {
     data: { inactive: true },
   });
 }
+
+export type SearchInactiveCurriculumResult = Awaited<
+  ReturnType<typeof searchInactiveCurriculum>
+>;
+
+export async function searchInactiveCurriculum(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const skip = (page - 1) * pageSize;
+
+  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+
+  const searchFilter = q
+    ? {
+        OR: [
+          ...chunks.map((chunk) => ({
+            OR: [
+              { curriculum_name: { contains: chunk, mode: "insensitive" as const } },
+              { curriculum_code: { contains: chunk, mode: "insensitive" as const } },
+            ],
+          })),
+        ],
+      }
+    : {};
+
+  const where = { inactive: true, ...searchFilter };
+
+  const [find, total] = await Promise.all([
+    prisma.curriculum.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: {
+        created_at: "desc",
+      },
+    }),
+    prisma.curriculum.count({ where }),
+  ]);
+
+  const curriculums = find.map((c) => ({
+    ...c,
+    miscellaneous_fee: c.miscellaneous_fee.toNumber(),
+  }));
+
+  return {
+    curriculums,
+    total,
+    page,
+    pageSize,
+  };
+}
+
+export async function undoCurriculum(id: number) {
+  await prisma.curriculum.update({
+    where: { id },
+    data: { inactive: false },
+  });
+}

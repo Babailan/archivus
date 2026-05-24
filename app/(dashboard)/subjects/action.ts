@@ -8,6 +8,7 @@ import { zfd } from "zod-form-data";
 import {
   deleteSubject,
   searchSubject,
+  undoSubject,
   updateSubject,
 } from "@/services/subject.service";
 
@@ -39,5 +40,13 @@ export const deleteSubjectAction = registrarActionClient
   .action(async ({ parsedInput: { id } }) => {
     await deleteSubject(id);
     revalidatePath("/subjects");
+    return { success: true };
+  });
+
+export const undoSubjectAction = registrarActionClient
+  .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
+  .action(async ({ parsedInput: { id } }) => {
+    await undoSubject(id);
+    revalidatePath("/subjects/inactive");
     return { success: true };
   });

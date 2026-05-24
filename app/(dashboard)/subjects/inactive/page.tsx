@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
-import { Archive, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { CurriculumListForm } from "./curriculum-list-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,60 +13,67 @@ import {
 import { queryFirst } from "@/lib/helper";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchCurriculum } from "@/services/curriculum.service";
+import { searchInactiveSubject } from "@/services/subject.service";
 import { SearchInput } from "@/components/ui/search-input";
+import { InactiveSubjectListForm } from "./inactive-subject-list-table";
 
 export const metadata: Metadata = {
-  title: "Curriculum",
+  title: "Inactive Subjects",
 };
 
-export default async function CurriculumPage({
+export default async function InactiveSubjectListPage({
   searchParams,
-}: PageProps<"/curriculum">) {
+}: PageProps<"/subjects/inactive">) {
   let { q, page } = await searchParams;
   q = queryFirst(q);
   page = queryFirst(page);
   const pageNum = page ? parseInt(page) : 1;
-  const curriculums = searchCurriculum(q, pageNum);
+  const subjects = searchInactiveSubject(q, pageNum);
+
   return (
     <div className="p-10">
       <Breadcrumb className="mb-5">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink
-              render={<Link href="/dashboard">Home</Link>}
-            ></BreadcrumbLink>
+            <BreadcrumbLink render={<Link href="/dashboard" />}>
+              Home
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Curriculum</BreadcrumbPage>
+            <BreadcrumbLink render={<Link href="/subjects" />}>
+              Subjects
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Inactive Subjects</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex justify-between items-center mb-5">
         <div>
-          <h1 className="text-xl font-bold">List of Curriculum</h1>
+          <h1 className="text-xl font-bold">Inactive Subjects</h1>
+          <p className="text-sm text-muted-foreground">
+            List of subjects that are currently deactivated.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Link href={"/curriculum/inactive"}>
+        <div>
+          <Link href={"/subjects"}>
             <Button variant="outline" className="cursor-pointer">
-              <Archive /> Inactive
-            </Button>
-          </Link>
-          <Link href={"/curriculum/create"}>
-            <Button className="cursor-pointer">
-              <Plus /> New Curriculum
+              <ArrowLeft /> Back to Subjects
             </Button>
           </Link>
         </div>
       </div>
-      <SearchInput pathname="/curriculum" />
+      <SearchInput pathname="/subjects/inactive" />
       <Suspense key={`${q}-${page}`} fallback={<SkeletonTable />}>
-        <CurriculumListForm curriculumsPromise={curriculums} />
+        <InactiveSubjectListForm subjectsPromise={subjects} />
       </Suspense>
     </div>
   );
 }
+
 function SkeletonTable() {
   return (
     <div className="flex w-full flex-col gap-2 mt-5">

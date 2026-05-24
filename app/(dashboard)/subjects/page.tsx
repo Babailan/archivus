@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Archive, Plus } from "lucide-react";
 import Link from "next/link";
 import { SubjectListForm } from "./subject-list-table";
 import {
@@ -49,7 +49,12 @@ export default async function SubjectListPage({
         <div>
           <h1 className="text-xl font-bold">List of Subjects</h1>
         </div>
-        <div>
+        <div className="flex gap-2">
+          <Link href={"/subjects/inactive"}>
+            <Button variant="outline" className="cursor-pointer">
+              <Archive /> Inactive
+            </Button>
+          </Link>
           <Link href={"/subjects/create"}>
             <Button className="cursor-pointer">
               <Plus /> New Subject

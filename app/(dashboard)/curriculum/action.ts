@@ -8,6 +8,7 @@ import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 import {
   deleteCurriculum,
   searchCurriculum,
+  undoCurriculum,
   updateCurriculum,
 } from "@/services/curriculum.service";
 
@@ -22,6 +23,14 @@ export const deleteCurriculumAction = registrarActionClient
   .action(async ({ parsedInput: { id } }) => {
     await deleteCurriculum(id);
     revalidatePath("/curriculum");
+    return { success: true };
+  });
+
+export const undoCurriculumAction = registrarActionClient
+  .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
+  .action(async ({ parsedInput: { id } }) => {
+    await undoCurriculum(id);
+    revalidatePath("/curriculum/inactive");
     return { success: true };
   });
 
