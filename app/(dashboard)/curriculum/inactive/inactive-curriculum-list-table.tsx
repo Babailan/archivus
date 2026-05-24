@@ -21,9 +21,7 @@ import {
 import { use, useState } from "react";
 import { SearchInactiveCurriculumResult } from "@/services/curriculum.service";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { useAction } from "next-safe-action/hooks";
-import { undoCurriculumAction } from "../action";
-import { toast } from "sonner";
+import RestoreCurriculumDialog from "./restore-curriculum-dialog";
 
 export function InactiveCurriculumListForm({
   curriculumsPromise,
@@ -31,18 +29,8 @@ export function InactiveCurriculumListForm({
   curriculumsPromise: Promise<SearchInactiveCurriculumResult>;
 }) {
   const { curriculums, total, page, pageSize } = use(curriculumsPromise);
-  const [undoingId, setUndoingId] = useState<number | null>(null);
-  const { executeAsync } = useAction(undoCurriculumAction);
+  const [restoringId, setRestoringId] = useState<number | null>(null);
   const totalPages = Math.ceil(total / pageSize);
-
-  const handleUndo = async (id: number) => {
-    setUndoingId(id);
-    const { data } = await executeAsync({ id });
-    if (data) {
-      toast.success("Curriculum restored successfully");
-    }
-    setUndoingId(null);
-  };
 
   return (
     <>
@@ -89,11 +77,15 @@ export function InactiveCurriculumListForm({
                       size="sm"
                       variant="outline"
                       className="cursor-pointer"
-                      disabled={undoingId === curriculum.id}
-                      onClick={() => handleUndo(curriculum.id)}
+                      onClick={() => setRestoringId(curriculum.id)}
                     >
                       <RotateCcw /> Undo
                     </Button>
+                    <RestoreCurriculumDialog
+                      id={curriculum.id}
+                      open={restoringId === curriculum.id}
+                      onOpenChange={(open) => { if (!open) setRestoringId(null); }}
+                    />
                   </TableCell>
                 </TableRow>
               ))}

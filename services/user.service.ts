@@ -121,12 +121,32 @@ export async function searchUsers(
   return { users, total, page, pageSize };
 }
 
-export async function getInactiveUsers(
+export type SearchInactiveUserResult = Awaited<
+  ReturnType<typeof searchInactiveUsers>
+>;
+
+export async function searchInactiveUsers(
+  q: string,
   page: number = 1,
   pageSize: number = 10,
 ) {
   const skip = (page - 1) * pageSize;
   const where: Prisma.UserWhereInput = { inactive: true };
+
+  if (q) {
+    const chunks = q.trim().split(/\s+/).filter(Boolean);
+    if (chunks.length > 0) {
+      where.AND = chunks.map((chunk) => ({
+        OR: [
+          { username: { contains: chunk } },
+          { email: { contains: chunk } },
+          { first_name: { contains: chunk } },
+          { last_name: { contains: chunk } },
+          { middle_name: { contains: chunk } },
+        ],
+      }));
+    }
+  }
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
@@ -144,6 +164,13 @@ export async function getInactiveUsers(
   ]);
 
   return { users, total, page, pageSize };
+}
+
+export async function getInactiveUsers(
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  return searchInactiveUsers("", page, pageSize);
 }
 
 export async function toggleUserStatus(id: number) {

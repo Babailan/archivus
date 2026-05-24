@@ -1,4 +1,6 @@
 import { Metadata } from "next";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,11 +10,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { queryFirst } from "@/lib/helper";
-import { getInactiveUsers } from "@/services/user.service";
+import { searchInactiveUsers } from "@/services/user.service";
 import Link from "next/link";
 import { Suspense } from "react";
-import { UserListForm } from "../user-list-table";
+import { InactiveUserListForm } from "./inactive-user-list-table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SearchInput } from "@/components/ui/search-input";
 
 export const metadata: Metadata = {
   title: "Inactive Users",
@@ -21,9 +24,11 @@ export const metadata: Metadata = {
 export default async function InactiveUsersPage({
   searchParams,
 }: PageProps<"/users/inactive">) {
-  const { page } = await searchParams;
-  const pageNum = queryFirst(page) ? parseInt(queryFirst(page)!) : 1;
-  const users = getInactiveUsers(pageNum);
+  let { q, page } = await searchParams;
+  q = queryFirst(q);
+  page = queryFirst(page);
+  const pageNum = page ? parseInt(page) : 1;
+  const users = searchInactiveUsers(q ?? "", pageNum);
 
   return (
     <div className="p-10">
@@ -53,9 +58,17 @@ export default async function InactiveUsersPage({
             List of users who are currently deactivated and cannot log in.
           </p>
         </div>
+        <div>
+          <Link href={"/users"}>
+            <Button variant="outline" className="cursor-pointer">
+              <ArrowLeft /> Back to Users
+            </Button>
+          </Link>
+        </div>
       </div>
-      <Suspense key={pageNum} fallback={<SkeletonTable />}>
-        <UserListForm usersPromise={users} />
+      <SearchInput pathname="/users/inactive" />
+      <Suspense key={`${q}-${page}`} fallback={<SkeletonTable />}>
+        <InactiveUserListForm usersPromise={users} />
       </Suspense>
     </div>
   );

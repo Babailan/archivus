@@ -2,15 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { registrarActionClient } from "@/lib/safe-action";
-import z from "zod";
 import { zfd } from "zod-form-data";
-import { undoSubject } from "@/services/subject.service";
+import { z } from "zod";
+import { undoCurriculum } from "@/services/curriculum.service";
 
-export const restoreSubjectAction = registrarActionClient
+export const restoreCurriculumAction = registrarActionClient
   .inputSchema(zfd.formData({ id: zfd.numeric(z.number()) }))
   .action(async ({ parsedInput: { id } }) => {
-    await undoSubject(id);
-    revalidatePath("/subjects/inactive");
-    revalidatePath("/subjects");
+    await undoCurriculum(id);
+    revalidatePath("/curriculum/inactive");
+    revalidatePath("/curriculum");
     return { success: true };
   });
