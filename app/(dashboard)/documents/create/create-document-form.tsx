@@ -15,29 +15,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { SendHorizonal } from "lucide-react";
-import React from "react";
+import React, { useRef } from "react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
 export function CreateDocumentForm() {
   const { executeAsync, result, isExecuting } = useAction(createDocumentAction);
+  const form = useRef<HTMLFormElement>(null);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formdata = new FormData(e.currentTarget);
     const result = await executeAsync(formdata);
+    
     if (result.data) {
       toast.success("Document created successfully", {
         description: format(new Date(), "MMM, d yyyy"),
       });
-      e.currentTarget.reset();
+      form.current?.reset()
     }
   }
 
   return (
-    <form onSubmit={submit}>
+    <form onSubmit={submit} ref={form}>
       <FieldSet>
-        <FieldLegend className="text-xl! font-bold">Create Document</FieldLegend>
+        <FieldLegend className="text-xl! font-bold">
+          Create Document
+        </FieldLegend>
         <FieldDescription>
           Add a document type that students must submit to the registrar.
         </FieldDescription>
@@ -53,9 +57,7 @@ export function CreateDocumentForm() {
           <FieldDescription>
             e.g., Form 137, Birth Certificate, Good Moral Certificate
           </FieldDescription>
-          <FieldError>
-            {result.validationErrors?.fieldErrors.name}
-          </FieldError>
+          <FieldError>{result.validationErrors?.fieldErrors.name}</FieldError>
         </Field>
         <Field>
           <FieldLabel>Description</FieldLabel>

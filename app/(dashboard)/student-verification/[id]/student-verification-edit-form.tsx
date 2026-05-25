@@ -103,7 +103,7 @@ export function StudentVerificationEditForm({
   const { executeAsync: updateAsync, isExecuting: isUpdating } = useAction(
     updateStudentVerificationAction,
   );
-  const { executeAsync: approveAsync, isExecuting: isApproving } =
+  const { executeAsync: approveAsync } =
     useAction(approveAction);
   const { executeAsync: declineAsync, isExecuting: isDeclining } =
     useAction(declineAction);
@@ -130,6 +130,7 @@ export function StudentVerificationEditForm({
     new Date(studentVerification.date_of_birth),
   );
   const [openDatePicker, setOpenDatePicker] = useState(false);
+  const [isSavingAndApproving, setIsSavingAndApproving] = useState(false);
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const formData = new FormData();
@@ -155,16 +156,45 @@ export function StudentVerificationEditForm({
     }
   }
 
-  const handleApprove = async () => {
+  const handleSaveAndApprove = async () => {
+    const isFormValid = await form.trigger();
+    if (!isFormValid) return;
+
+    setIsSavingAndApproving(true);
+
+    const data = form.getValues();
     const formData = new FormData();
-    formData.append("id", studentVerification.id.toString());
-    const { data } = await approveAsync(formData);
-    if (data?.success) {
+    formData.append("id", data.id.toString());
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("middle_name", data.middle_name);
+    formData.append("date_of_birth", data.date_of_birth.toISOString());
+    formData.append("gender", data.gender);
+    formData.append("address", data.address);
+    formData.append("email", data.email);
+    formData.append("grade_level", data.grade_level);
+    formData.append("school_year", data.school_year);
+    formData.append("lrn", data.lrn);
+    formData.append("contact_number", data.contact_number);
+
+    const { data: updateResult } = await updateAsync(formData);
+    if (!updateResult?.success) {
+      toast.error("Failed to save changes");
+      setIsSavingAndApproving(false);
+      return;
+    }
+
+    const approveFormData = new FormData();
+    approveFormData.append("id", data.id.toString());
+    const { data: approveResult } = await approveAsync(approveFormData);
+    if (approveResult?.success) {
       toast.success("Application approved!");
       router.push("/student-verification");
     } else {
-      toast.error("Failed to approve");
+      toast.error("Failed to approve after saving");
     }
+
+    setIsSavingAndApproving(false);
   };
 
   const handleDecline = async () => {
@@ -221,7 +251,9 @@ export function StudentVerificationEditForm({
                 name="first_name"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>First Name</FieldLabel>
+                    <FieldLabel>
+                      First Name <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Input type="text" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -233,7 +265,9 @@ export function StudentVerificationEditForm({
                 name="last_name"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Last Name</FieldLabel>
+                    <FieldLabel>
+                      Last Name <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Input type="text" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -257,7 +291,9 @@ export function StudentVerificationEditForm({
                 name="gender"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Gender</FieldLabel>
+                    <FieldLabel>
+                      Gender <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger aria-invalid={fieldState.invalid}>
                         <SelectValue placeholder="Select gender" />
@@ -279,7 +315,9 @@ export function StudentVerificationEditForm({
                 name="date_of_birth"
                 render={({ fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Date of Birth</FieldLabel>
+                    <FieldLabel>
+                      Date of Birth <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Popover
                       open={openDatePicker}
                       onOpenChange={setOpenDatePicker}
@@ -325,7 +363,9 @@ export function StudentVerificationEditForm({
                 name="address"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Address</FieldLabel>
+                    <FieldLabel>
+                      Address<span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Input type="text" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -337,7 +377,7 @@ export function StudentVerificationEditForm({
                 name="email"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Email</FieldLabel>
+                    <FieldLabel>Email <span className="text-red-600">*</span></FieldLabel>
                     <Input type="email" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -367,7 +407,7 @@ export function StudentVerificationEditForm({
                 name="grade_level"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Grade Level</FieldLabel>
+                    <FieldLabel>Grade Level <span className="text-red-600">*</span></FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -396,7 +436,7 @@ export function StudentVerificationEditForm({
                 name="school_year"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>School Year</FieldLabel>
+                    <FieldLabel>School Year <span className="text-red-600">*</span></FieldLabel>
                     <Input type="text" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -405,80 +445,77 @@ export function StudentVerificationEditForm({
             </FieldGroup>
 
             <FieldGroup className="flex-row gap-4 mt-6">
-              <Button type="submit" disabled={isUpdating}>
+              <Button type="submit" className={"bg-blue-600 hover:bg-sky-800"}  disabled={isUpdating}>
                 {isUpdating ? "Saving..." : "Save Changes"}
               </Button>
+
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button className="bg-green-600 hover:bg-green-700">
+                      <Check className="mr-2 h-4 w-4" />
+                      Save and Approve
+                    </Button>
+                  }
+                />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Approve Application</DialogTitle>
+                    <DialogDescription>
+                      This will save all changes and create an official Student
+                      record.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose
+                      render={<Button variant="outline">Cancel</Button>}
+                    />
+                    <Button
+                      disabled={isSavingAndApproving}
+                      onClick={handleSaveAndApprove}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      {isSavingAndApproving
+                        ? "Saving and Approving..."
+                        : "Save and Approve"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger
+                  render={
+                    <Button variant="destructive">
+                      <X className="mr-2 h-4 w-4" />
+                      Deny
+                    </Button>
+                  }
+                />
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Deny Application</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to deny this application?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter>
+                    <DialogClose
+                      render={<Button variant="outline">Cancel</Button>}
+                    />
+                    <Button
+                      variant="destructive"
+                      disabled={isDeclining}
+                      onClick={handleDecline}
+                    >
+                      {isDeclining ? "Denying..." : "Deny"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </FieldGroup>
           </FieldSet>
         </form>
-
-        <div className="mt-8 pt-6 border-t">
-          <h3 className="text-lg font-semibold mb-4">Review Decision</h3>
-          <div className="flex gap-4">
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button className="bg-green-600 hover:bg-green-700">
-                    <Check className="mr-2 h-4 w-4" />
-                    Accept
-                  </Button>
-                }
-              />
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Approve Application</DialogTitle>
-                  <DialogDescription>
-                    Confirming this will create an official Student record and
-                    assign a permanent ID.
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose
-                    render={<Button variant="outline">Cancel</Button>}
-                  />
-                  <Button
-                    disabled={isApproving}
-                    onClick={handleApprove}
-                    className="bg-green-600 hover:bg-green-700"
-                  >
-                    {isApproving ? "Approving..." : "Approve"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
-            <Dialog>
-              <DialogTrigger
-                render={
-                  <Button variant="destructive">
-                    <X className="mr-2 h-4 w-4" />
-                    Deny
-                  </Button>
-                }
-              />
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Deny Application</DialogTitle>
-                  <DialogDescription>
-                    Are you sure you want to deny this application?
-                  </DialogDescription>
-                </DialogHeader>
-                <DialogFooter>
-                  <DialogClose
-                    render={<Button variant="outline">Cancel</Button>}
-                  />
-                  <Button
-                    variant="destructive"
-                    disabled={isDeclining}
-                    onClick={handleDecline}
-                  >
-                    {isDeclining ? "Denying..." : "Deny"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
       </Card>
     </div>
   );

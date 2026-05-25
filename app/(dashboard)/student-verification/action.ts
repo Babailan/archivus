@@ -3,19 +3,23 @@
 import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
-import {
-  
-} from "@/services/enrollment.service";
+import {} from "@/services/enrollment.service";
 import { revalidatePath } from "next/cache";
-import { updateStudentVerification,searchStudentVerifications,approveStudentVerification,
+import {
+  updateStudentVerification,
+  searchStudentVerifications,
+  approveStudentVerification,
   declineStudentVerification,
-  getStudentVerificationById, } from "@/services/student-verification.service";
+  getStudentVerificationById,
+} from "@/services/student-verification.service";
 
 const updateStudentVerificationSchema = zfd.formData({
   id: zfd.numeric(z.number()),
   first_name: zfd.text(),
   last_name: zfd.text(),
-  middle_name: zfd.text(),
+  middle_name: zfd.text(
+    z.transform((v) => (v == undefined ? "" : v)).pipe(z.string()),
+  ),
   date_of_birth: zfd.text(),
   gender: zfd.text(),
   address: zfd.text(),

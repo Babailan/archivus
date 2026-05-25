@@ -6,6 +6,18 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
 
 export default function LandingPageLayout({
   children,
@@ -15,10 +27,7 @@ export default function LandingPageLayout({
   return (
     <>
       <LandingPageNavbar />
-      <div className="min-h-screen">
-      {children}
-
-      </div>
+      <div className="min-h-screen">{children}</div>
       <Footer />
     </>
   );
@@ -26,20 +35,20 @@ export default function LandingPageLayout({
 
 const LandingPageNavbar = () => {
   return (
-    <div className="flex border-b justify-between items-center p-5 lg:px-20 px-10 top-0 bg-background z-20 sticky shadow-2xl">
+    <div className="flex border-b justify-between items-center p-5 lg:px-20 top-0 bg-background z-20 sticky shadow-2xl">
       <div>
         <Link href={"/"}>
           <div className="flex gap-2">
-            <AspectRatio ratio={1 / 1} className="size-16">
+            <AspectRatio ratio={1 / 1} className="size-10">
               <Image src={"/school_logo.png"} alt={""} fill />
             </AspectRatio>
-            <span className="font-medium flex items-center gap-1 font-garamond text-2xl">
+            <span className="font-medium flex items-center gap-1 font-garamond text-sm lg:text-2xl">
               Manny So Christian Academy.
             </span>
           </div>
         </Link>
       </div>
-      <div className="gap-10 flex">
+      <div className="gap-10 hidden lg:flex">
         <HoverCard>
           <HoverCardTrigger
             delay={0}
@@ -80,7 +89,11 @@ const LandingPageNavbar = () => {
             </div>
           </HoverCardContent>
         </HoverCard>
-        <Link href={"https://maps.app.goo.gl/o1XbgPkZmbsWzu3r9"} target="_blank" className="hover:text-primary transition-colors">
+        <Link
+          href={"https://maps.app.goo.gl/o1XbgPkZmbsWzu3r9"}
+          target="_blank"
+          className="hover:text-primary transition-colors"
+        >
           Visit Us
         </Link>
         <Link
@@ -89,6 +102,36 @@ const LandingPageNavbar = () => {
         >
           Apply
         </Link>
+      </div>
+      <div className="lg:hidden">
+        <Drawer direction="right">
+          <DrawerTrigger>
+            <div className="flex gap-2">
+              <Menu strokeWidth={1} />
+            </div>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>
+                <Link href={"/"}>
+                  <div className="flex gap-2">
+                    <AspectRatio ratio={1 / 1} className="size-10">
+                      <Image src={"/school_logo.png"} alt={""} fill />
+                    </AspectRatio>
+                    <span className="font-medium flex items-center gap-1 font-garamond text-sm lg:text-2xl">
+                      Manny So Christian Academy.
+                    </span>
+                  </div>
+                </Link>
+              </DrawerTitle>
+            </DrawerHeader>
+            <div className="flex flex-col p-5 *:text-base gap-5">
+              <Link href={"/about-us"}>About Us</Link>
+              <Link href={"https://maps.app.goo.gl/o1XbgPkZmbsWzu3r9"} target="_blank">Visit Us</Link>
+              <Link href={"/enroll"} className="text-primary">Apply</Link>
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </div>
   );

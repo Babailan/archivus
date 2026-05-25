@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Search } from "lucide-react";
+import { Ellipsis, Pencil, Search, Trash } from "lucide-react";
 import { format } from "date-fns";
 import {
   Empty,
@@ -86,12 +86,14 @@ export function DocumentListTable({
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
                           <DropdownMenuItem onClick={() => setEditingId(doc.id)}>
+                            <Pencil/>
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setDeletingId(doc.id)}>
+                          <DropdownMenuItem variant="destructive" onClick={() => setDeletingId(doc.id)}>
+                            <Trash/>
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuGroup>

@@ -9,7 +9,7 @@ import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 const submitEnrollmentInputSchema = zfd.formData({
   first_name: zfd.text(z.string().min(1, "First name is required")),
   last_name: zfd.text(z.string().min(1, "Last name is required")),
-  middle_name: zfd.text(z.string().min(1, "Middle name is required")),
+  middle_name: zfd.text(z.transform((v) => v == undefined ? "": v).pipe(z.string())),
   date_of_birth: zfd.text(z.string().min(1, "Date of birth is required")),
   gender: zfd.text(z.enum(["male", "female"])),
   grade_level: zfd.text(z.string().min(1, "Grade level is required")),

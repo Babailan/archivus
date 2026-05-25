@@ -1,6 +1,6 @@
 export default function AboutPage() {
   return (
-    <article className="prose m-auto mt-20">
+    <article className="prose m-auto mt-20 p-10">
       <h1>Our Story</h1>
       <h3>HISTORY OF MANNY SO CHRISTIAN ACADEMY INC.</h3>
       <p>

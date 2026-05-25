@@ -1,8 +1,7 @@
 import { Metadata } from "next";
 import { Button } from "@/components/ui/button";
-import { Archive, Plus } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { DocumentListTable } from "./document-list-table";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,21 +13,22 @@ import {
 import { queryFirst } from "@/lib/helper";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchDocument } from "@/services/document.service";
+import { searchInactiveDocument } from "@/services/document.service";
 import { SearchInput } from "@/components/ui/search-input";
+import { InactiveDocumentListTable } from "./inactive-document-list-table";
 
 export const metadata: Metadata = {
-  title: "Documents",
+  title: "Inactive Documents",
 };
 
-export default async function DocumentListPage({
+export default async function InactiveDocumentListPage({
   searchParams,
-}: PageProps<"/documents">) {
+}: PageProps<"/documents/inactive">) {
   let { q, page } = await searchParams;
   q = queryFirst(q);
   page = queryFirst(page);
   const pageNum = page ? parseInt(page) : 1;
-  const documents = searchDocument(q, pageNum);
+  const documents = searchInactiveDocument(q, pageNum);
 
   return (
     <div className="p-10">
@@ -41,30 +41,34 @@ export default async function DocumentListPage({
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Documents</BreadcrumbPage>
+            <BreadcrumbLink render={<Link href="/documents" />}>
+              Documents
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Inactive Documents</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       <div className="flex justify-between items-center mb-5">
         <div>
-          <h1 className="text-xl font-bold">List of Documents</h1>
+          <h1 className="text-xl font-bold">Inactive Documents</h1>
+          <p className="text-sm text-muted-foreground">
+            List of documents that are currently deactivated.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Link href={"/documents/inactive"}>
+        <div>
+          <Link href={"/documents"}>
             <Button variant="outline" className="cursor-pointer">
-              <Archive /> Inactive
-            </Button>
-          </Link>
-          <Link href={"/documents/create"}>
-            <Button className="cursor-pointer">
-              <Plus /> New Document
+              <ArrowLeft /> Back to Documents
             </Button>
           </Link>
         </div>
       </div>
-      <SearchInput pathname="/documents" />
+      <SearchInput pathname="/documents/inactive" />
       <Suspense key={`${q}-${page}`} fallback={<SkeletonTable />}>
-        <DocumentListTable documentsPromise={documents} />
+        <InactiveDocumentListTable documentsPromise={documents} />
       </Suspense>
     </div>
   );

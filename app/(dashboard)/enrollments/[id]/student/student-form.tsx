@@ -127,7 +127,8 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
         <div className="flex items-center gap-3 rounded-lg border border-gray-500/30 bg-gray-500/10 px-4 py-3">
           <RotateCcw className="h-4 w-4 shrink-0 text-gray-500" />
           <p className="text-sm text-muted-foreground font-medium">
-            This enrollment has been cancelled. No further actions are available.
+            This enrollment has been cancelled. No further actions are
+            available.
           </p>
         </div>
       )}
@@ -190,7 +191,9 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-muted-foreground">Reference Code</p>
+                  <p className="text-sm text-muted-foreground">
+                    Reference Code
+                  </p>
                   <p className="font-medium">{enrollment.reference_code}</p>
                 </div>
                 <div>
@@ -217,13 +220,17 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Tuition</p>
+                    <p className="text-sm text-muted-foreground">
+                      Total Tuition
+                    </p>
                     <p className="font-medium text-lg">
                       ₱{enrollment.total_tuition_snapshot.toLocaleString()}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Miscellaneous</p>
+                    <p className="text-sm text-muted-foreground">
+                      Miscellaneous
+                    </p>
                     <p className="font-medium text-lg">
                       ₱{enrollment.total_misc_snapshot.toLocaleString()}
                     </p>
@@ -260,26 +267,22 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
       {isActive && !hasPending && (
         <div className="flex flex-wrap gap-3">
           {/* Request Rollback */}
+          <Link href={`/enrollments/${enrollment.id}/rollback`}>
           <Button
             variant="outline"
             size="lg"
             className="border-orange-500 text-orange-600 hover:bg-orange-50"
-            asChild
           >
-            <Link href={`/enrollments/${enrollment.id}/rollback`}>
               <RotateCcw className="mr-2 h-4 w-4" />
               Request Rollback
-            </Link>
           </Button>
+            </Link>
 
           {/* Drop Enrollment */}
           <Dialog>
             <DialogTrigger
               render={
-                <Button
-                  size="lg"
-                  className="bg-red-600 hover:bg-red-700"
-                >
+                <Button size="lg" className="bg-red-600 hover:bg-red-700">
                   <Trash2 className="mr-2 h-4 w-4" />
                   Drop Enrollment
                 </Button>
@@ -294,7 +297,9 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
-                <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                <DialogClose
+                  render={<Button variant="outline">Cancel</Button>}
+                />
                 <DialogClose
                   render={
                     <Button
@@ -314,7 +319,7 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
 
       {/* Pending rollback — show link to manage request */}
       {isActive && hasPending && (
-        <Button variant="outline" size="lg" asChild>
+        <Button variant="outline" size="lg">
           <Link href={`/enrollments/${enrollment.id}/rollback`}>
             <Clock className="mr-2 h-4 w-4" />
             Manage Rollback Request

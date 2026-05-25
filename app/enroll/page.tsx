@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { EnrollmentForm } from "./enrollment-form";
 import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
+import { ClockAlert } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -13,8 +14,9 @@ export default async function EnrollmentPage() {
 
   if (!settings || !settings.is_online_enrollment_enabled) {
     return (
-      <div className="px-10 py-2 mb-10">
+      <div className="px-10 py-2 mb-10 mt-10">
         <div className="flex flex-col items-center justify-center h-64 text-center">
+          <ClockAlert className="size-20 text-muted-foreground mb-5"/>
           <h1 className="text-2xl font-bold text-muted-foreground mb-2">
             Online Enrollment is Currently Disabled
           </h1>

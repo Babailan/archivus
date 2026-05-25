@@ -40,3 +40,37 @@ export async function deleteDocument(id: number) {
 export async function findDocumentByName(name: string) {
   return await prisma.document.findFirst({ where: { name, inactive: false } });
 }
+
+export type SearchInactiveDocumentResult = Awaited<
+  ReturnType<typeof searchInactiveDocument>
+>;
+
+export async function searchInactiveDocument(
+  q: string,
+  page: number = 1,
+  pageSize: number = 10,
+) {
+  const skip = (page - 1) * pageSize;
+  const where = q
+    ? { name: { contains: q }, inactive: true }
+    : { inactive: true };
+
+  const [find, total] = await Promise.all([
+    prisma.document.findMany({
+      where,
+      orderBy: { created_at: "desc" },
+      skip,
+      take: pageSize,
+    }),
+    prisma.document.count({ where }),
+  ]);
+
+  return { documents: find, total, page, pageSize };
+}
+
+export async function undoDocument(id: number) {
+  await prisma.document.update({
+    where: { id },
+    data: { inactive: false },
+  });
+}

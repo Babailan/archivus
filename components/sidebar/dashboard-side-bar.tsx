@@ -216,9 +216,6 @@ export async function HeaderBar() {
               <DropdownMenuLabel className="flex flex-col gap-1">
                 <span>{session?.user?.name}</span>
               </DropdownMenuLabel>
-              <DropdownMenuItem>
-                <User /> Profile
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
