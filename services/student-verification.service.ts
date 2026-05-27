@@ -1,6 +1,7 @@
 import { GradeLevelEnum, Prisma, StudentVerificationStatus } from "@/app/generated/prisma";
 import { generateNextCustomId, generateReferenceCode } from "@/lib/helper";
 import prisma from "@/lib/prisma";
+import { sendReferenceCodeEmail } from "@/lib/email";
 
 export async function createEnrollment(data: {
   first_name: string;
@@ -37,6 +38,14 @@ export async function createEnrollment(data: {
   const updated = await prisma.studentVerification.update({
     where: { id: studentVerification.id },
     data: { reference_code: referenceCode },
+  });
+
+  sendReferenceCodeEmail({
+    to: data.email,
+    applicantName: `${data.first_name} ${data.last_name}`,
+    referenceCode,
+    gradeLevel: data.grade_level,
+    schoolYear: data.school_year,
   });
 
   return updated;

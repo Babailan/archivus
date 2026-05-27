@@ -199,6 +199,9 @@ export async function getRevenueTrends(
   const payments = await prisma.tuitionFeePayment.findMany({
     where: {
       payment_date: { gte: startDate },
+      rollback_requests: {
+        none: { status: "approved" },
+      },
     },
   });
 

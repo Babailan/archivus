@@ -54,6 +54,9 @@ export default async function EnrollmentSuccessPage({
           Please present this code when making payments or checking your
           enrollment status.
         </p>
+        <p className="text-sm text-center mt-4 underline">
+          Reference Code is sent to email provided email.
+        </p>
 
         <div className="flex justify-center mt-8">
           <a
