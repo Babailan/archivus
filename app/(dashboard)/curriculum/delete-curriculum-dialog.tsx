@@ -1,7 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -13,7 +12,6 @@ import {
 import { useAction } from "next-safe-action/hooks";
 import { deleteCurriculumAction } from "./action";
 import { toast } from "sonner";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 export default function DeleteCurriculumDialog({
   id,

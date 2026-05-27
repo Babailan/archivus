@@ -69,7 +69,7 @@ export function EditUserForm({ user }: { user: NonNullable<UserWithRoles> }) {
     formData.set("roles", JSON.stringify(roles));
     formData.set("id", user.id.toString());
 
-    const { data, validationErrors } = await executeAsync(formData);
+    const { data } = await executeAsync(formData);
     if (data?.success) {
       toast.success("User updated successfully");
       router.push("/users");

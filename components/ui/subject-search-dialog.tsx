@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { useDebouncedCallback } from "use-debounce";
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+
 import {
   Command,
   CommandDialog,
@@ -39,6 +38,7 @@ export function SubjectSearchDialog({
     if (open) {
       execute({ q: "" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const debouncedSearch = useDebouncedCallback((value: string) => {

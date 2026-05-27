@@ -35,7 +35,7 @@ export default function EditSubjectDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { isExecuting, result, executeAsync } = useAction(updateSubjectAction);
+  const { isExecuting, executeAsync } = useAction(updateSubjectAction);
 
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();

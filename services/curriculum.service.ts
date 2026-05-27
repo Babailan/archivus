@@ -1,4 +1,3 @@
-import { CurriculumFindManyArgs } from "@/app/generated/prisma/models";
 import prisma from "@/lib/prisma";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 

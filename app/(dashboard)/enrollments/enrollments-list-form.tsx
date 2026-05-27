@@ -10,34 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
 
-import { useAction } from "next-safe-action/hooks";
-import { approveEnrollmentAction } from "./action";
+
 import {
-  PaymentStatus,
-  EnrollmentItem,
   SearchEnrollmentResult,
 } from "@/services/enrollment.service";
-import { toast } from "sonner";
-import { Ellipsis, Check, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 import { use, useState, useEffect, useRef } from "react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useDebounce } from "use-debounce";
@@ -59,9 +38,7 @@ export function EnrollmentsListForm({
   const formatSchoolYear = (schoolYear: string) => {
     return schoolYear;
   };
-  const { executeAsync: approveAsync, isExecuting: isApproving } = useAction(
-    approveEnrollmentAction,
-  );
+
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   const [debouncedSearch] = useDebounce(searchTerm, 500);
@@ -81,6 +58,7 @@ export function EnrollmentsListForm({
     }
     params.delete("page");
     router.push(`/enrollments?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops if it changes externally
 
   const handleStatusChange = (value: string | null) => {
@@ -92,17 +70,6 @@ export function EnrollmentsListForm({
     }
     params.delete("page");
     router.push(`/enrollments?${params.toString()}`);
-  };
-
-  const handleApprove = async (id: number) => {
-    const formData = new FormData();
-    formData.append("id", id.toString());
-    const { data } = await approveAsync(formData);
-    if (data?.success) {
-      toast.success("Enrollment approved");
-    } else {
-      toast.error("Failed to approve enrollment");
-    }
   };
 
   const statusLabels: Record<string, string> = {

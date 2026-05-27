@@ -38,7 +38,7 @@ export function EnrollmentSettingsForm({
   settings,
   curriculums,
 }: EnrollmentSettingsFormProps) {
-  const { executeAsync, isExecuting, result } = useAction(
+  const { executeAsync, isExecuting } = useAction(
     updateEnrollmentSettingsAction,
   );
 

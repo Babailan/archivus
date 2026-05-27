@@ -1,11 +1,9 @@
 import { Metadata } from "next";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, GalleryVerticalEnd, School } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Home",
@@ -86,7 +84,7 @@ function SecondSection() {
               <p className="text-base">
                 Learning happens through active engagement, and communication
                 and collaboration are essential skills for success. We dedicate
-                roughly half of each student's experience to collaborative
+                roughly half of each student&apos;s experience to collaborative
                 discussions, problem-solving, and real-world applications. The
                 other half focuses on developing fluency in essential skills and
                 content, all at a pace that suits the individual learner.

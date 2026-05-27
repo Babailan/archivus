@@ -1,10 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import { use, useState } from "react";
 import { format } from "date-fns";
 import { SearchCurriculumResult } from "@/services/curriculum.service";
-import EditCurriculumDialog from "./edit-curriculum-dialog";
 import DeleteCurriculumDialog from "./delete-curriculum-dialog";
 import {
   Table,
@@ -24,7 +22,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,

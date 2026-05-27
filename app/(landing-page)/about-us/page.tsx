@@ -49,7 +49,7 @@ export default function AboutPage() {
       <p>
         Our school system will provide all learners with a safe and nurturing
         environment, and with a core curriculum that is rich, rigorous and
-        respects diversity in learners' learning styles
+        respects diversity in learners&apos; learning styles
       </p>
       <h1>Vision</h1>
       <p>

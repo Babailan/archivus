@@ -1,5 +1,4 @@
 import {
-  SubjectFindManyArgs,
   SubjectUpdateInput,
 } from "@/app/generated/prisma/models";
 import prisma from "@/lib/prisma";

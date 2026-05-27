@@ -3,8 +3,8 @@
 import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
-import {} from "@/services/enrollment.service";
 import { revalidatePath } from "next/cache";
+import { GradeLevelEnum, StudentVerificationStatus } from "@/app/generated/prisma";
 import {
   updateStudentVerification,
   searchStudentVerifications,
@@ -41,7 +41,7 @@ export const updateStudentVerificationAction = actionClient
       gender: parsedInput.gender as "male" | "female",
       address: parsedInput.address,
       email: parsedInput.email,
-      grade_level: parsedInput.grade_level as any,
+      grade_level: parsedInput.grade_level as GradeLevelEnum,
       school_year: parsedInput.school_year,
       lrn: parsedInput.lrn,
       contact_number: parsedInput.contact_number,
@@ -82,7 +82,7 @@ export async function fetchStudentVerifications(
   pageSize?: number,
   q?: string,
 ) {
-  return await searchStudentVerifications(status as any, page, pageSize, q);
+  return await searchStudentVerifications(status as StudentVerificationStatus, page, pageSize, q);
 }
 
 export async function fetchStudentVerificationById(id: number) {

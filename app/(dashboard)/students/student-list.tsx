@@ -12,24 +12,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogClose,
-} from "@/components/ui/dialog";
-import { useAction } from "next-safe-action/hooks";
-import { dropEnrollmentAction } from "./action";
-import { toast } from "sonner";
-import { UserMinus, Eye } from "lucide-react";
+
+import { Eye } from "lucide-react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
 import { useDebounce } from "use-debounce";
 
-export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
+type StudentData = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  middle_name: string;
+  enrollments?: Array<{
+    status: string;
+    curriculum?: {
+      grade_level: string;
+    };
+  }>;
+};
+
+export function StudentList({ dataPromise }: { dataPromise: Promise<{ students: StudentData[]; total: number; page: number; pageSize: number }> }) {
   const { students, total, page, pageSize } = use(dataPromise);
   const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();
@@ -52,21 +53,8 @@ export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
     }
     params.delete("page");
     router.push(`/students?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops if it changes externally
-
-  const { executeAsync: dropAsync, isExecuting: isDropping } =
-    useAction(dropEnrollmentAction);
-
-  const handleDrop = async (enrollmentId: number) => {
-    const formData = new FormData();
-    formData.append("id", enrollmentId.toString());
-    const { data } = await dropAsync(formData);
-    if (data?.success) {
-      toast.success("Student dropped from enrollment");
-    } else {
-      toast.error("Failed to drop student");
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -98,7 +86,7 @@ export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
               </TableCell>
             </TableRow>
           ) : (
-            students.map((student: any) => {
+            students.map((student: StudentData) => {
               const latestEnrollment = student.enrollments?.[0];
               return (
                 <TableRow key={student.id}>

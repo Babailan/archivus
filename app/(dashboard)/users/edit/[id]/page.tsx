@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 import { EditUserForm } from "./edit-user-form";
-import { getUser, UserWithRoles } from "@/services/user.service";
+import { getUser } from "@/services/user.service";
 import { notFound } from "next/navigation";
 import { Roles } from "@/app/generated/prisma/enums";
 

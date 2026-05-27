@@ -174,7 +174,7 @@ export default function FAQsPage() {
             <p>
               <strong>For Returning (Old) Students:</strong> There is no need to
               submit an application online. You may proceed directly to the
-              school registrar's office to secure and fill out your enrollment
+              school registrar&apos;s office to secure and fill out your enrollment
               form.
             </p>
             <p>

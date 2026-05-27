@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { PaymentsResult, ApprovedEnrollment } from "@/services/payment.service";
+import { PaymentsResult } from "@/services/payment.service";
 import { use } from "react";
 import { Wallet } from "lucide-react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";

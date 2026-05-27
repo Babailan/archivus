@@ -28,19 +28,6 @@ export function TimeRangeSelector({
     router.push(`/dashboard?${params.toString()}`);
   };
 
-  const getDescription = (range: TimeRange) => {
-    switch (range) {
-      case "3":
-        return "Last 3 months";
-      case "6":
-        return "Last 6 months";
-      case "12":
-        return "Last 12 months";
-      default:
-        return "Last 6 months";
-    }
-  };
-
   return (
     <div className="flex items-center gap-2">
       <span className="text-sm text-muted-foreground">Time Range:</span>

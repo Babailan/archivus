@@ -17,7 +17,6 @@ import {
   LayoutDashboard,
   LibraryBig,
   Settings,
-  User,
   Users,
   Wallet,
 } from "lucide-react";
@@ -27,7 +26,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuLabel,
-  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenu,
 } from "../ui/dropdown-menu";

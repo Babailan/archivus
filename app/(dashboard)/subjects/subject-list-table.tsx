@@ -27,7 +27,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { useRouter, useSearchParams } from "next/navigation";
+
 import { use, useState } from "react";
 import { SearchSubjectResult } from "@/services/subject.service";
 import EditSubjectDialog from "./edit-subject-dialog";

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Check, X, UserRoundPen } from "lucide-react";
+import { Check, X, UserRoundPen } from "lucide-react";
 import {
   Select,
   SelectContent,

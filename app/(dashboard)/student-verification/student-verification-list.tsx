@@ -33,7 +33,12 @@ import { StudentVerification } from "@/app/generated/prisma";
 export function StudentVerificationList({
   dataPromise,
 }: {
-  dataPromise: Promise<any>;
+  dataPromise: Promise<{
+    studentVerifications: StudentVerification[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }>;
 }) {
   const { studentVerifications, total, page, pageSize } = use(dataPromise);
   const totalPages = Math.ceil(total / pageSize);
@@ -57,6 +62,7 @@ export function StudentVerificationList({
     }
     params.delete("page");
     router.push(`/student-verification?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops
 
   const { executeAsync: approveAsync } = useAction(

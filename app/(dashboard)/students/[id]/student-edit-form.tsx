@@ -32,6 +32,7 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
+import type { EnrollmentSettingsWithCurriculums } from "@/services/enrollment-settings.service";
 import {
   updateStudentDetailAction,
   createEnrollmentAction,
@@ -72,8 +73,7 @@ export function StudentEditForm({
   const [selectedDocuments, setSelectedDocuments] =
     useState<number[]>(checkedDocumentIds);
   const [enrollmentGrade, setEnrollmentGrade] = useState<string>("");
-  const [enrollmentData, setEnrollmentData] = useState<any>(null);
-  const [isLoadingEnrollmentData, setIsLoadingEnrollmentData] = useState(false);
+  const [enrollmentData, setEnrollmentData] = useState<EnrollmentSettingsWithCurriculums | null>(null);
 
   const { executeAsync, isExecuting } = useAction(updateStudentDetailAction);
   const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } =
@@ -81,10 +81,8 @@ export function StudentEditForm({
 
   useEffect(() => {
     const loadEnrollmentData = async () => {
-      setIsLoadingEnrollmentData(true);
       const data = await getEnrollmentData();
       setEnrollmentData(data);
-      setIsLoadingEnrollmentData(false);
     };
     loadEnrollmentData();
   }, []);
@@ -187,7 +185,7 @@ export function StudentEditForm({
                     </SelectTrigger>
                     <SelectContent>
                       {enrollmentData.grade_curriculum_settings?.map(
-                        (setting: any) => (
+                        (setting) => (
                           <SelectItem
                             key={setting.grade_level}
                             value={setting.grade_level}

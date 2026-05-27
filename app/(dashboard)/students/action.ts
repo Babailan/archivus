@@ -8,6 +8,7 @@ import {
   dropEnrollment,
   createEnrollmentForStudent,
 } from "@/services/enrollment.service";
+import { GradeLevelEnum } from "@/app/generated/prisma";
 import { updateStudentWithDocuments } from "@/services/student.service";
 import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 import { revalidatePath } from "next/cache";
@@ -75,7 +76,7 @@ export const createEnrollmentAction = actionClient
   .action(async ({ parsedInput }) => {
     await createEnrollmentForStudent({
       student_id: parsedInput.student_id,
-      grade_level: parsedInput.grade_level as any,
+      grade_level: parsedInput.grade_level as GradeLevelEnum,
       school_year: parsedInput.school_year,
     });
     revalidatePath(`/students/${parsedInput.student_id}`);

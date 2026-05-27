@@ -1,7 +1,7 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useDebounce, useDebouncedCallback } from "use-debounce";
+import { useRouter } from "next/navigation";
+import { useDebounce } from "use-debounce";
 import { Input } from "./input";
 import { useEffect, useState } from "react";
 
@@ -11,7 +11,6 @@ function SearchInput({
 }: React.ComponentProps<"input"> & {
   pathname: string;
 }) {
-  const params = useSearchParams();
   const [text, setText] = useState<string>();
   const router = useRouter();
   const [value] = useDebounce(text, 300);
@@ -20,6 +19,7 @@ function SearchInput({
     if (value != null) {
       router.replace(`${pathname}?q=${value}`);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (

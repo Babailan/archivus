@@ -13,11 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Controller, useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 import { useState } from "react";
 import { ShieldAlert } from "lucide-react";
 import { Spinner } from "../ui/spinner";
@@ -39,8 +37,6 @@ export function LoginForm({
     },
   });
   const [invalidCredentials, setInvalidCredentials] = useState(false);
-
-  const router = useRouter();
 
   async function log_in(data: z.infer<typeof schema>) {
     const res = await signIn("credentials", {

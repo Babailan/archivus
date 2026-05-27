@@ -14,7 +14,7 @@ import {
 import { queryFirst } from "@/lib/helper";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { searchUsers, SearchUserResult } from "@/services/user.service";
+import { searchUsers } from "@/services/user.service";
 import { SearchInput } from "@/components/ui/search-input";
 
 export const metadata: Metadata = {

@@ -3,10 +3,9 @@ import {
   EnrollmentStatus,
   GradeLevelEnum,
   Prisma,
-  StudentVerificationStatus,
 } from "@/app/generated/prisma/client";
 import { Decimal } from "@prisma/client/runtime/client";
-import { generateReferenceCode, generateNextCustomId } from "@/lib/helper";
+import { generateReferenceCode } from "@/lib/helper";
 
 export type EnrollmentWithDetails = Awaited<ReturnType<typeof getEnrollment>>;
 

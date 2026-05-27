@@ -4,8 +4,6 @@ import {
   startOfDay,
   startOfMonth,
   subMonths,
-  startOfYear,
-  endOfYear,
 } from "date-fns";
 
 export type EnrollmentTrend = {

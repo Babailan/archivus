@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+
 import { use } from "react";
 import { format } from "date-fns";
 import { SearchUserResult } from "@/services/user.service";

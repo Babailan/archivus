@@ -6,8 +6,6 @@ import { z } from "zod";
 import {
   approveEnrollment,
   searchEnrollments,
-  recordPayment,
-  getEnrollment,
   getStudentByEnrollmentId,
   updateStudent,
   dropEnrollment,

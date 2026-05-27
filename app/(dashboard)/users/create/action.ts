@@ -1,7 +1,7 @@
 "use server";
 
 import { Roles, GenderEnum } from "@/app/generated/prisma/enums";
-import { actionClient, adminActionClient } from "@/lib/safe-action";
+import { adminActionClient } from "@/lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
 import { revalidatePath } from "next/cache";
 import z from "zod";

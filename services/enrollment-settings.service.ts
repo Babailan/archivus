@@ -1,6 +1,5 @@
 import prisma from "@/lib/prisma";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
-import { PrismaClientKnownRequestError } from "@/app/generated/prisma/internal/prismaNamespace";
 
 export type EnrollmentSettingsWithCurriculums = Awaited<
   ReturnType<typeof getEnrollmentSettings>
