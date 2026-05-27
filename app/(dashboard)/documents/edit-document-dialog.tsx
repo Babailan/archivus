@@ -36,7 +36,7 @@ export default function EditDocumentDialog({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Update docs")
+    console.log("Update docs");
     const formdata = new FormData(e.currentTarget);
     const validateForm = new FormData();
     validateForm.append("id", id.toString());
@@ -76,7 +76,11 @@ export default function EditDocumentDialog({
                 Update the document name or description.
               </DialogDescription>
             </DialogFooter>
-            <Button type="submit" className="w-full mt-2" disabled={isExecuting}>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isExecuting}
+            >
               {isExecuting ? "Updating..." : "Update Document"}
             </Button>
           </FieldSet>

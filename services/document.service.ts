@@ -25,11 +25,17 @@ export async function searchDocument(
   return { documents: find, total, page, pageSize };
 }
 
-export async function createDocument(input: { name: string; description?: string }) {
+export async function createDocument(input: {
+  name: string;
+  description?: string;
+}) {
   return await prisma.document.create({ data: input });
 }
 
-export async function updateDocument(id: number, input: { name?: string; description?: string }) {
+export async function updateDocument(
+  id: number,
+  input: { name?: string; description?: string },
+) {
   return await prisma.document.update({ where: { id }, data: input });
 }
 

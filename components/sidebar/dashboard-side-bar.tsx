@@ -37,13 +37,17 @@ import { getServerSession } from "next-auth";
 import { authOption } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { getPendingEnrollmentCount } from "@/services/enrollment.service";
-import { getPendingRollbackCount, getPendingEnrollmentRollbackCount } from "@/services/rollback.service";
+import {
+  getPendingRollbackCount,
+  getPendingEnrollmentRollbackCount,
+} from "@/services/rollback.service";
 import { Button } from "../ui/button";
 
 export async function DashboardSideBar() {
   const pendingCount = await getPendingEnrollmentCount();
   const pendingRollbackCount = await getPendingRollbackCount();
-  const pendingEnrollmentRollbackCount = await getPendingEnrollmentRollbackCount();
+  const pendingEnrollmentRollbackCount =
+    await getPendingEnrollmentRollbackCount();
   const session = await getServerSession(authOption);
   const isAdmin = session?.user?.roles?.includes("admin");
   const isRegistrar = session?.user?.roles?.includes("registrar");

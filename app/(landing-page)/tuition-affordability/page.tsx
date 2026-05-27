@@ -23,9 +23,9 @@ export default function TuitionAffordabilityPage() {
 
       <div>
         <Card>
-            <CardHeader>
-                <h1></h1>
-            </CardHeader>
+          <CardHeader>
+            <h1></h1>
+          </CardHeader>
         </Card>
       </div>
       <div className="m-auto text-center mt-10 text-3xl">

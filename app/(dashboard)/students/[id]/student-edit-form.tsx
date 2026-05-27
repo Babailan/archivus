@@ -32,7 +32,11 @@ import {
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { updateStudentDetailAction, createEnrollmentAction, getEnrollmentData } from "../action";
+import {
+  updateStudentDetailAction,
+  createEnrollmentAction,
+  getEnrollmentData,
+} from "../action";
 import { ArrowLeft, Save, FileText, Plus } from "lucide-react";
 
 type StudentData = {
@@ -65,15 +69,15 @@ export function StudentEditForm({
 }: StudentEditFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<StudentData>(student);
-  const [selectedDocuments, setSelectedDocuments] = useState<number[]>(checkedDocumentIds);
+  const [selectedDocuments, setSelectedDocuments] =
+    useState<number[]>(checkedDocumentIds);
   const [enrollmentGrade, setEnrollmentGrade] = useState<string>("");
   const [enrollmentData, setEnrollmentData] = useState<any>(null);
   const [isLoadingEnrollmentData, setIsLoadingEnrollmentData] = useState(false);
 
   const { executeAsync, isExecuting } = useAction(updateStudentDetailAction);
-  const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } = useAction(
-    createEnrollmentAction
-  );
+  const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } =
+    useAction(createEnrollmentAction);
 
   useEffect(() => {
     const loadEnrollmentData = async () => {
@@ -93,7 +97,7 @@ export function StudentEditForm({
     setSelectedDocuments((prev) =>
       prev.includes(docId)
         ? prev.filter((id) => id !== docId)
-        : [...prev, docId]
+        : [...prev, docId],
     );
   };
 
@@ -167,28 +171,40 @@ export function StudentEditForm({
               <DialogHeader>
                 <DialogTitle>Create New Enrollment</DialogTitle>
                 <DialogDescription>
-                  Select a grade level for the new enrollment in {enrollmentData.school_year}
+                  Select a grade level for the new enrollment in{" "}
+                  {enrollmentData.school_year}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <Field>
                   <FieldLabel>Grade Level</FieldLabel>
-                  <Select value={enrollmentGrade} onValueChange={(value) => setEnrollmentGrade(value || "")}>
+                  <Select
+                    value={enrollmentGrade}
+                    onValueChange={(value) => setEnrollmentGrade(value || "")}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a grade level" />
                     </SelectTrigger>
                     <SelectContent>
-                      {enrollmentData.grade_curriculum_settings?.map((setting: any) => (
-                        <SelectItem key={setting.grade_level} value={setting.grade_level}>
-                          {setting.curriculum.grade_level} - {setting.curriculum.curriculum_name}
-                        </SelectItem>
-                      ))}
+                      {enrollmentData.grade_curriculum_settings?.map(
+                        (setting: any) => (
+                          <SelectItem
+                            key={setting.grade_level}
+                            value={setting.grade_level}
+                          >
+                            {setting.curriculum.grade_level} -{" "}
+                            {setting.curriculum.curriculum_name}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </Field>
               </div>
               <DialogFooter>
-                <DialogClose render={<Button variant="outline">Cancel</Button>} />
+                <DialogClose
+                  render={<Button variant="outline">Cancel</Button>}
+                />
                 <Button
                   onClick={onCreateEnrollment}
                   disabled={isCreatingEnrollment || !enrollmentGrade}
@@ -206,9 +222,7 @@ export function StudentEditForm({
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
-            <CardDescription>
-              All fields below are editable
-            </CardDescription>
+            <CardDescription>All fields below are editable</CardDescription>
           </CardHeader>
           <CardContent>
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
@@ -231,7 +245,9 @@ export function StudentEditForm({
                   <FieldLabel>Middle Name</FieldLabel>
                   <Input
                     value={formData.middle_name}
-                    onChange={(e) => handleChange("middle_name", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("middle_name", e.target.value)
+                    }
                   />
                 </Field>
               </FieldGroup>
@@ -241,14 +257,18 @@ export function StudentEditForm({
                   <Input
                     type="date"
                     value={formData.date_of_birth}
-                    onChange={(e) => handleChange("date_of_birth", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("date_of_birth", e.target.value)
+                    }
                   />
                 </Field>
                 <Field>
                   <FieldLabel>Gender</FieldLabel>
                   <Select
                     value={formData.gender}
-                    onValueChange={(val) => handleChange("gender", val as "male" | "female")}
+                    onValueChange={(val) =>
+                      handleChange("gender", val as "male" | "female")
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -303,7 +323,10 @@ export function StudentEditForm({
                     className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition cursor-pointer"
                     onClick={() => handleToggleDocument(doc.id)}
                   >
-                    <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="pt-0.5"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Checkbox
                         checked={selectedDocuments.includes(doc.id)}
                         onCheckedChange={() => handleToggleDocument(doc.id)}
@@ -346,7 +369,8 @@ export function StudentEditForm({
             <DialogHeader>
               <DialogTitle>Save Changes</DialogTitle>
               <DialogDescription>
-                Are you sure you want to save the changes to this student&apos;s personal info and document checklist?
+                Are you sure you want to save the changes to this student&apos;s
+                personal info and document checklist?
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>

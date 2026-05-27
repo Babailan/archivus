@@ -92,7 +92,9 @@ export function InactiveUserListForm({
                       <RestoreUserDialog
                         id={user.id}
                         open={restoringId === user.id}
-                        onOpenChange={(open) => { if (!open) setRestoringId(null); }}
+                        onOpenChange={(open) => {
+                          if (!open) setRestoringId(null);
+                        }}
                       />
                     </TableCell>
                   </TableRow>

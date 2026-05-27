@@ -23,15 +23,18 @@ export function generateReferenceCode(): string {
   // Generates 8 bytes of random data (16 hex characters)
   const array = new Uint8Array(8);
   crypto.getRandomValues(array);
-  
+
   const hex = Array.from(array)
-    .map(b => b.toString(16).padStart(2, "0"))
+    .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
 
   return `EN-${hex}`;
 }
 
-export function generateNextCustomId(year: string, lastId: number | null): number {
+export function generateNextCustomId(
+  year: string,
+  lastId: number | null,
+): number {
   const prefix = parseInt(year);
   const startId = prefix * 100000 + 1; // e.g., 202600001
 

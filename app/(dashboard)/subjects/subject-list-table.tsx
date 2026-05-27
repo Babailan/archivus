@@ -96,15 +96,20 @@ export function SubjectListForm({
                       />
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setEditingId(subject.id)}>
-                            <Pencil/>
+                          <DropdownMenuItem
+                            onClick={() => setEditingId(subject.id)}
+                          >
+                            <Pencil />
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem variant="destructive" onClick={() => setDeletingId(subject.id)}>
-                           <Trash/>  Delete
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeletingId(subject.id)}
+                          >
+                            <Trash /> Delete
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
@@ -115,12 +120,16 @@ export function SubjectListForm({
                       subject_name={subject.subject_name}
                       prices={subject.prices}
                       open={editingId === subject.id}
-                      onOpenChange={(open) => { if (!open) setEditingId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setEditingId(null);
+                      }}
                     />
                     <DeleteSubjectDialog
                       id={subject.id}
                       open={deletingId === subject.id}
-                      onOpenChange={(open) => { if (!open) setDeletingId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setDeletingId(null);
+                      }}
                     />
                   </TableCell>
                 </TableRow>

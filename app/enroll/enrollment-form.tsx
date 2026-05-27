@@ -76,8 +76,12 @@ interface EnrollmentFormProps {
 
 export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
   const router = useRouter();
-  const { executeAsync, isExecuting ,result:{validationErrors}} = useAction(submitEnrollmentAction);
-  console.log(validationErrors)
+  const {
+    executeAsync,
+    isExecuting,
+    result: { validationErrors },
+  } = useAction(submitEnrollmentAction);
+  console.log(validationErrors);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

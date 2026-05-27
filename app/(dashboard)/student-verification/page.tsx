@@ -47,7 +47,9 @@ export default async function PreEnrollmentsPage({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      <h1 className="text-2xl font-bold mb-6">Student Verification (New Students)</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Student Verification (New Students)
+      </h1>
       <Suspense fallback={<Skeleton className="h-96" />}>
         <StudentVerificationList dataPromise={dataPromise} />
       </Suspense>

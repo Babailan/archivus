@@ -54,7 +54,9 @@ export function EnrollmentReferenceEmail({
       <Body style={main}>
         <Container style={container}>
           <Section style={headerSection}>
-            <Heading style={schoolName}>Maniso School Christian Academy</Heading>
+            <Heading style={schoolName}>
+              Maniso School Christian Academy
+            </Heading>
           </Section>
 
           <Section style={contentSection}>

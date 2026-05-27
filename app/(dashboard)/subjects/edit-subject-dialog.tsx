@@ -65,7 +65,7 @@ export default function EditSubjectDialog({
   }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl">Edit Subject</DialogTitle>
         </DialogHeader>
@@ -96,7 +96,11 @@ export default function EditSubjectDialog({
                 locked at the current value.
               </DialogDescription>
             </DialogFooter>
-            <Button type="submit" className="w-full mt-2" disabled={isExecuting}>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isExecuting}
+            >
               {isExecuting ? "Updating..." : "Update Subject"}
             </Button>
           </FieldSet>

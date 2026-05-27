@@ -9,20 +9,26 @@ import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 const submitEnrollmentInputSchema = zfd.formData({
   first_name: zfd.text(z.string().min(1, "First name is required")),
   last_name: zfd.text(z.string().min(1, "Last name is required")),
-  middle_name: zfd.text(z.transform((v) => v == undefined ? "": v).pipe(z.string())),
+  middle_name: zfd.text(
+    z.transform((v) => (v == undefined ? "" : v)).pipe(z.string()),
+  ),
   date_of_birth: zfd.text(z.string().min(1, "Date of birth is required")),
   gender: zfd.text(z.enum(["male", "female"])),
   grade_level: zfd.text(z.string().min(1, "Grade level is required")),
   address: zfd.text(z.string().min(1, "Address is required")),
   email: zfd.text(z.string().email("Invalid email address")),
-  contact_number: zfd.text(z.string().length(11, "Contact number must be 11 digits")),
-  lrn: zfd.text(z.string().min(12, "LRN is required").length(12, "LRN must be 12 digits")),
+  contact_number: zfd.text(
+    z.string().length(11, "Contact number must be 11 digits"),
+  ),
+  lrn: zfd.text(
+    z.string().min(12, "LRN is required").length(12, "LRN must be 12 digits"),
+  ),
 });
 
 export const submitEnrollmentAction = actionClient
   .inputSchema(submitEnrollmentInputSchema)
   .action(async ({ parsedInput }) => {
-    console.log('submit')
+    console.log("submit");
     const settings = await getEnrollmentSettings();
     if (!settings) {
       return { success: false, error: "Enrollment settings not found" };

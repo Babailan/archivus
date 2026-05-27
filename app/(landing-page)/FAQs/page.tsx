@@ -187,7 +187,15 @@ export default function FAQsPage() {
         </Collapsible>
       </div>
       <div className="m-auto text-center mt-10 text-3xl">
-        <h1>More questions about us? You can contact us at <a href="mailto:info@mannysochristian.org" className="text-blue-500 underline">info@mannysochristian.org</a></h1>
+        <h1>
+          More questions about us? You can contact us at{" "}
+          <a
+            href="mailto:info@mannysochristian.org"
+            className="text-blue-500 underline"
+          >
+            info@mannysochristian.org
+          </a>
+        </h1>
       </div>
     </div>
   );

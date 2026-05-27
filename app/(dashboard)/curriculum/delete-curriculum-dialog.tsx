@@ -18,7 +18,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 export default function DeleteCurriculumDialog({
   id,
   open,
-  onOpenChange
+  onOpenChange,
 }: {
   id: number | null;
   open: boolean;

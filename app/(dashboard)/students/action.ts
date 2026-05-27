@@ -86,4 +86,3 @@ export const createEnrollmentAction = actionClient
 export async function getEnrollmentData() {
   return await getEnrollmentSettings();
 }
-

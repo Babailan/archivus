@@ -14,7 +14,6 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div>
-  
       <div className="min-h-screen relative overflow-hidden">
         {/* The Background Image */}
         <div className="absolute inset-0 -z-10 bg-background">
@@ -127,4 +126,3 @@ function SecondSection() {
     </div>
   );
 }
-

@@ -1,4 +1,8 @@
-import { GradeLevelEnum, Prisma, StudentVerificationStatus } from "@/app/generated/prisma";
+import {
+  GradeLevelEnum,
+  Prisma,
+  StudentVerificationStatus,
+} from "@/app/generated/prisma";
 import { generateNextCustomId, generateReferenceCode } from "@/lib/helper";
 import prisma from "@/lib/prisma";
 import { sendReferenceCodeEmail } from "@/lib/email";
@@ -76,7 +80,9 @@ export async function searchStudentVerifications(
             OR: [
               { first_name: { contains: chunk, mode: "insensitive" as const } },
               { last_name: { contains: chunk, mode: "insensitive" as const } },
-              { middle_name: { contains: chunk, mode: "insensitive" as const } },
+              {
+                middle_name: { contains: chunk, mode: "insensitive" as const },
+              },
               { email: { contains: chunk, mode: "insensitive" as const } },
               { lrn: { contains: chunk, mode: "insensitive" as const } },
             ],
@@ -85,7 +91,10 @@ export async function searchStudentVerifications(
       }
     : {};
 
-  const where: Prisma.StudentVerificationWhereInput = { status, ...searchFilter };
+  const where: Prisma.StudentVerificationWhereInput = {
+    status,
+    ...searchFilter,
+  };
 
   const [studentVerifications, total] = await Promise.all([
     prisma.studentVerification.findMany({
@@ -133,7 +142,6 @@ export async function updateStudentVerification(
     },
   });
 }
-
 
 export async function approveStudentVerification(id: number) {
   const studentVerification = await prisma.studentVerification.findUnique({

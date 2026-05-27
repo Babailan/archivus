@@ -121,10 +121,12 @@ export async function searchEnrollments(
         const searchConditions: Prisma.EnrollmentWhereInput[] = [
           { reference_code: { contains: chunk } },
           { reference_code: { contains: `EN-${chunk}` } },
-          { student: { first_name: { contains: chunk , mode: "insensitive"} } },
-          { student: { last_name: { contains: chunk , mode: "insensitive"} } },
-          { student: { middle_name: { contains: chunk , mode: "insensitive"} } },
-          { student: { email: { contains: chunk , mode: "insensitive"} } },
+          { student: { first_name: { contains: chunk, mode: "insensitive" } } },
+          { student: { last_name: { contains: chunk, mode: "insensitive" } } },
+          {
+            student: { middle_name: { contains: chunk, mode: "insensitive" } },
+          },
+          { student: { email: { contains: chunk, mode: "insensitive" } } },
           { school_year: { contains: chunk } },
           { curriculum: { curriculum_name: { contains: chunk } } },
         ];
@@ -187,7 +189,6 @@ export async function searchEnrollments(
     pageSize,
   };
 }
-
 
 export async function searchStudents(
   q?: string,
@@ -254,7 +255,6 @@ export async function getPendingEnrollmentCount() {
     where: { status: "pending" },
   });
 }
-
 
 export async function dropEnrollment(id: number) {
   return await prisma.enrollment.update({
@@ -328,7 +328,6 @@ export async function getStudentByEnrollmentId(id: number) {
     },
   };
 }
-
 
 export async function updateStudent(data: {
   id: number;

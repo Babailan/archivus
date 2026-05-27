@@ -10,7 +10,10 @@ export const actionClient = createSafeActionClient({
 export const registrarActionClient = actionClient.use(async ({ next }) => {
   const session = await getServerSession(authOption);
 
-  if (!session?.user?.roles?.includes("registrar") && !session?.user?.roles?.includes("admin")) {
+  if (
+    !session?.user?.roles?.includes("registrar") &&
+    !session?.user?.roles?.includes("admin")
+  ) {
     redirect("/unauthorized");
   }
   return next();
@@ -29,7 +32,10 @@ export const adminActionClient = actionClient.use(async ({ next }) => {
 export const cashierActionClient = actionClient.use(async ({ next }) => {
   const session = await getServerSession(authOption);
 
-  if (!session?.user?.roles?.includes("cashier") && !session?.user?.roles?.includes("admin")) {
+  if (
+    !session?.user?.roles?.includes("cashier") &&
+    !session?.user?.roles?.includes("admin")
+  ) {
     redirect("/unauthorized");
   }
 

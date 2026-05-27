@@ -20,8 +20,12 @@ export async function searchSubject(
         OR: [
           ...chunks.map((chunk) => ({
             OR: [
-              { subject_name: { contains: chunk, mode: "insensitive" as const } },
-              { subject_code: { contains: chunk, mode: "insensitive" as const } },
+              {
+                subject_name: { contains: chunk, mode: "insensitive" as const },
+              },
+              {
+                subject_code: { contains: chunk, mode: "insensitive" as const },
+              },
             ],
           })),
         ],
@@ -132,8 +136,12 @@ export async function searchInactiveSubject(
         OR: [
           ...chunks.map((chunk) => ({
             OR: [
-              { subject_name: { contains: chunk, mode: "insensitive" as const } },
-              { subject_code: { contains: chunk, mode: "insensitive" as const } },
+              {
+                subject_name: { contains: chunk, mode: "insensitive" as const },
+              },
+              {
+                subject_code: { contains: chunk, mode: "insensitive" as const },
+              },
             ],
           })),
         ],

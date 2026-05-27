@@ -127,8 +127,15 @@ const LandingPageNavbar = () => {
             </DrawerHeader>
             <div className="flex flex-col p-5 *:text-base gap-5">
               <Link href={"/about-us"}>About Us</Link>
-              <Link href={"https://maps.app.goo.gl/o1XbgPkZmbsWzu3r9"} target="_blank">Visit Us</Link>
-              <Link href={"/enroll"} className="text-primary">Apply</Link>
+              <Link
+                href={"https://maps.app.goo.gl/o1XbgPkZmbsWzu3r9"}
+                target="_blank"
+              >
+                Visit Us
+              </Link>
+              <Link href={"/enroll"} className="text-primary">
+                Apply
+              </Link>
             </div>
           </DrawerContent>
         </Drawer>

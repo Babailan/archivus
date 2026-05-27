@@ -134,11 +134,7 @@ export function StudentList({ dataPromise }: { dataPromise: Promise<any> }) {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() =>
-                          router.push(
-                            `/students/${student.id}`,
-                          )
-                        }
+                        onClick={() => router.push(`/students/${student.id}`)}
                       >
                         <Eye className="h-4 w-4 mr-1" /> View
                       </Button>

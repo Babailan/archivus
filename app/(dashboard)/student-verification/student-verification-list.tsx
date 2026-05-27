@@ -59,8 +59,12 @@ export function StudentVerificationList({
     router.push(`/student-verification?${params.toString()}`);
   }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops
 
-  const { executeAsync: approveAsync } = useAction(approveStudentVerificationAction);
-  const { executeAsync: declineAsync } = useAction(declineStudentVerificationAction);
+  const { executeAsync: approveAsync } = useAction(
+    approveStudentVerificationAction,
+  );
+  const { executeAsync: declineAsync } = useAction(
+    declineStudentVerificationAction,
+  );
 
   const handleAccept = async (id: number) => {
     const formData = new FormData();
@@ -128,9 +132,13 @@ export function StudentVerificationList({
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger render={<Button size="sm" variant="ghost">
-                        <Ellipsis className="h-4 w-4" />
-                      </Button>}/>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button size="sm" variant="ghost">
+                          <Ellipsis className="h-4 w-4" />
+                        </Button>
+                      }
+                    />
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
                         onClick={() =>

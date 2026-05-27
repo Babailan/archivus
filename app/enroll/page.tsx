@@ -16,7 +16,7 @@ export default async function EnrollmentPage() {
     return (
       <div className="px-10 py-2 mb-10 mt-10">
         <div className="flex flex-col items-center justify-center h-64 text-center">
-          <ClockAlert className="size-20 text-muted-foreground mb-5"/>
+          <ClockAlert className="size-20 text-muted-foreground mb-5" />
           <h1 className="text-2xl font-bold text-muted-foreground mb-2">
             Online Enrollment is Currently Disabled
           </h1>

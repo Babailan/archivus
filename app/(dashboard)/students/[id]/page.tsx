@@ -51,7 +51,9 @@ export default async function StudentDetailPage({
       </Breadcrumb>
       <div>
         <h1 className="text-2xl font-bold">Student Profile</h1>
-        <p className="text-muted-foreground">View and edit student credentials and checklist</p>
+        <p className="text-muted-foreground">
+          View and edit student credentials and checklist
+        </p>
       </div>
 
       <StudentEditForm

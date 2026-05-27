@@ -27,12 +27,12 @@ export function CreateDocumentForm() {
     e.preventDefault();
     const formdata = new FormData(e.currentTarget);
     const result = await executeAsync(formdata);
-    
+
     if (result.data) {
       toast.success("Document created successfully", {
         description: format(new Date(), "MMM, d yyyy"),
       });
-      form.current?.reset()
+      form.current?.reset();
     }
   }
 

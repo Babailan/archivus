@@ -58,8 +58,18 @@ export async function searchCurriculum(
         OR: [
           ...chunks.map((chunk) => ({
             OR: [
-              { curriculum_name: { contains: chunk, mode: "insensitive" as const } },
-              { curriculum_code: { contains: chunk, mode: "insensitive" as const } },
+              {
+                curriculum_name: {
+                  contains: chunk,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                curriculum_code: {
+                  contains: chunk,
+                  mode: "insensitive" as const,
+                },
+              },
             ],
           })),
         ],
@@ -215,8 +225,18 @@ export async function searchInactiveCurriculum(
         OR: [
           ...chunks.map((chunk) => ({
             OR: [
-              { curriculum_name: { contains: chunk, mode: "insensitive" as const } },
-              { curriculum_code: { contains: chunk, mode: "insensitive" as const } },
+              {
+                curriculum_name: {
+                  contains: chunk,
+                  mode: "insensitive" as const,
+                },
+              },
+              {
+                curriculum_code: {
+                  contains: chunk,
+                  mode: "insensitive" as const,
+                },
+              },
             ],
           })),
         ],

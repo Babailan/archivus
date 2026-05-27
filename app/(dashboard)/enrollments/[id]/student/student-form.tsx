@@ -268,15 +268,15 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
         <div className="flex flex-wrap gap-3">
           {/* Request Rollback */}
           <Link href={`/enrollments/${enrollment.id}/rollback`}>
-          <Button
-            variant="outline"
-            size="lg"
-            className="border-orange-500 text-orange-600 hover:bg-orange-50"
-          >
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-orange-500 text-orange-600 hover:bg-orange-50"
+            >
               <RotateCcw className="mr-2 h-4 w-4" />
               Request Rollback
-          </Button>
-            </Link>
+            </Button>
+          </Link>
 
           {/* Drop Enrollment */}
           <Dialog>

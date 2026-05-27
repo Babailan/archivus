@@ -43,7 +43,8 @@ export default function RestoreSubjectDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Restore Subject</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to restore this subject? It will be available again in the active subjects list.
+            Are you sure you want to restore this subject? It will be available
+            again in the active subjects list.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

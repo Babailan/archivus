@@ -85,15 +85,20 @@ export function DocumentListTable({
                       />
                       <DropdownMenuContent>
                         <DropdownMenuGroup>
-                          <DropdownMenuItem onClick={() => setEditingId(doc.id)}>
-                            <Pencil/>
+                          <DropdownMenuItem
+                            onClick={() => setEditingId(doc.id)}
+                          >
+                            <Pencil />
                             Edit
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          <DropdownMenuItem variant="destructive" onClick={() => setDeletingId(doc.id)}>
-                            <Trash/>
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => setDeletingId(doc.id)}
+                          >
+                            <Trash />
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -104,12 +109,16 @@ export function DocumentListTable({
                       name={doc.name}
                       description={doc.description}
                       open={editingId === doc.id}
-                      onOpenChange={(open) => { if (!open) setEditingId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setEditingId(null);
+                      }}
                     />
                     <DeleteDocumentDialog
                       id={doc.id}
                       open={deletingId === doc.id}
-                      onOpenChange={(open) => { if (!open) setDeletingId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setDeletingId(null);
+                      }}
                     />
                   </TableCell>
                 </TableRow>

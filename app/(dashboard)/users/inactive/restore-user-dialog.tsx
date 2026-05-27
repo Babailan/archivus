@@ -43,7 +43,8 @@ export default function RestoreUserDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Restore User</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to restore this user? They will be able to log in again.
+            Are you sure you want to restore this user? They will be able to log
+            in again.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

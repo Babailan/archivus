@@ -103,8 +103,7 @@ export function StudentVerificationEditForm({
   const { executeAsync: updateAsync, isExecuting: isUpdating } = useAction(
     updateStudentVerificationAction,
   );
-  const { executeAsync: approveAsync } =
-    useAction(approveAction);
+  const { executeAsync: approveAsync } = useAction(approveAction);
   const { executeAsync: declineAsync, isExecuting: isDeclining } =
     useAction(declineAction);
 
@@ -377,7 +376,9 @@ export function StudentVerificationEditForm({
                 name="email"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Email <span className="text-red-600">*</span></FieldLabel>
+                    <FieldLabel>
+                      Email <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Input type="email" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -407,7 +408,9 @@ export function StudentVerificationEditForm({
                 name="grade_level"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>Grade Level <span className="text-red-600">*</span></FieldLabel>
+                    <FieldLabel>
+                      Grade Level <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
@@ -436,7 +439,9 @@ export function StudentVerificationEditForm({
                 name="school_year"
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.error}>
-                    <FieldLabel>School Year <span className="text-red-600">*</span></FieldLabel>
+                    <FieldLabel>
+                      School Year <span className="text-red-600">*</span>
+                    </FieldLabel>
                     <Input type="text" {...field} />
                     <FieldError errors={[fieldState.error]} />
                   </Field>
@@ -445,7 +450,11 @@ export function StudentVerificationEditForm({
             </FieldGroup>
 
             <FieldGroup className="flex-row gap-4 mt-6">
-              <Button type="submit" className={"bg-blue-600 hover:bg-sky-800"}  disabled={isUpdating}>
+              <Button
+                type="submit"
+                className={"bg-blue-600 hover:bg-sky-800"}
+                disabled={isUpdating}
+              >
                 {isUpdating ? "Saving..." : "Save Changes"}
               </Button>
 

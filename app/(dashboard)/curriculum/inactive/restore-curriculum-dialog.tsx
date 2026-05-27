@@ -43,7 +43,8 @@ export default function RestoreCurriculumDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Restore Curriculum</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to restore this curriculum? It will be available again in the active curriculum list.
+            Are you sure you want to restore this curriculum? It will be
+            available again in the active curriculum list.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

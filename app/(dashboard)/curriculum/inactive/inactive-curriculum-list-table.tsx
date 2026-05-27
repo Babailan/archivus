@@ -84,7 +84,9 @@ export function InactiveCurriculumListForm({
                     <RestoreCurriculumDialog
                       id={curriculum.id}
                       open={restoringId === curriculum.id}
-                      onOpenChange={(open) => { if (!open) setRestoringId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setRestoringId(null);
+                      }}
                     />
                   </TableCell>
                 </TableRow>

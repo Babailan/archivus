@@ -87,7 +87,9 @@ export function InactiveSubjectListForm({
                     <RestoreSubjectDialog
                       id={subject.id}
                       open={restoringId === subject.id}
-                      onOpenChange={(open) => { if (!open) setRestoringId(null); }}
+                      onOpenChange={(open) => {
+                        if (!open) setRestoringId(null);
+                      }}
                     />
                   </TableCell>
                 </TableRow>

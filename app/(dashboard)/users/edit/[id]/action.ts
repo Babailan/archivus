@@ -50,85 +50,100 @@ const updateUserInputSchema = zfd.formData({
 
 export const updateUserAction = actionClient
   .inputSchema(updateUserInputSchema)
-  .action(async ({ parsedInput: { id, username, email, password, roles, first_name, last_name, middle_name, gender, birthdate } }) => {
-    const existingUser = await prisma.user.findUnique({
-      where: { id },
-      include: { role: true },
-    });
-
-    if (!existingUser) {
-      return returnValidationErrors(updateUserInputSchema, {
-        username: {
-          _errors: ["User not found"],
-        },
+  .action(
+    async ({
+      parsedInput: {
+        id,
+        username,
+        email,
+        password,
+        roles,
+        first_name,
+        last_name,
+        middle_name,
+        gender,
+        birthdate,
+      },
+    }) => {
+      const existingUser = await prisma.user.findUnique({
+        where: { id },
+        include: { role: true },
       });
-    }
 
-    const existingUsername = await getUserByUsername(username);
-    if (existingUsername && existingUsername.id !== id) {
-      return returnValidationErrors(updateUserInputSchema, {
-        username: {
-          _errors: ["Username already exists"],
-        },
-      });
-    }
-
-    const existingEmail = await getUserByEmail(email);
-    if (existingEmail && existingEmail.id !== id) {
-      return returnValidationErrors(updateUserInputSchema, {
-        email: {
-          _errors: ["Email already exists"],
-        },
-      });
-    }
-
-    try {
-      let hashedPassword = existingUser.hash_password;
-      if (password) {
-        const salt = await bcrypt.genSalt(10);
-        hashedPassword = await bcrypt.hash(password, salt);
-      }
-
-      await prisma.$transaction([
-        prisma.user.update({
-          where: { id },
-          data: {
-            username,
-            email,
-            hash_password: hashedPassword,
-            first_name,
-            last_name,
-            middle_name,
-            gender,
-            birthdate,
+      if (!existingUser) {
+        return returnValidationErrors(updateUserInputSchema, {
+          username: {
+            _errors: ["User not found"],
           },
-        }),
-        prisma.role.deleteMany({
-          where: { user_id: id },
-        }),
-        prisma.role.createMany({
-          data: roles.map((role) => ({
-            user_id: id,
-            role,
-          })),
-        }),
-      ]);
-    } catch (err) {
-      if (err instanceof PrismaClientKnownRequestError) {
-        if (err.code === "P2002") {
-          return returnValidationErrors(updateUserInputSchema, {
-            username: {
-              _errors: ["Username already exists"],
-            },
-          });
-        }
+        });
       }
-      throw err;
-    }
 
-    revalidatePath("/users");
-    return { success: true };
-  });
+      const existingUsername = await getUserByUsername(username);
+      if (existingUsername && existingUsername.id !== id) {
+        return returnValidationErrors(updateUserInputSchema, {
+          username: {
+            _errors: ["Username already exists"],
+          },
+        });
+      }
+
+      const existingEmail = await getUserByEmail(email);
+      if (existingEmail && existingEmail.id !== id) {
+        return returnValidationErrors(updateUserInputSchema, {
+          email: {
+            _errors: ["Email already exists"],
+          },
+        });
+      }
+
+      try {
+        let hashedPassword = existingUser.hash_password;
+        if (password) {
+          const salt = await bcrypt.genSalt(10);
+          hashedPassword = await bcrypt.hash(password, salt);
+        }
+
+        await prisma.$transaction([
+          prisma.user.update({
+            where: { id },
+            data: {
+              username,
+              email,
+              hash_password: hashedPassword,
+              first_name,
+              last_name,
+              middle_name,
+              gender,
+              birthdate,
+            },
+          }),
+          prisma.role.deleteMany({
+            where: { user_id: id },
+          }),
+          prisma.role.createMany({
+            data: roles.map((role) => ({
+              user_id: id,
+              role,
+            })),
+          }),
+        ]);
+      } catch (err) {
+        if (err instanceof PrismaClientKnownRequestError) {
+          if (err.code === "P2002") {
+            return returnValidationErrors(updateUserInputSchema, {
+              username: {
+                _errors: ["Username already exists"],
+              },
+            });
+          }
+        }
+        throw err;
+      }
+
+      revalidatePath("/users");
+      return { success: true };
+    },
+  );
 
 export const toggleUserStatusAction = actionClient
   .inputSchema(zfd.formData({ id: zfd.numeric() }))

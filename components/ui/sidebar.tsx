@@ -547,7 +547,12 @@ function SidebarMenuButton({
     count && count > 0 ? (
       <div className="flex items-center w-full">
         {resolvedRender as React.ReactNode}
-        <Badge className={cn("ml-auto h-5 w-5 shrink-0 rounded-full p-0 flex items-center justify-center",isActive && "bg-secondary text-primary")}>
+        <Badge
+          className={cn(
+            "ml-auto h-5 w-5 shrink-0 rounded-full p-0 flex items-center justify-center",
+            isActive && "bg-secondary text-primary",
+          )}
+        >
           {count}
         </Badge>
       </div>

@@ -167,7 +167,9 @@ export function EnrollmentRollbackRequestsList({
                     {request.enrollment.student.last_name},{" "}
                     {request.enrollment.student.first_name}
                   </TableCell>
-                  <TableCell>{request.enrollment.curriculum.grade_level}</TableCell>
+                  <TableCell>
+                    {request.enrollment.curriculum.grade_level}
+                  </TableCell>
                   <TableCell>{request.enrollment.school_year}</TableCell>
                   <TableCell>{request.requested_by.username}</TableCell>
                   <TableCell className="max-w-xs truncate">
