@@ -155,6 +155,9 @@ export async function getRollbackRequests(
           select: {
             id: true,
             username: true,
+            first_name: true,
+            last_name: true,
+            middle_name: true,
           },
         },
         reviewed_by: {
@@ -417,7 +420,7 @@ export async function getEnrollmentRollbackRequests(
           },
         },
         requested_by: {
-          select: { id: true, username: true },
+          select: { id: true, username: true, first_name: true, last_name: true, middle_name: true },
         },
         reviewed_by: {
           select: { id: true, username: true },

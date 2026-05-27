@@ -163,7 +163,13 @@ export function RollbackRequestsList({
                   <TableCell>
                     ₱{request.payment.amount_paid.toLocaleString()}
                   </TableCell>
-                  <TableCell>{request.requested_by.username}</TableCell>
+                  <TableCell>
+                    {request.requested_by.last_name},{" "}
+                    {request.requested_by.first_name}
+                    {request.requested_by.middle_name
+                      ? ` ${request.requested_by.middle_name}`
+                      : ""}
+                  </TableCell>
                   <TableCell className="max-w-xs truncate">
                     {request.reason}
                   </TableCell>
