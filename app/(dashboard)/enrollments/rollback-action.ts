@@ -85,6 +85,7 @@ export const denyEnrollmentRollbackAction = actionClient
 export async function getEnrollmentRollbackRequestsAction(
   status?: string,
   page?: number,
+  q?: string,
 ) {
-  return await getEnrollmentRollbackRequests(status, page);
+  return await getEnrollmentRollbackRequests(status, page, 10, q);
 }

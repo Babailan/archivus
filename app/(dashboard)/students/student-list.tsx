@@ -30,7 +30,16 @@ type StudentData = {
   }>;
 };
 
-export function StudentList({ dataPromise }: { dataPromise: Promise<{ students: StudentData[]; total: number; page: number; pageSize: number }> }) {
+export function StudentList({
+  dataPromise,
+}: {
+  dataPromise: Promise<{
+    students: StudentData[];
+    total: number;
+    page: number;
+    pageSize: number;
+  }>;
+}) {
   const { students, total, page, pageSize } = use(dataPromise);
   const totalPages = Math.ceil(total / pageSize);
   const router = useRouter();

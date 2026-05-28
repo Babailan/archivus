@@ -319,12 +319,12 @@ export function StudentForm({ student, enrollment }: StudentFormProps) {
 
       {/* Pending rollback — show link to manage request */}
       {isActive && hasPending && (
-        <Button variant="outline" size="lg">
-          <Link href={`/enrollments/${enrollment.id}/rollback`}>
+        <Link href={`/enrollments/${enrollment.id}/rollback`}>
+          <Button variant="outline" size="lg">
             <Clock className="mr-2 h-4 w-4" />
             Manage Rollback Request
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       )}
 
       {/* Dropped / Cancelled — no actions */}

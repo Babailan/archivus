@@ -12,9 +12,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOption)
-  if(!session) {
-    redirect("/login")
+  const session = await getServerSession(authOption);
+  if (!session) {
+    redirect("/login");
   }
   return (
     <SidebarProvider className="scheme-dark">

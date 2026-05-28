@@ -91,10 +91,10 @@ export function CurriculumListForm({
                       />
                       <DropdownMenuContent>
                         <Link href={`/curriculum/edit/${curriculum.id}`}>
-                        <DropdownMenuItem>
-                          <Pencil />
-                          Edit
-                        </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Pencil />
+                            Edit
+                          </DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem

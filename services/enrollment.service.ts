@@ -120,12 +120,12 @@ export async function searchEnrollments(
         const searchConditions: Prisma.EnrollmentWhereInput[] = [
           { reference_code: { contains: chunk } },
           { reference_code: { contains: `EN-${chunk}` } },
-          { student: { first_name: { contains: chunk, mode: "insensitive" } } },
-          { student: { last_name: { contains: chunk, mode: "insensitive" } } },
+          { student: { first_name: { contains: chunk } } },
+          { student: { last_name: { contains: chunk } } },
           {
-            student: { middle_name: { contains: chunk, mode: "insensitive" } },
+            student: { middle_name: { contains: chunk } },
           },
-          { student: { email: { contains: chunk, mode: "insensitive" } } },
+          { student: { email: { contains: chunk } } },
           { school_year: { contains: chunk } },
           { curriculum: { curriculum_name: { contains: chunk } } },
         ];
@@ -202,10 +202,10 @@ export async function searchStudents(
     if (chunks.length > 0) {
       where.AND = chunks.map((chunk) => {
         const searchConditions: Prisma.StudentWhereInput[] = [
-          { first_name: { contains: chunk, mode: "insensitive" } },
-          { last_name: { contains: chunk, mode: "insensitive" } },
-          { middle_name: { contains: chunk, mode: "insensitive" } },
-          { email: { contains: chunk, mode: "insensitive" } },
+          { first_name: { contains: chunk } },
+          { last_name: { contains: chunk } },
+          { middle_name: { contains: chunk } },
+          { email: { contains: chunk } },
         ];
 
         const id = Number(chunk);

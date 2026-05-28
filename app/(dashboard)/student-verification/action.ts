@@ -4,7 +4,10 @@ import { actionClient } from "@/lib/safe-action";
 import { zfd } from "zod-form-data";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
-import { GradeLevelEnum, StudentVerificationStatus } from "@/app/generated/prisma";
+import {
+  GradeLevelEnum,
+  StudentVerificationStatus,
+} from "@/app/generated/prisma";
 import {
   updateStudentVerification,
   searchStudentVerifications,
@@ -82,7 +85,12 @@ export async function fetchStudentVerifications(
   pageSize?: number,
   q?: string,
 ) {
-  return await searchStudentVerifications(status as StudentVerificationStatus, page, pageSize, q);
+  return await searchStudentVerifications(
+    status as StudentVerificationStatus,
+    page,
+    pageSize,
+    q,
+  );
 }
 
 export async function fetchStudentVerificationById(id: number) {

@@ -5,9 +5,7 @@ import {
 } from "@/components/ui/input-group";
 import { PhilippinePeso } from "lucide-react";
 
-export const PesoInput = ({
-  ...props
-}: React.ComponentProps<"input">) => {
+export const PesoInput = ({ ...props }: React.ComponentProps<"input">) => {
   return (
     <InputGroup>
       <InputGroupInput placeholder="" {...props} />

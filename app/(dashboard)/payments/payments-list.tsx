@@ -15,6 +15,7 @@ import { PaymentsResult } from "@/services/payment.service";
 import { use } from "react";
 import { Wallet } from "lucide-react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { SearchInput } from "@/components/ui/search-input";
 
 interface PaymentsListProps {
   paymentsPromise: Promise<PaymentsResult>;
@@ -40,7 +41,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <Input placeholder="Search by student name..." className="max-w-sm" />
+        <SearchInput pathname="/payments" placeholder="Search by id, name" className="max-w-sm" />
       </div>
 
       <div className="border rounded-md">
@@ -71,9 +72,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
             ) : (
               enrollments.map((payment) => (
                 <TableRow key={payment.id}>
-                  <TableCell>
-                    {payment.student.id}
-                  </TableCell>
+                  <TableCell>{payment.student.id}</TableCell>
                   <TableCell>
                     {payment.student.last_name}, {payment.student.first_name}
                   </TableCell>

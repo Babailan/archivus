@@ -20,11 +20,15 @@ export const metadata: Metadata = {
 export default async function EnrollmentRollbackRequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; page?: string }>;
 }) {
-  const { status, page } = await searchParams;
+  const { q, status, page } = await searchParams;
   const pageNum = page ? parseInt(page) : 1;
-  const requestsPromise = getEnrollmentRollbackRequestsAction(status, pageNum);
+  const requestsPromise = getEnrollmentRollbackRequestsAction(
+    status,
+    pageNum,
+    q,
+  );
 
   return (
     <div className="p-10 mb-10">

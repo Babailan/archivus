@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -9,11 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { RecentPaymentsResult } from "@/services/payment.service";
 import { use } from "react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
-import { useDebouncedCallback } from "use-debounce";
+import { SearchInput } from "@/components/ui/search-input";
 
 interface RecentPaymentsListProps {
   paymentsPromise: Promise<RecentPaymentsResult>;
@@ -24,28 +22,14 @@ export function RecentPaymentsList({
 }: RecentPaymentsListProps) {
   const { payments, total, page, pageSize } = use(paymentsPromise);
   const totalPages = Math.ceil(total / pageSize);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const handleSearch = useDebouncedCallback((value: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set("q", value);
-    } else {
-      params.delete("q");
-    }
-    params.set("page", "1");
-    router.push(`/recent-payment?${params.toString()}`);
-  }, 300);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <Input
+        <SearchInput
+          pathname="/recent-payment"
           placeholder="Search by receipt no. or student name..."
           className="max-w-sm"
-          defaultValue={searchParams.get("q") ?? ""}
-          onChange={(e) => handleSearch(e.target.value)}
         />
       </div>
 

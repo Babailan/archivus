@@ -12,10 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-
-import {
-  SearchEnrollmentResult,
-} from "@/services/enrollment.service";
+import { SearchEnrollmentResult } from "@/services/enrollment.service";
 import { Eye } from "lucide-react";
 import { use, useState, useEffect, useRef } from "react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
@@ -38,7 +35,6 @@ export function EnrollmentsListForm({
   const formatSchoolYear = (schoolYear: string) => {
     return schoolYear;
   };
-
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   const [debouncedSearch] = useDebounce(searchTerm, 500);

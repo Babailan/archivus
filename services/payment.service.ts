@@ -49,10 +49,13 @@ export async function getApprovedEnrollments(
 
   if (q) {
     where.OR = [
-      { student: { last_name: { contains: q, mode: "insensitive" } } },
-      { student: { first_name: { contains: q, mode: "insensitive" } } },
-      { student: { id: Number(q) } },
+      { student: { last_name: { contains: q } } },
+      { student: { first_name: { contains: q } } },
     ];
+    const id = Number(q);
+    if (!Number.isNaN(id)) {
+      where.OR.push({ student: { id } });
+    }
   }
 
   const skip = (page - 1) * pageSize;
@@ -97,7 +100,7 @@ export async function getApprovedEnrollments(
         student: {
           first_name: e.student.first_name,
           last_name: e.student.last_name,
-          id:e.student.id
+          id: e.student.id,
         },
         grade_level: e.curriculum.grade_level,
         school_year: e.school_year,

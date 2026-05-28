@@ -131,7 +131,7 @@ export async function getRollbackRequests(
   pageSize: number = 10,
   q?: string,
 ) {
-  const where: Prisma.RollbackRequestWhereInput = {}
+  const where: Prisma.RollbackRequestWhereInput = {};
   if (status && status !== "all") {
     where.status = status as RollbackStatus;
   }
@@ -144,9 +144,9 @@ export async function getRollbackRequests(
           student: {
             AND: chunks.map((chunk) => {
               const searchConditions: object[] = [
-                { first_name: { contains: chunk, mode: "insensitive" } },
-                { last_name: { contains: chunk, mode: "insensitive" } },
-                { lrn: { contains: chunk, mode: "insensitive" } },
+                { first_name: { contains: chunk } },
+                { last_name: { contains: chunk } },
+                { lrn: { contains: chunk } },
               ];
               const id = Number(chunk);
               if (!Number.isNaN(id)) {
@@ -425,10 +425,27 @@ export async function getEnrollmentRollbackRequests(
   status?: string,
   page: number = 1,
   pageSize: number = 10,
+  q?: string,
 ) {
-  const where: { status?: RollbackStatus } = {};
+  const where: Prisma.EnrollmentRollbackRequestWhereInput = {};
   if (status && status !== "all") {
     where.status = status as RollbackStatus;
+  }
+
+  if (q) {
+    where.enrollment = {
+      student: {
+        OR: [
+          { first_name: { contains: q } },
+          { last_name: { contains: q } },
+          { lrn: { contains: q } },
+        ],
+      },
+    };
+    const id = Number(q);
+    if (!Number.isNaN(id)) {
+      (where.enrollment.student.OR as unknown[]).push({ id });
+    }
   }
 
   const skip = (page - 1) * pageSize;
@@ -472,7 +489,8 @@ export async function getEnrollmentRollbackRequests(
         total_misc_snapshot: r.enrollment.total_misc_snapshot.toNumber(),
         curriculum: {
           ...r.enrollment.curriculum,
-          miscellaneous_fee: r.enrollment.curriculum.miscellaneous_fee.toNumber(),
+          miscellaneous_fee:
+            r.enrollment.curriculum.miscellaneous_fee.toNumber(),
         },
       },
     })),

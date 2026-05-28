@@ -73,7 +73,8 @@ export function StudentEditForm({
   const [selectedDocuments, setSelectedDocuments] =
     useState<number[]>(checkedDocumentIds);
   const [enrollmentGrade, setEnrollmentGrade] = useState<string>("");
-  const [enrollmentData, setEnrollmentData] = useState<EnrollmentSettingsWithCurriculums | null>(null);
+  const [enrollmentData, setEnrollmentData] =
+    useState<EnrollmentSettingsWithCurriculums | null>(null);
 
   const { executeAsync, isExecuting } = useAction(updateStudentDetailAction);
   const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } =

@@ -19,6 +19,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { useAction } from "next-safe-action/hooks";
 import {
   approveStudentVerificationAction,
@@ -64,6 +73,9 @@ export function StudentVerificationList({
     router.push(`/student-verification?${params.toString()}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, router]); // purposely omitting searchParams to avoid infinite loops
+
+  const [acceptDialogId, setAcceptDialogId] = useState<number | null>(null);
+  const [denyDialogId, setDenyDialogId] = useState<number | null>(null);
 
   const { executeAsync: approveAsync } = useAction(
     approveStudentVerificationAction,
@@ -155,14 +167,14 @@ export function StudentVerificationList({
                         View
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleAccept(item.id)}
+                        onClick={() => setAcceptDialogId(item.id)}
                         className="text-green-600"
                       >
                         <Check className="mr-2 h-4 w-4" />
                         Accept
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDeny(item.id)}
+                        onClick={() => setDenyDialogId(item.id)}
                         className="text-red-600"
                       >
                         <X className="mr-2 h-4 w-4" />
@@ -177,6 +189,59 @@ export function StudentVerificationList({
         </TableBody>
       </Table>
       <DataTablePagination page={page} totalPages={totalPages} />
+
+      <Dialog
+        open={acceptDialogId !== null}
+        onOpenChange={(open) => !open && setAcceptDialogId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Accept Application</DialogTitle>
+            <DialogDescription>
+              This will create an official Student record and assign a Student
+              ID.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+            <Button
+              className="bg-green-600 hover:bg-green-700"
+              onClick={() => {
+                if (acceptDialogId !== null) handleAccept(acceptDialogId);
+                setAcceptDialogId(null);
+              }}
+            >
+              Accept
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={denyDialogId !== null}
+        onOpenChange={(open) => !open && setDenyDialogId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deny Application</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to deny this application?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button variant="outline">Cancel</Button>} />
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (denyDialogId !== null) handleDeny(denyDialogId);
+                setDenyDialogId(null);
+              }}
+            >
+              Deny
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

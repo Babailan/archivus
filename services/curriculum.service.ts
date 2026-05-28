@@ -50,27 +50,21 @@ export async function searchCurriculum(
 ) {
   const skip = (page - 1) * pageSize;
 
-  const chunks = q ? q.trim().split(/\s+/).filter(Boolean) : [];
+  const trimmedQuery = q ? q.trim() : "";
 
-  const searchFilter = q
+  const searchFilter = trimmedQuery
     ? {
         OR: [
-          ...chunks.map((chunk) => ({
-            OR: [
-              {
-                curriculum_name: {
-                  contains: chunk,
-                  mode: "insensitive" as const,
-                },
-              },
-              {
-                curriculum_code: {
-                  contains: chunk,
-                  mode: "insensitive" as const,
-                },
-              },
-            ],
-          })),
+          {
+            curriculum_name: {
+              contains: trimmedQuery,
+            },
+          },
+          {
+            curriculum_code: {
+              contains: trimmedQuery,
+            },
+          },
         ],
       }
     : {};
@@ -227,13 +221,11 @@ export async function searchInactiveCurriculum(
               {
                 curriculum_name: {
                   contains: chunk,
-                  mode: "insensitive" as const,
                 },
               },
               {
                 curriculum_code: {
                   contains: chunk,
-                  mode: "insensitive" as const,
                 },
               },
             ],

@@ -29,6 +29,7 @@ import {
 } from "../enrollments/rollback-action";
 import { getEnrollmentRollbackRequests } from "@/services/rollback.service";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import { SearchInput } from "@/components/ui/search-input";
 
 interface EnrollmentRollbackRequestsListProps {
   requestsPromise: Promise<{
@@ -123,7 +124,13 @@ export function EnrollmentRollbackRequestsList({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex items-center gap-4">
+        <SearchInput
+          pathname="/enrollment-rollback-requests"
+          placeholder="Search by student name or LRN..."
+          className="max-w-sm"
+        />
+        <div className="flex gap-2">
         {statusFilterTabs.map((tab) => (
           <Button
             key={tab}
@@ -134,6 +141,7 @@ export function EnrollmentRollbackRequestsList({
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </Button>
         ))}
+      </div>
       </div>
 
       <div className="border rounded-md">

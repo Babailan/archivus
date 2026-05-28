@@ -72,19 +72,18 @@ export async function searchStudentVerifications(
           {
             reference_code: {
               contains: q.trim(),
-              mode: "insensitive" as const,
             },
           },
           // match each chunk against name/email fields
           ...chunks.map((chunk) => ({
             OR: [
-              { first_name: { contains: chunk, mode: "insensitive" as const } },
-              { last_name: { contains: chunk, mode: "insensitive" as const } },
+              { first_name: { contains: chunk } },
+              { last_name: { contains: chunk } },
               {
-                middle_name: { contains: chunk, mode: "insensitive" as const },
+                middle_name: { contains: chunk },
               },
-              { email: { contains: chunk, mode: "insensitive" as const } },
-              { lrn: { contains: chunk, mode: "insensitive" as const } },
+              { email: { contains: chunk } },
+              { lrn: { contains: chunk } },
             ],
           })),
         ],

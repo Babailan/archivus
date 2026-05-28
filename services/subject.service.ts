@@ -1,6 +1,4 @@
-import {
-  SubjectUpdateInput,
-} from "@/app/generated/prisma/models";
+import { SubjectUpdateInput } from "@/app/generated/prisma/models";
 import prisma from "@/lib/prisma";
 
 export type SearchSubjectResult = Awaited<ReturnType<typeof searchSubject>>;
@@ -20,10 +18,10 @@ export async function searchSubject(
           ...chunks.map((chunk) => ({
             OR: [
               {
-                subject_name: { contains: chunk, mode: "insensitive" as const },
+                subject_name: { contains: chunk },
               },
               {
-                subject_code: { contains: chunk, mode: "insensitive" as const },
+                subject_code: { contains: chunk },
               },
             ],
           })),
@@ -136,10 +134,10 @@ export async function searchInactiveSubject(
           ...chunks.map((chunk) => ({
             OR: [
               {
-                subject_name: { contains: chunk, mode: "insensitive" as const },
+                subject_name: { contains: chunk },
               },
               {
-                subject_code: { contains: chunk, mode: "insensitive" as const },
+                subject_code: { contains: chunk },
               },
             ],
           })),

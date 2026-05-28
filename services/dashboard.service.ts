@@ -1,10 +1,5 @@
 import prisma from "@/lib/prisma";
-import {
-  endOfDay,
-  startOfDay,
-  startOfMonth,
-  subMonths,
-} from "date-fns";
+import { endOfDay, startOfDay, startOfMonth, subMonths } from "date-fns";
 
 export type EnrollmentTrend = {
   month: string;

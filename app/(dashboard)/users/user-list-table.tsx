@@ -1,6 +1,5 @@
 "use client";
 
-
 import { use } from "react";
 import { format } from "date-fns";
 import { SearchUserResult } from "@/services/user.service";

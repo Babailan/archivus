@@ -14,41 +14,13 @@ async function seedUsers() {
         email: "babailanxx@gmail.com",
         hash_password: await bcrypt.hash("admin", salt),
         username: "babi",
-        first_name: "Admin",
-        last_name: "User",
+        first_name: "Ronnel",
+        last_name: "Babailan",
         gender: "male",
         birthdate: new Date("1990-01-01"),
         role: {
           create: {
             role: "admin",
-          },
-        },
-      },
-    });
-  }
-
-  const cashierUser = await prisma.user.findFirst({
-    where: {
-      role: {
-        some: { role: "cashier" },
-      },
-    },
-  });
-  if (!cashierUser) {
-    const salt = await bcrypt.genSalt(10);
-    await prisma.user.create({
-      data: {
-        id: parseInt(`${currentYear}00002`),
-        email: "cashier@archivus.edu",
-        hash_password: await bcrypt.hash("cashier", salt),
-        username: "cashier",
-        first_name: "Cashier",
-        last_name: "Staff",
-        gender: "female",
-        birthdate: new Date("1995-05-15"),
-        role: {
-          create: {
-            role: "cashier",
           },
         },
       },

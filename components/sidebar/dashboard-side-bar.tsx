@@ -74,7 +74,7 @@ export async function DashboardSideBar() {
             />
           </SidebarMenu>
         </SidebarGroup>
-        {(isAdmin || isRegistrar) && (
+        {(isAdmin) && (
           <SidebarGroup>
             <SidebarGroupLabel>Academic Affairs</SidebarGroupLabel>
             <SidebarMenu className="gap-1">
@@ -122,13 +122,7 @@ export async function DashboardSideBar() {
                 icon={<LibraryBig />}
                 title="Enrollments"
               />
-              <SidebarMenuButton
-                href="/enrollment-rollback-requests"
-                pathname="/enrollment-rollback-requests"
-                icon={<ClipboardList />}
-                title="Enrollment Rollback"
-                count={pendingEnrollmentRollbackCount}
-              />
+
               <SidebarMenuButton
                 href="/enrollment-settings"
                 pathname="/enrollment-settings"
@@ -144,36 +138,47 @@ export async function DashboardSideBar() {
             </SidebarMenu>
           </SidebarGroup>
         )}
-        <SidebarGroup>
-          <SidebarGroupLabel>Finance</SidebarGroupLabel>
-          <SidebarMenu className="gap-1">
-            {(isAdmin || isCashier) && (
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Rollbacks requests</SidebarGroupLabel>
+            <SidebarMenu className="gap-1">
+              <SidebarMenuButton
+                href="/rollback-requests"
+                pathname="/rollback-requests"
+                icon={<Wallet />}
+                title="Payment Rollback"
+                count={pendingRollbackCount}
+              />
+              <SidebarMenuButton
+                href="/enrollment-rollback-requests"
+                pathname="/enrollment-rollback-requests"
+                icon={<ClipboardList />}
+                title="Enrollment Rollback"
+                count={pendingEnrollmentRollbackCount}
+              />
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
+
+        {(isAdmin || isCashier) && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Finance</SidebarGroupLabel>
+            <SidebarMenu className="gap-1">
               <SidebarMenuButton
                 href="/payments"
                 pathname="/payments"
                 icon={<Wallet />}
                 title="Payments"
               />
-            )}
-            {(isAdmin || isCashier) && (
               <SidebarMenuButton
                 href="/recent-payment"
                 pathname="/recent-payment"
                 icon={<Receipt />}
                 title="Recent Payments"
               />
-            )}
-            {isAdmin && (
-              <SidebarMenuButton
-                href="/rollback-requests"
-                pathname="/rollback-requests"
-                icon={<Wallet />}
-                title="Rollback Requests"
-                count={pendingRollbackCount}
-              />
-            )}
-          </SidebarMenu>
-        </SidebarGroup>
+            </SidebarMenu>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
