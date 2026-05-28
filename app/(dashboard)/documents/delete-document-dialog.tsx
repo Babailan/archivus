@@ -34,9 +34,9 @@ export default function DeleteDocumentDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Document</DialogTitle>
+          <DialogTitle>Archived Document</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this document?
+            Are you sure you want to archived this document?
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -49,7 +49,7 @@ export default function DeleteDocumentDialog({
                 onClick={handleSubmit}
                 disabled={isExecuting}
               >
-                Delete
+                Archived
               </Button>
             }
           />

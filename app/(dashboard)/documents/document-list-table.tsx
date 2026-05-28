@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Pencil, Search, Trash } from "lucide-react";
+import { Archive, Ellipsis, Pencil, Search, Trash } from "lucide-react";
 import { format } from "date-fns";
 import {
   Empty,
@@ -60,7 +60,6 @@ export function DocumentListTable({
           <Table className="my-5 border">
             <TableHeader>
               <TableRow>
-                <TableHead>ID</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Date Created</TableHead>
@@ -70,7 +69,6 @@ export function DocumentListTable({
             <TableBody>
               {documents.map((doc) => (
                 <TableRow key={doc.id}>
-                  <TableCell>{doc.id}</TableCell>
                   <TableCell>{doc.name.toUpperCase()}</TableCell>
                   <TableCell>{doc.description ?? "—"}</TableCell>
                   <TableCell>{format(doc.created_at, "MMM, d yyyy")}</TableCell>
@@ -98,8 +96,8 @@ export function DocumentListTable({
                             variant="destructive"
                             onClick={() => setDeletingId(doc.id)}
                           >
-                            <Trash />
-                            Delete
+                            <Archive />
+                            Archived
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>

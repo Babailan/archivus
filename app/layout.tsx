@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { SessionProvider } from "@/components/session-provider";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+
 const garamond = EB_Garamond({
   subsets: ["latin"],
   variable: "--font-garamond",

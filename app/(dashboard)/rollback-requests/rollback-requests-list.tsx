@@ -4,7 +4,8 @@ import { use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAction } from "next-safe-action/hooks";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 import {
   Table,
   TableBody,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +62,21 @@ export function RollbackRequestsList({
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentStatus = searchParams.get("status") ?? "all";
+  const currentSearch = searchParams.get("q") ?? "";
+
+  const [searchTerm, setSearchTerm] = useState(currentSearch);
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearch) {
+      params.set("q", debouncedSearch);
+    } else {
+      params.delete("q");
+    }
+    params.delete("page");
+    router.push(`?${params.toString()}`);
+  }, [debouncedSearch]);
 
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
@@ -117,7 +134,13 @@ export function RollbackRequestsList({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
+        <Input
+          placeholder="Search by student name or ID..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
         {statusFilterTabs.map((tab) => (
           <Button
             key={tab}

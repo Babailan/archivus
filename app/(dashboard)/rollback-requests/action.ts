@@ -16,8 +16,9 @@ import { z } from "zod";
 export async function getRollbackRequestsAction(
   status?: string,
   page?: number,
+  q?: string,
 ) {
-  return await getRollbackRequests(status, page);
+  return await getRollbackRequests(status, page, 10, q);
 }
 
 export async function getPendingRollbackCountAction() {

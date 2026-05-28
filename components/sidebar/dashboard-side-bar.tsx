@@ -16,6 +16,7 @@ import {
   GalleryVerticalEnd,
   LayoutDashboard,
   LibraryBig,
+  Receipt,
   Settings,
   Users,
   Wallet,
@@ -152,6 +153,14 @@ export async function DashboardSideBar() {
                 pathname="/payments"
                 icon={<Wallet />}
                 title="Payments"
+              />
+            )}
+            {(isAdmin || isCashier) && (
+              <SidebarMenuButton
+                href="/recent-payment"
+                pathname="/recent-payment"
+                icon={<Receipt />}
+                title="Recent Payments"
               />
             )}
             {isAdmin && (

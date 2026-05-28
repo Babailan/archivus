@@ -27,8 +27,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Ellipsis, Search } from "lucide-react";
+import { Archive, Ellipsis, Pencil, Search } from "lucide-react";
 import { DataTablePagination } from "@/components/ui/data-table-pagination";
+import Link from "next/link";
 
 export function CurriculumListForm({
   curriculumsPromise,
@@ -89,13 +90,18 @@ export function CurriculumListForm({
                         }
                       />
                       <DropdownMenuContent>
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <Link href={`/curriculum/edit/${curriculum.id}`}>
+                        <DropdownMenuItem>
+                          <Pencil />
+                          Edit
+                        </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           variant="destructive"
                           onClick={() => setDeletingId(curriculum.id)}
                         >
-                          Delete
+                          <Archive /> Archived
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

@@ -9,7 +9,7 @@ export async function searchDocument(
 ) {
   const skip = (page - 1) * pageSize;
   const where = q
-    ? { name: { contains: q }, inactive: false }
+    ? { name: { contains: q, mode: "insensitive" as const }, inactive: false }
     : { inactive: false };
 
   const [find, total] = await Promise.all([
@@ -58,7 +58,7 @@ export async function searchInactiveDocument(
 ) {
   const skip = (page - 1) * pageSize;
   const where = q
-    ? { name: { contains: q }, inactive: true }
+    ? { name: { contains: q, mode: "insensitive" as const }, inactive: true }
     : { inactive: true };
 
   const [find, total] = await Promise.all([
