@@ -35,9 +35,9 @@ export default function DeleteCurriculumDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Curriculum</DialogTitle>
+          <DialogTitle>Archived Curriculum</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete this curriculum?
+            Are you sure you want to archived this curriculum?
           </DialogDescription>
         </DialogHeader>
 
@@ -50,7 +50,7 @@ export default function DeleteCurriculumDialog({
                 variant={"destructive"}
                 onClick={handleSubmit}
               >
-                Delete
+                Archived
               </Button>
             }
           />

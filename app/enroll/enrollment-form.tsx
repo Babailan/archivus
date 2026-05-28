@@ -222,7 +222,7 @@ export function EnrollmentForm({ gradeLevels }: EnrollmentFormProps) {
                 name="middle_name"
                 render={({ field, fieldState }) => (
                   <Field>
-                    <FieldLabel>Middle Name</FieldLabel>
+                    <FieldLabel>Middle Name (Optional)</FieldLabel>
                     <Input
                       type="text"
                       placeholder="Ex: Flores"

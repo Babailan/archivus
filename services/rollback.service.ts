@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import type { Prisma } from "@/app/generated/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOption } from "@/lib/auth";
 import { RollbackStatus } from "@/app/generated/prisma/enums";
@@ -128,10 +129,35 @@ export async function getRollbackRequests(
   status?: string,
   page: number = 1,
   pageSize: number = 10,
+  q?: string,
 ) {
-  const where: { status?: RollbackStatus } = {};
+  const where: Prisma.RollbackRequestWhereInput = {}
   if (status && status !== "all") {
     where.status = status as RollbackStatus;
+  }
+
+  if (q) {
+    const chunks = q.trim().split(/\s+/).filter(Boolean);
+    if (chunks.length > 0) {
+      where.payment = {
+        enrollment: {
+          student: {
+            AND: chunks.map((chunk) => {
+              const searchConditions: object[] = [
+                { first_name: { contains: chunk, mode: "insensitive" } },
+                { last_name: { contains: chunk, mode: "insensitive" } },
+                { lrn: { contains: chunk, mode: "insensitive" } },
+              ];
+              const id = Number(chunk);
+              if (!Number.isNaN(id)) {
+                searchConditions.push({ id });
+              }
+              return { OR: searchConditions };
+            }),
+          },
+        },
+      };
+    }
   }
 
   const skip = (page - 1) * pageSize;
@@ -444,6 +470,10 @@ export async function getEnrollmentRollbackRequests(
         ...r.enrollment,
         total_tuition_snapshot: r.enrollment.total_tuition_snapshot.toNumber(),
         total_misc_snapshot: r.enrollment.total_misc_snapshot.toNumber(),
+        curriculum: {
+          ...r.enrollment.curriculum,
+          miscellaneous_fee: r.enrollment.curriculum.miscellaneous_fee.toNumber(),
+        },
       },
     })),
     total,

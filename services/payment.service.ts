@@ -1,4 +1,7 @@
-import { EnrollmentWhereInput } from "@/app/generated/prisma/models";
+import {
+  EnrollmentWhereInput,
+  TuitionFeePaymentWhereInput,
+} from "@/app/generated/prisma/models";
 import { GradeLevelEnum } from "@/app/generated/prisma/enums";
 import prisma from "@/lib/prisma";
 import { Decimal } from "@prisma/client/runtime/client";
@@ -46,8 +49,9 @@ export async function getApprovedEnrollments(
 
   if (q) {
     where.OR = [
-      { student: { last_name: { contains: q } } },
-      { student: { first_name: { contains: q } } },
+      { student: { last_name: { contains: q, mode: "insensitive" } } },
+      { student: { first_name: { contains: q, mode: "insensitive" } } },
+      { student: { id: Number(q) } },
     ];
   }
 
@@ -93,6 +97,7 @@ export async function getApprovedEnrollments(
         student: {
           first_name: e.student.first_name,
           last_name: e.student.last_name,
+          id:e.student.id
         },
         grade_level: e.curriculum.grade_level,
         school_year: e.school_year,
@@ -103,6 +108,83 @@ export async function getApprovedEnrollments(
         min_partial_payment: minPartialPayment,
       };
     }),
+    total,
+    page,
+    pageSize,
+  };
+}
+
+export type RecentPaymentItem = {
+  id: number;
+  receipt_no: string;
+  student: { first_name: string; last_name: string };
+  amount_paid: number;
+  payment_date: string;
+  school_year: string;
+  grade_level: string;
+};
+
+export type RecentPaymentsResult = {
+  payments: RecentPaymentItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export async function getRecentPayments(
+  q?: string,
+  page: number = 1,
+  pageSize: number = 10,
+): Promise<RecentPaymentsResult> {
+  const where: TuitionFeePaymentWhereInput = {
+    NOT: {
+      rollback_requests: {
+        some: { status: "approved" },
+      },
+    },
+  };
+
+  if (q) {
+    where.OR = [
+      { receipt_no: { contains: q } },
+      { enrollment: { student: { first_name: { contains: q } } } },
+      { enrollment: { student: { last_name: { contains: q } } } },
+    ];
+  }
+
+  const skip = (page - 1) * pageSize;
+
+  const [payments, total] = await Promise.all([
+    prisma.tuitionFeePayment.findMany({
+      where,
+      skip,
+      take: pageSize,
+      include: {
+        enrollment: {
+          include: {
+            student: true,
+            curriculum: true,
+          },
+        },
+      },
+      orderBy: { payment_date: "desc" },
+    }),
+    prisma.tuitionFeePayment.count({ where }),
+  ]);
+
+  return {
+    payments: payments.map((p) => ({
+      id: p.id,
+      receipt_no: p.receipt_no,
+      student: {
+        first_name: p.enrollment.student.first_name,
+        last_name: p.enrollment.student.last_name,
+      },
+      amount_paid: p.amount_paid.toNumber(),
+      payment_date: p.payment_date.toISOString(),
+      school_year: p.enrollment.school_year,
+      grade_level: p.enrollment.curriculum.grade_level,
+    })),
     total,
     page,
     pageSize,

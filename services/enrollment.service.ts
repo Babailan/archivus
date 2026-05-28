@@ -201,14 +201,21 @@ export async function searchStudents(
   if (q) {
     const chunks = q.trim().split(/\s+/).filter(Boolean);
     if (chunks.length > 0) {
-      where.AND = chunks.map((chunk) => ({
-        OR: [
+      where.AND = chunks.map((chunk) => {
+        const searchConditions: Prisma.StudentWhereInput[] = [
           { first_name: { contains: chunk, mode: "insensitive" } },
           { last_name: { contains: chunk, mode: "insensitive" } },
           { middle_name: { contains: chunk, mode: "insensitive" } },
           { email: { contains: chunk, mode: "insensitive" } },
-        ],
-      }));
+        ];
+
+        const id = Number(chunk);
+        if (!Number.isNaN(id)) {
+          searchConditions.push({ id });
+        }
+
+        return { OR: searchConditions };
+      });
     }
   }
 
