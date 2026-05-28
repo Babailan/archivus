@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 
 export function CreateSubjectForm() {
-  const { executeAsync, isExecuting } = useAction(createSubjectAction);
+  const { executeAsync, isExecuting, result } = useAction(createSubjectAction);
   async function submit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     const formdata = new FormData(e.target);

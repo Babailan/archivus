@@ -41,7 +41,7 @@ export function PaymentsList({ paymentsPromise }: PaymentsListProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
-        <SearchInput pathname="/payments" placeholder="Search by id, name" className="max-w-sm" />
+        <SearchInput pathname="/payments" placeholder="Search by name or ID" className="max-w-sm" />
       </div>
 
       <div className="border rounded-md">

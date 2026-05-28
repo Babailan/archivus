@@ -433,19 +433,21 @@ export async function getEnrollmentRollbackRequests(
   }
 
   if (q) {
-    where.enrollment = {
-      student: {
-        OR: [
-          { first_name: { contains: q } },
-          { last_name: { contains: q } },
-          { lrn: { contains: q } },
-        ],
-      },
-    };
+    const studentOr: Prisma.StudentWhereInput[] = [
+      { first_name: { contains: q } },
+      { last_name: { contains: q } },
+      { lrn: { contains: q } },
+    ];
     const id = Number(q);
     if (!Number.isNaN(id)) {
-      (where.enrollment.student.OR as unknown[]).push({ id });
+      studentOr.push({ id });
     }
+
+    where.enrollment = {
+      student: {
+        OR: studentOr,
+      },
+    };
   }
 
   const skip = (page - 1) * pageSize;

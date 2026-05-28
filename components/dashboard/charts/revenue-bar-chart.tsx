@@ -92,7 +92,7 @@ export function RevenueBarChart({
                 offset={12}
                 className="fill-foreground"
                 fontSize={12}
-                formatter={(value: number) =>
+                formatter={(value) =>
                   `₱${numeral(value).format("0,0")}`
                 }
               />

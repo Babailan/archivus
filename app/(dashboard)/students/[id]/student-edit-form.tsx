@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -36,7 +36,6 @@ import type { EnrollmentSettingsWithCurriculums } from "@/services/enrollment-se
 import {
   updateStudentDetailAction,
   createEnrollmentAction,
-  getEnrollmentData,
 } from "../action";
 import { ArrowLeft, Save, FileText, Plus } from "lucide-react";
 
@@ -61,32 +60,24 @@ interface StudentEditFormProps {
   student: StudentData;
   activeDocuments: DocumentData[];
   checkedDocumentIds: number[];
+  enrollmentData: EnrollmentSettingsWithCurriculums | null;
 }
 
 export function StudentEditForm({
   student,
   activeDocuments,
   checkedDocumentIds,
+  enrollmentData,
 }: StudentEditFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<StudentData>(student);
   const [selectedDocuments, setSelectedDocuments] =
     useState<number[]>(checkedDocumentIds);
   const [enrollmentGrade, setEnrollmentGrade] = useState<string>("");
-  const [enrollmentData, setEnrollmentData] =
-    useState<EnrollmentSettingsWithCurriculums | null>(null);
 
   const { executeAsync, isExecuting } = useAction(updateStudentDetailAction);
   const { executeAsync: createEnrollment, isExecuting: isCreatingEnrollment } =
     useAction(createEnrollmentAction);
-
-  useEffect(() => {
-    const loadEnrollmentData = async () => {
-      const data = await getEnrollmentData();
-      setEnrollmentData(data);
-    };
-    loadEnrollmentData();
-  }, []);
 
   const handleChange = (field: keyof StudentData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -127,6 +118,11 @@ export function StudentEditForm({
   const onCreateEnrollment = async () => {
     if (!enrollmentGrade) {
       toast.error("Please select a grade level");
+      return;
+    }
+
+    if (!enrollmentData) {
+      toast.error("Enrollment settings not available");
       return;
     }
 

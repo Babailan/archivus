@@ -68,7 +68,7 @@ export function StudentList({
   return (
     <div className="space-y-4">
       <Input
-        placeholder="Search students..."
+        placeholder="Search students by name or ID..."
         className="max-w-sm"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}

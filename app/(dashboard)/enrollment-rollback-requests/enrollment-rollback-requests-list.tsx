@@ -127,28 +127,29 @@ export function EnrollmentRollbackRequestsList({
       <div className="flex items-center gap-4">
         <SearchInput
           pathname="/enrollment-rollback-requests"
-          placeholder="Search by student name or LRN..."
+          placeholder="Search by student name or ID..."
           className="max-w-sm"
         />
         <div className="flex gap-2">
-        {statusFilterTabs.map((tab) => (
-          <Button
-            key={tab}
-            variant={currentStatus === tab ? "default" : "outline"}
-            size="sm"
-            onClick={() => handleStatusFilter(tab)}
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </Button>
-        ))}
-      </div>
+          {statusFilterTabs.map((tab) => (
+            <Button
+              key={tab}
+              variant={currentStatus === tab ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleStatusFilter(tab)}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <div className="border rounded-md">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Student</TableHead>
+              <TableHead>Student ID</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Grade Level</TableHead>
               <TableHead>School Year</TableHead>
               <TableHead>Requested By</TableHead>
@@ -171,6 +172,7 @@ export function EnrollmentRollbackRequestsList({
             ) : (
               requests.map((request) => (
                 <TableRow key={request.id}>
+                  <TableCell>{request.enrollment.student.id}</TableCell>
                   <TableCell>
                     {request.enrollment.student.last_name},{" "}
                     {request.enrollment.student.first_name}

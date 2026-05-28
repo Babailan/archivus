@@ -1,4 +1,5 @@
 import { getStudentWithDocuments } from "@/services/student.service";
+import { getEnrollmentSettings } from "@/services/enrollment-settings.service";
 import { StudentEditForm } from "./student-edit-form";
 import {
   Breadcrumb,
@@ -16,7 +17,10 @@ export default async function StudentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const data = await getStudentWithDocuments(Number(id));
+  const [data, enrollmentData] = await Promise.all([
+    getStudentWithDocuments(Number(id)),
+    getEnrollmentSettings(),
+  ]);
 
   if (!data) {
     return (
@@ -60,6 +64,7 @@ export default async function StudentDetailPage({
         student={data.student}
         activeDocuments={data.activeDocuments}
         checkedDocumentIds={data.checkedDocumentIds}
+        enrollmentData={enrollmentData}
       />
     </div>
   );

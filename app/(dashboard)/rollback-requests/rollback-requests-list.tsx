@@ -157,7 +157,8 @@ export function RollbackRequestsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Student</TableHead>
+              <TableHead>Student ID</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Cashier</TableHead>
               <TableHead>Reason</TableHead>
@@ -179,6 +180,9 @@ export function RollbackRequestsList({
             ) : (
               requests.map((request) => (
                 <TableRow key={request.id}>
+                  <TableCell>
+                    {request.payment.enrollment.student.id}
+                  </TableCell>
                   <TableCell>
                     {request.payment.enrollment.student.last_name},{" "}
                     {request.payment.enrollment.student.first_name}
